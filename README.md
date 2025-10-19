@@ -1,10 +1,99 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# childpen
+# childpen <img src="man/figures/logo.png" align="right" height="120"/>
 
 <!-- badges: start -->
 
 <!-- badges: end -->
 
-The goal of childpen is to
+### Identification of Child Penalties: Estimators and Simulation Tools
+
+The **`childpen`** package implements the core estimators and
+data-preparation utilities developed in the paper:
+
+> **Leventer, Dor (2025)**.  
+> *Identification of Child Penalties:*  
+> Tel Aviv University, Job Market Paper.  
+> \[link to paper or DOI once public\]
+
+The package provides: - **Formal implementations** of
+Difference-in-Differences (DID), Triple Differences (TD), and Normalized
+Event-Study (NTD) estimators used in child-penalty applications.  
+- **Alternative identification frameworks**, including conditional
+DID/TD and null-effect identification strategies.  
+- **Utility functions** for influence-function–based standard errors,
+balanced-panel construction, and data preparation.  
+- **Simulation tools** to generate artificial data consistent with
+theoretical child-penalty mechanisms.
+
+------------------------------------------------------------------------
+
+## Installation
+
+Install the latest development version from GitHub:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("dorleventer/childpen")
+#> Using GitHub PAT from the git credential store.
+#> Skipping install of 'childpen' from a github remote, the SHA1 (cbafa28d) has not changed since last install.
+#>   Use `force = TRUE` to force installation
+```
+
+## Simulating data
+
+The function simulate_data() creates a panel of synthetic individuals,
+with gender, treatment group (D), and earnings paths that are motivated
+by the child penalty application. It uses default DGP parameters bundled
+with the package that are based on observable earnings data in Israel.
+More data on the simulation can be found in the vignette.
+
+``` r
+# set.seed(123)
+# sim_data <- simulate_data(n_individuals = 2000)
+# head(sim_data)
+```
+
+## Estimators
+
+The function single_treatment_group_analysis() computes a full set of
+estimators—DID, TD, NTD, and their alternatives—for one treatment group
+($`d`$) and one control offset ($`dp`$), at a given evaluation age
+($`a`$).
+
+``` r
+# # Prepare data
+# DT <- prep_data_table(sim_data)
+# 
+# # Estimate for a single 2×2 setup: treatment at D=27, control at D=29, evaluated at a=28
+# res_single <- single_treatment_group_analysis(DT, d = 27, dp = 29, a = 28, pre = 1)
+# res_single[, .(estimand, method, est, se, p)]
+```
+
+## Analyzing multiple treatment groups
+
+The main function of the package provides estimates over a vector of
+treatment groups, up to *periods_post* post treatment. Pre-treatment
+periods used in validation test are set using *periods_pre*. The
+anticipation period can be set by the researcher using *pre*, default is
+one period before treatment.
+
+``` r
+# res_multi <- multiple_treatment_group_analysis(
+#   sim_data,
+#   treatment_groups = 24:28,
+#   periods_post = 2,
+#   periods_pre = 2,
+#   pre = 1
+# )
+# 
+# head(res_multi)
+```
+
+## Citation
+
+If you use childpen, please cite:
+
+Leventer, Dor (2025). Identification of Child Penalties. Tel Aviv
+University, Job Market Paper. <https://dorleventer.github.io/childpen>

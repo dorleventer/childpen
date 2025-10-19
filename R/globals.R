@@ -7,5 +7,8 @@ utils::globalVariables(c(
   "if_td_null_apo","if_td_null_ate","if_td_null_theta",
   "if_ntd_null_apo","if_ntd_null_ate","if_ntd_null_theta",
   # also silence DT symbol if referenced in notes
-  "DT"
+  "DT",
+  "id","age","D","female","Y","Y_inf","obs_id",
+  "log_Y_inf_male","b0","b1","b2","b3","ratio","log_Y_inf_base",
+  "epsilon","alpha_i","initial_penalty","penalty_pct"
 ))

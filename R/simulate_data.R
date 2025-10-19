@@ -6,11 +6,6 @@
 #' @param n_individuals Integer. Number of individuals to simulate (default \code{10000}).
 #' @param seed Integer. RNG seed.
 #'
-#' @details
-#' For females, an individual-specific initial penalty is drawn \eqn{\sim N(-0.30, 0.15^2)}
-#' at treatment age, and partial recovery increases earnings by \code{0.02} per year since birth:
-#' \deqn{ \text{penalty\_pct}_{i,a} = \text{initial\_penalty}_i + 0.02 \cdot (a - D_i) \;\; \text{for } a \ge D_i.}
-#' Observed earnings are \eqn{Y_{i,a} = Y_{\infty,i,a} \cdot (1 + \text{penalty\_pct}_{i,a})}.
 #'
 #' @return A \code{data.frame} with columns:
 #' \itemize{
@@ -30,10 +25,7 @@
 #' }
 #'
 #' @export
-simulate_data <- function(male_profiles   = NULL,
-                          female_params   = NULL,
-                          variance_params = NULL,
-                          n_individuals   = 10000,
+simulate_data <- function(n_individuals   = 10000,
                           seed            = 42) {
 
 
@@ -104,7 +96,7 @@ simulate_data <- function(male_profiles   = NULL,
   panel[, Y_inf := exp(log_Y_inf_base + alpha_i + epsilon)]
 
   # Female penalties: id-specific initial penalty + recovery
-  unique_mothers <- unique(panel[female == 1, .(id)])
+  unique_mothers <- unique(panel[female == 1, list(id)])
   unique_mothers[, initial_penalty := stats::rnorm(.N, mean = -0.30, sd = 0.15)]
   panel <- merge(panel, unique_mothers, by = "id", all.x = TRUE)
 
