@@ -78,13 +78,14 @@ multiple_treatment_group_analysis <- function(data,
   idx <- 1
   completed <- 0
 
+  control_offsets = periods_post + 1
+
   if(verbose) {
     cat(sprintf("\nRunning analysis for %d treatment groups...\n", length(treatment_groups)))
-    cat(sprintf("Post-treatment event times: %d to %d\n", min(event_times_post), max(event_times_post)))
+    cat(sprintf("Post-treatment event times: 0 to %d\n", periods_post))
     if (!is.null(event_times_pre)) {
       cat(sprintf("Pre-treatment event times: %d to %d (testing %d control groups: d+%d to d+%d)\n",
-                  min(event_times_pre), max(event_times_pre), length(control_offsets),
-                  min(control_offsets), max(control_offsets)))
+                  -periods_pre-pre, -1-pre, control_offsets, 1, control_offsets))
     }
     cat(sprintf("Total estimations: %d (%d post + %d pre)\n\n", n_total, n_post, n_pre))
   }
