@@ -193,7 +193,7 @@ multiple_treatment_group_analysis <- function(data,
   result_df$event_time <- result_df$a - result_df$d
 
   # Reorder columns for clarity
-  col_order <- c("d", "dp", "a", " event_time",
+  col_order <- c("d", "dp", "a", "event_time",
                  "estimand", "method", "est", "se", "ci_l", "ci_h", "t", "p",
                  "n_female_treat", "n_female_control", "n_male_treat", "n_male_control")
 
