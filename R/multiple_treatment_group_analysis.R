@@ -83,7 +83,7 @@ multiple_treatment_group_analysis <- function(data,
   if(verbose) {
     cat(sprintf("\nRunning analysis for %d treatment groups...\n", length(treatment_groups)))
     cat(sprintf("Post-treatment event times: 0 to %d\n", periods_post))
-    if (!is.null(event_times_pre)) {
+    if (!is.null(periods_pre)) {
       cat(sprintf("Pre-treatment event times: %d to %d (testing %d control groups: d+%d to d+%d)\n",
                   -periods_pre-pre, -1-pre, control_offsets, 1, control_offsets))
     }
