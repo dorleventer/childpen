@@ -18,41 +18,4 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of childpen is to provide a helper package for estimating child penalties using DID, TD and NTD based methods as discussed in Leventer (2025). 
-
-## Installation
-
-You can install the development version of childpen like so:
-
-```{r installation}
-# install.packages("remotes")
-remotes::install_github("dorleventer/childpen")
-```
-
-## Example
-
-A basic example of estimating descriptive estimands for several treatment groups:
-
-```{r example}
-library(childpen)
-library(data.table)
-
-set.seed(1)
-DT <- CJ(id = 1:60, age = 20:26)
-DT[, female := +(id %% 2 == 0)]
-DT[, D := rep(sample(24:28, 60, T), each = 7)]
-DT[, Y := stats::rnorm(.N, 10 - 0.5*female + 0.1*(age-20))]
-
-# for a single 2-by-2
-single_treatment_group_analysis(DT, 24, 25, 24) |> 
-  head()
-
-# over multiple treatment groups
-multiple_treatment_group_analysis(
-  DT,
-  treatment_groups = 24:26,
-  periods_post = 1,
-  periods_pre = 2,
-  pre = 1
-) |> head()
-```
+The goal of childpen is to 

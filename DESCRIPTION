@@ -5,14 +5,20 @@ Authors@R:
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
 Description: Tools to compute DID, TD and NTD based estimands.
 License: MIT + file LICENSE
-URL: https://github.com/dorleventer/childpen
+URL: https://github.com/dorleventer/childpen, https://dorleventer.github.io/childpen/
 BugReports: https://github.com/dorleventer/childpen/issues
 Imports: 
     data.table,
     stats
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+VignetteBuilder: knitr
+Depends: 
+    R (>= 3.5)
+LazyData: true

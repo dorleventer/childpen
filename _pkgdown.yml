@@ -1,0 +1,41 @@
+url: https://dorleventer.github.io/childpen
+template:
+  bootstrap: 5
+  bslib:
+    bootswatch: flatly
+
+home:
+  title: Child Penalties
+  description: >
+    Unconditional estimands and event-study tools for child penalty analysis.
+
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [github]
+  components:
+    intro:
+      text: "Get started"
+      href: index.html
+    reference:
+      text: "Reference"
+      href: reference/index.html
+    articles:
+      text: "Articles"
+      menu:
+        - text: "Tutorials"
+          href: articles/index.html
+    github:
+      icon: fa-github
+      href: https://github.com/dorleventer/childpen
+
+reference:
+  - title: "Core estimators"
+    contents:
+      - single_treatment_group_analysis
+      - multiple_treatment_group_analysis
+  - title: "Utilities"
+    contents:
+      - prep_data_table
+      - compute_mean_if
+      - se_cluster
