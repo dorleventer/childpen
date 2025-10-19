@@ -81,7 +81,7 @@ prep_data_table <- function(data,
 compute_mean_if <- function(DT, age_val, gender, D_val, col_name) {
   S <- as.numeric(DT$age == age_val & DT$female == gender & DT$D == D_val)
   p <- mean(S)
-  if (p <= 0) stop(sprintf("Empty subgroup: age=%d, female=%d, D=%d", age_val, gender, age_d_val))
+  if (p <= 0) stop(sprintf("Empty subgroup: age=%d, female=%d, D=%d", age_val, gender, D_val))
 
   Y_bar <- mean(S * DT$Y) / p
   psi   <- (S / p) * (DT$Y - Y_bar)

@@ -44,14 +44,15 @@ DT[, D := rep(sample(24:28, 60, T), each = 7)]
 DT[, Y := rnorm(.N, 10 - 0.5*female + 0.1*(age-20))]
 
 # for a single 2-by-2
-single_treatment_group_analysis(DT, 24, 25, 24)
+single_treatment_group_analysis(DT, 24, 25, 24) |> 
+  head()
 
 # over multiple treatment groups
-# multiple_treatment_group_analysis(
-#   DT,
-#   treatment_groups = 24:26,
-#   periods_post = 1,
-#   periods_pre = 2,
-#   pre = 1
-# )
+multiple_treatment_group_analysis(
+  DT,
+  treatment_groups = 24:26,
+  periods_post = 1,
+  periods_pre = 2,
+  pre = 1
+) |> head()
 ```
