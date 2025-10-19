@@ -19,8 +19,19 @@ You can install the development version of childpen like so:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 #> Using GitHub PAT from the git credential store.
-#> Skipping install of 'childpen' from a github remote, the SHA1 (390b9427) has not changed since last install.
-#>   Use `force = TRUE` to force installation
+#> Downloading GitHub repo dorleventer/childpen@HEAD
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>      checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpmIoIX3/remotesccc0249833d0/dorleventer-childpen-651088f/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpmIoIX3/remotesccc0249833d0/dorleventer-childpen-651088f/DESCRIPTION’
+#>   ─  preparing ‘childpen’:
+#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>      Warning: newline within quoted string at multiple_treatment_group_analysis.Rd:75
+#>    Warning: /private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpFl66cM/Rbuildccdc5a4d3cc0/childpen/man/multiple_treatment_group_analysis.Rd:78: unknown macro '\Delta'
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building ‘childpen_0.0.0.9000.tar.gz’
+#>      
+#> 
 ```
 
 ## Example
@@ -36,7 +47,7 @@ set.seed(1)
 DT <- CJ(id = 1:60, age = 20:26)
 DT[, female := +(id %% 2 == 0)]
 DT[, D := rep(sample(24:28, 60, T), each = 7)]
-DT[, Y := rnorm(.N, 10 - 0.5*female + 0.1*(age-20))]
+DT[, Y := stats::rnorm(.N, 10 - 0.5*female + 0.1*(age-20))]
 
 # for a single 2-by-2
 single_treatment_group_analysis(DT, 24, 25, 24) |> 
@@ -75,7 +86,7 @@ multiple_treatment_group_analysis(
 #> Progress: 3/15 (20.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
 #> Progress: 4/15 (26.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
 #> Progress: 5/15 (33.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
-#>   Error for d=26, event_time=1: object 'age_d_val' not found
+#>   Error for d=26, event_time=1: Empty subgroup: age=27, female=1, D=26
 #> Progress: 6/15 (40.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
 #> Progress: 7/15 (46.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
 #> Progress: 8/15 (53.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min

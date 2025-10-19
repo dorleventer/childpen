@@ -41,7 +41,7 @@ set.seed(1)
 DT <- CJ(id = 1:60, age = 20:26)
 DT[, female := +(id %% 2 == 0)]
 DT[, D := rep(sample(24:28, 60, T), each = 7)]
-DT[, Y := rnorm(.N, 10 - 0.5*female + 0.1*(age-20))]
+DT[, Y := stats::rnorm(.N, 10 - 0.5*female + 0.1*(age-20))]
 
 # for a single 2-by-2
 single_treatment_group_analysis(DT, 24, 25, 24) |> 

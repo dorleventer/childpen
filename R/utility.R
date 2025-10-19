@@ -27,11 +27,11 @@ prep_data_table <- function(data,
 
   # Map provided names -> canonical names (id, age, D, female, Y)
   rename_map <- c(
-    setNames(id_name,     "id"),
-    setNames(age_name,    "age"),
-    setNames(D_name,      "D"),
-    setNames(female_name, "female"),
-    setNames(Y_name,      "Y")
+    stats::setNames(id_name,     "id"),
+    stats::setNames(age_name,    "age"),
+    stats::setNames(D_name,      "D"),
+    stats::setNames(female_name, "female"),
+    stats::setNames(Y_name,      "Y")
   )
 
   for (target in names(rename_map)) {
@@ -93,9 +93,21 @@ compute_mean_if <- function(DT, age_val, gender, D_val, col_name) {
 #' @keywords internal
 se_cluster <- function(DT, if_col) {
   # cluster sums of the IF
-  cluster_scores <- DT[, .(score = sum(get(if_col))), by = id]
+  cluster_scores <- DT[, list(score = sum(get(if_col))), by = id]
   n <- nrow(DT)                 # total observations contributing ψ_i
   G <- nrow(cluster_scores)     # number of clusters
   v_hat <- (sum(cluster_scores$score^2) / (n^2)) * (G / (G - 1))
   sqrt(v_hat)
 }
+
+# utils::globalVariables(c(
+#   # common columns
+#   "id","age","D","female","Y","obs_id",
+#   # IF columns written by single_treatment_group_analysis()
+#   "if_y_d_minus_1_f_d","if_y_d_minus_1_m_d","if_y_a_f_d","if_y_a_m_d",
+#   "if_y_a_f_dp","if_y_a_m_dp","if_y_d_minus_1_f_dp","if_y_d_minus_1_m_dp",
+#   "if_apo_f","if_apo_m","if_ate_f","if_ate_m","if_theta_f","if_theta_m",
+#   "if_td","if_ntd","if_ratio_y","if_ratio_apo","if_ntd_alt",
+#   "if_td_null_apo","if_td_null_ate","if_td_null_theta",
+#   "if_ntd_null_apo","if_ntd_null_ate","if_ntd_null_theta"
+# ))

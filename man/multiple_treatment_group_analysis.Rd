@@ -2,7 +2,8 @@
 % Please edit documentation in R/multiple_treatment_group_analysis.R
 \name{multiple_treatment_group_analysis}
 \alias{multiple_treatment_group_analysis}
-\title{Child penalty analysis over multiple treatment groups}
+\title{Child penalty analysis over multiple treatment groups
+Event-study runner over treatment groups and horizons}
 \usage{
 multiple_treatment_group_analysis(
   data,
@@ -21,61 +22,32 @@ multiple_treatment_group_analysis(
 )
 }
 \arguments{
-\item{data}{A \code{data.frame} or \code{data.table} containing the raw input data.
-Must include columns corresponding to identifiers, treatment status, age, gender, and the outcome.
-These columns can be specified using the arguments \code{Y_name}, \code{age_name},
-\code{D_name}, \code{id_name}, and \code{female_name}.}
+\item{data}{A data.frame or data.table with the needed columns. Names can be
+mapped via \code{Y_name}, \code{age_name}, \code{D_name}, \code{id_name}, \code{female_name}.}
 
-\item{treatment_groups}{Integer vector of treatment groups (e.g., \code{24:34}).}
+\item{treatment_groups}{Integer vector of treatment groups (e.g., 24:34).}
 
-\item{periods_post}{Integer \eqn{H \ge 0}. Post-treatment horizons; the function
-evaluates 2-by-2 designs via event times \eqn{e \in \{0,1,\ldots,H\}} with target age
-\eqn{a = d + e} and closest not-yet-treated control group \eqn{d' = a + 1}.}
+\item{periods_post}{Integer H >= 0. Post-treatment horizons; evaluates event
+times e = 0, 1, ..., H with target age a = d + e and control dp = a + 1.}
 
-\item{periods_pre}{Integer \eqn{K \ge 0} (default \code{4}). Number of
-pre-treatment horizons. The function evaluates
-\eqn{e \in \{-K, \ldots, -\mathrm{pre}\}} with \eqn{a = d + e}. Outputs are produced
-for all control groups used in post-treatment estimation.
-Set \code{NULL} to skip pre-trend computations.}
+\item{periods_pre}{Integer K >= 0 (default 4). Number of pre-treatment horizons.
+Evaluates e = -K, ..., -pre with a = d + e. For each pre period, tests the same
+control offsets used post, i.e., dp = d + 1, 2, ..., H + 1. Set \code{NULL} to skip pre-trends.}
 
-\item{max_age}{Integer (default \code{999}). Upper bound; cells with
-\eqn{d' >} \code{max_age} are skipped.}
+\item{max_age}{Integer (default 999). Upper bound; cells with dp > max_age are skipped.}
 
-\item{min_age}{Integer (default \code{0}). Lower bound; cells with
-\eqn{a <} \code{min_age} are skipped.}
+\item{min_age}{Integer (default 0). Lower bound; cells with a < min_age are skipped.}
 
-\item{pre}{Integer (default \code{1}). Offset used for the pre-treatment anchor in the underlying
-2-by-2 designs; determines which pre-period is used in APO construction.}
+\item{pre}{Integer (default 1). Pre-treatment anchor used in APO (uses d - pre).}
 
-\item{Y_name}{Character. Column name in \code{data} holding the outcome variable.
-Default \code{"Y"}.}
+\item{Y_name, age_name, D_name, id_name, female_name}{Column name mappings passed to \code{prep_data_table()}.}
 
-\item{age_name}{Character. Column name in \code{data} holding the age variable.
-Default \code{"age"}.}
-
-\item{D_name}{Character. Column name in \code{data} holding the treatment group indicator
-(e.g., age-at-treatment). Default \code{"D"}.}
-
-\item{id_name}{Character. Column name in \code{data} holding the cluster identifier
-(e.g., individual ID). Default \code{"id"}.}
-
-\item{female_name}{Character. Column name in \code{data} holding the binary gender indicator
-(1 = female). Default \code{"female"}.}
+\item{verbose}{Logical (default \code{TRUE}). Print progress messages.}
 }
 \value{
-A \code{data.frame} stacking estimator (\code{est}) and clustered SE (\code{se})) by treatment group (\code{d}), control group (\code{dp}) and age (\code{age}), as outputed by \code{single_treatment_group_analysis()}.
+A \code{data.frame} stacking results from \code{single_treatment_group_analysis()}.
 }
 \description{
-Runs \code{single_treatment_group_analysis()} over a grid of treatment groups
-and event-time horizons, stacking results into one data frame.
-}
-\details{
-For post-treatment horizons the function loops over
-\eqn{e = 0,1,\ldots,\mathrm{periods\_post}} and calls
-\code{single_treatment_group_analysis(data, d, d' = a+1, a = d+e, pre)}.
-For pre-treatment horizons, it loops over
-\eqn{e = -\mathrm{periods\_pre}, \ldots, -\mathrm{pre}}, sets \eqn{a = d + e},
-and tests multiple controls \eqn{d' = d + \Delta} with
-\eqn{\Delta \in \{1, \ldots, \mathrm{periods\_post}+1\}} (closest not-yet-treated up
-to the maximum post horizon).
+Child penalty analysis over multiple treatment groups
+Event-study runner over treatment groups and horizons
 }

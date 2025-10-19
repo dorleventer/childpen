@@ -52,8 +52,8 @@ From these, the cross-gender contrasts are formed:
 \itemize{
 \item \strong{TD} \eqn{= \mathrm{ATE}(F) - \mathrm{ATE}(M)}
 \item \strong{NTD} \eqn{= \theta(F) - \theta(M)}
-\item \strong{NTD\_Alt} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}}
-\item \strong{TD\_Null} and \strong{NTD\_Null} variants are defined analogously
+\item \strong{NTD Alt} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}}
+\item \strong{TD Null} and \strong{NTD Null} variants are defined analogously
 under a null-effect-for-fathers bias-correction.
 }
 
