@@ -186,10 +186,11 @@ multiple_treatment_group_analysis <- function(data,
 
   # Combine all results
   result_df <- do.call(rbind, results_list)
-  result_df$ci_l = result_df$est - 1.96 * result_df$se
-  result_df$ci_h = result_df$est + 1.96 * result_df$se
-  result_df$t = result_df$est / result_df$se
-  result_df$p = 2 * pnorm(-abs(result_df$est / result_df$se))
+  result_df$ci_l <- result_df$est - 1.96 * result_df$se
+  result_df$ci_h <- result_df$est + 1.96 * result_df$se
+  result_df$t <- result_df$est / result_df$se
+  result_df$p <- 2 * pnorm(-abs(result_df$est / result_df$se))
+  result_df$event_time <- result_df$a - result_df$d
 
   # Reorder columns for clarity
   col_order <- c("d", "dp", "a", " event_time",
