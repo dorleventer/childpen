@@ -19,7 +19,7 @@ You can install the development version of childpen like so:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 #> Using GitHub PAT from the git credential store.
-#> Skipping install of 'childpen' from a github remote, the SHA1 (cc077699) has not changed since last install.
+#> Skipping install of 'childpen' from a github remote, the SHA1 (3bb0906a) has not changed since last install.
 #>   Use `force = TRUE` to force installation
 ```
 
@@ -35,8 +35,10 @@ treatment groups:
 # set.seed(1)
 # DT <- CJ(id = 1:60, age = 20:26)
 # DT[, female := +(id %% 2 == 0)]
-# DT[, D := sample(24:28, 420, T)]
-# DT[, Y := rnorm(.N, 10 + 0.5*female + 0.1*(age-20))]
+# DT[, D := rep(sample(24:28, 60, T), each = 7)]
+# DT[, Y := rnorm(.N, 10 - 0.5*female + 0.1*(age-20))]
+# 
+# single_treatment_group_analysis(DT, 24, 25, 24)
 # 
 # # Single design at d=24, a=25, control dp=26 (pre=1)
 # multiple_treatment_group_analysis(

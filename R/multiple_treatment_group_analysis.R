@@ -109,7 +109,7 @@ multiple_treatment_group_analysis <- function(data,
       }
 
       tryCatch({
-        res <- run_child_penalty_analysis_fast(data, d, dp, a, pre)
+        res <- single_treatment_group_analysis(data, d, dp, a, pre)
         res$d <- d
         res$dp <- dp
         res$a <- a
