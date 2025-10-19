@@ -96,7 +96,6 @@ multiple_treatment_group_analysis <- function(data,
   DT <- prep_data_table(data, Y_name, age_name, D_name, id_name, female_name)
 
   # Post-treatment estimates
-  cat("Computing post-treatment estimates...\n")
   for (d in treatment_groups) {
     for (event_time in 0:periods_post) {
       a <- d + event_time      # outcome age
@@ -136,9 +135,8 @@ multiple_treatment_group_analysis <- function(data,
 
   # Pre-treatment estimates (pre-trends)
   if (!is.null(periods_pre)) {
-    cat("\nComputing pre-treatment estimates (pre-trends)...\n")
     for (d in treatment_groups) {
-      for (event_time in (-pre - periods_pre):(d - pre - 1)) {
+      for (event_time in (-pre - periods_pre):(- pre - 1)) {
         a <- d + event_time  # outcome age (a < d for pre-treatment)
 
         # Skip if outcome age would be out of range
