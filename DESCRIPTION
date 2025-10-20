@@ -4,9 +4,7 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("Dor", "Leventer", 
            email = "dorleventer@gmail.com", 
-           role = c("aut", "cre"), 
-           comment = c(ORCID = "0000-0000-0000-0000"))
-)
+           role = c("aut", "cre")))
 Maintainer: Dor Leventer <dorleventer@gmail.com>
 Description: Tools to compute DID, TD and NTD based estimands.
 License: MIT + file LICENSE
