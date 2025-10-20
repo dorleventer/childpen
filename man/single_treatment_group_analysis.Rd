@@ -4,7 +4,18 @@
 \alias{single_treatment_group_analysis}
 \title{Unconditional estimands for a single treatment group}
 \usage{
-single_treatment_group_analysis(data, d, dp, a, pre = 1)
+single_treatment_group_analysis(
+  data,
+  d,
+  dp,
+  a,
+  pre = 1,
+  Y_name = "Y",
+  age_name = "age",
+  D_name = "D",
+  id_name = "id",
+  female_name = "female"
+)
 }
 \arguments{
 \item{data}{A \code{data.table} with columns:
@@ -23,6 +34,8 @@ single_treatment_group_analysis(data, d, dp, a, pre = 1)
 \item{a}{Integer. Target age.}
 
 \item{pre}{Integer, default \code{1}. Offset used for the pre-treatment anchor.}
+
+\item{Y_name, age_name, D_name, id_name, female_name}{Column name mappings passed to \code{prep_data_table()}.}
 }
 \value{
 A \code{data.frame} with one row per estimand/method combination:

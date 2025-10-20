@@ -37,8 +37,17 @@ Install the latest development version from GitHub:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 #> Using GitHub PAT from the git credential store.
-#> Skipping install of 'childpen' from a github remote, the SHA1 (9af195cd) has not changed since last install.
-#>   Use `force = TRUE` to force installation
+#> Downloading GitHub repo dorleventer/childpen@HEAD
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>      checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpTPDUNd/remoteseeef562fa891/dorleventer-childpen-b5b134e/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpTPDUNd/remoteseeef562fa891/dorleventer-childpen-b5b134e/DESCRIPTION’
+#>   ─  preparing ‘childpen’:
+#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building ‘childpen_0.0.0.9000.tar.gz’
+#>      
+#> 
 ```
 
 ## Simulating data
@@ -73,15 +82,56 @@ anticipation period can be set by the researcher using *pre*, default is
 one period before treatment.
 
 ``` r
-# res_multi <- multiple_treatment_group_analysis(
-#   sim_data,
-#   treatment_groups = 25,
-#   periods_post = 5,
-#   periods_pre = 4,
-#   pre = 1
-# )
-# 
-# head(res_multi)
+res_multi <- multiple_treatment_group_analysis(
+  sim_data,
+  treatment_groups = 25,
+  periods_post = 5,
+  periods_pre = 4,
+  pre = 1
+)
+#> 
+#> Running analysis for 1 treatment groups...
+#> Post-treatment event times: 0 to 5
+#> Pre-treatment event times: -5 to -2 (testing 6 control groups: d+1 to d+6)
+#> Total estimations: 30 (6 post + 24 pre)
+#> 
+#>   Error for d=25, event_time=0: object 'DT' not found
+#>   Error for d=25, event_time=1: object 'DT' not found
+#>   Error for d=25, event_time=2: object 'DT' not found
+#>   Error for d=25, event_time=3: object 'DT' not found
+#>   Error for d=25, event_time=4: object 'DT' not found
+#>   Error for d=25, event_time=5: object 'DT' not found
+#>   Error for d=25, event_time=-5, dp=26: object 'DT' not found
+#>   Error for d=25, event_time=-5, dp=27: object 'DT' not found
+#>   Error for d=25, event_time=-5, dp=28: object 'DT' not found
+#>   Error for d=25, event_time=-5, dp=29: object 'DT' not found
+#>   Error for d=25, event_time=-5, dp=30: object 'DT' not found
+#>   Error for d=25, event_time=-5, dp=31: object 'DT' not found
+#>   Error for d=25, event_time=-4, dp=26: object 'DT' not found
+#>   Error for d=25, event_time=-4, dp=27: object 'DT' not found
+#>   Error for d=25, event_time=-4, dp=28: object 'DT' not found
+#>   Error for d=25, event_time=-4, dp=29: object 'DT' not found
+#>   Error for d=25, event_time=-4, dp=30: object 'DT' not found
+#>   Error for d=25, event_time=-4, dp=31: object 'DT' not found
+#>   Error for d=25, event_time=-3, dp=26: object 'DT' not found
+#>   Error for d=25, event_time=-3, dp=27: object 'DT' not found
+#>   Error for d=25, event_time=-3, dp=28: object 'DT' not found
+#>   Error for d=25, event_time=-3, dp=29: object 'DT' not found
+#>   Error for d=25, event_time=-3, dp=30: object 'DT' not found
+#>   Error for d=25, event_time=-3, dp=31: object 'DT' not found
+#>   Error for d=25, event_time=-2, dp=26: object 'DT' not found
+#>   Error for d=25, event_time=-2, dp=27: object 'DT' not found
+#>   Error for d=25, event_time=-2, dp=28: object 'DT' not found
+#>   Error for d=25, event_time=-2, dp=29: object 'DT' not found
+#>   Error for d=25, event_time=-2, dp=30: object 'DT' not found
+#>   Error for d=25, event_time=-2, dp=31: object 'DT' not found
+#> 
+#> Completed 0 estimations in 0.0 minutes
+#> 
+#> No valid result rows produced. Returning empty data.frame.
+
+head(res_multi)
+#> data frame with 0 columns and 0 rows
 ```
 
 ## Citation

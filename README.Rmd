@@ -67,7 +67,7 @@ The main function of the package provides estimates over a vector of treatment g
 
 ```{r}
 # res_multi <- multiple_treatment_group_analysis(
-#   sim_data,
+#   data = sim_data,
 #   treatment_groups = 25,
 #   periods_post = 5,
 #   periods_pre = 4,

@@ -14,6 +14,7 @@
 #' @param dp Integer. Control group (closest not-yet-treated group)
 #' @param a Integer. Target age.
 #' @param pre Integer, default \code{1}. Offset used for the pre-treatment anchor.
+#' @param Y_name,age_name,D_name,id_name,female_name Column name mappings passed to \code{prep_data_table()}.
 #'
 #' @details
 #' Let \eqn{Y(a, g, d^\star)} denote the mean outcome at age \eqn{a} for gender
@@ -64,7 +65,15 @@
 #' head(res)
 #' }
 #' @export
-single_treatment_group_analysis <- function(data, d, dp, a, pre = 1) {
+single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
+                                            Y_name = "Y",
+                                            age_name = "age",
+                                            D_name = "D",
+                                            id_name = "id",
+                                            female_name = "female") {
+
+  DT <- if (inherits(data, "data.table")) data else
+    prep_data_table(data, Y_name, age_name, D_name, id_name, female_name)
 
   # Compute all 8 base means we need
   means <- list(
