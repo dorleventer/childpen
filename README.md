@@ -37,17 +37,8 @@ Install the latest development version from GitHub:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 #> Using GitHub PAT from the git credential store.
-#> Downloading GitHub repo dorleventer/childpen@HEAD
-#> 
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpTPDUNd/remoteseeef562fa891/dorleventer-childpen-b5b134e/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpTPDUNd/remoteseeef562fa891/dorleventer-childpen-b5b134e/DESCRIPTION’
-#>   ─  preparing ‘childpen’:
-#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-#>   ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>   ─  building ‘childpen_0.0.0.9000.tar.gz’
-#>      
-#> 
+#> Skipping install of 'childpen' from a github remote, the SHA1 (1b96fbe8) has not changed since last install.
+#>   Use `force = TRUE` to force installation
 ```
 
 ## Simulating data
@@ -61,16 +52,38 @@ More data on the simulation can be found in the vignette.
 ``` r
 library(childpen)
 
-set.seed(123)
-sim_data <- simulate_data(n_individuals = 2000)
+sim_data <- simulate_data(n_individuals = 10000, seed = 42)
 head(sim_data)
 #>   id female age  D     Y_inf         Y
-#> 1  1      1  20 39  4164.528  4164.528
-#> 2  1      1  21 39  7904.255  7904.255
-#> 3  1      1  22 39  6759.559  6759.559
-#> 4  1      1  23 39 12002.566 12002.566
-#> 5  1      1  24 39 17687.313 17687.313
-#> 6  1      1  25 39 23578.168 23578.168
+#> 1  1      1  20 34  5409.207  5409.207
+#> 2  1      1  21 34  4111.729  4111.729
+#> 3  1      1  22 34  8901.461  8901.461
+#> 4  1      1  23 34 19872.782 19872.782
+#> 5  1      1  24 34 22623.541 22623.541
+#> 6  1      1  25 34 29288.630 29288.630
+```
+
+## Analyzing single 2-by-2s
+
+The work behind the scenes is done by the function below, which
+estimates all relevant parameters for a single 2-by-2 comparison.
+
+``` r
+single_treatment_group_analysis(sim_data, d = 25, dp = 26, a = 25, pre = 1) |> head()
+#>   estimand     method           est           se n_female_treat
+#> 1      APO DID_Female  6.952063e+04 4.575281e+03            341
+#> 2      APO   DID_Male  7.046731e+04 4.219647e+03            341
+#> 3      ATE DID_Female -1.919906e+04 4.366312e+03            341
+#> 4      ATE   DID_Male -1.362064e+02 4.560543e+03            341
+#> 5    theta DID_Female -2.761635e-01 4.951042e-02            341
+#> 6    theta   DID_Male -1.932901e-03 6.464362e-02            341
+#>   n_female_control n_male_treat n_male_control
+#> 1              296          302            314
+#> 2              296          302            314
+#> 3              296          302            314
+#> 4              296          302            314
+#> 5              296          302            314
+#> 6              296          302            314
 ```
 
 ## Analyzing multiple treatment groups
@@ -83,7 +96,7 @@ one period before treatment.
 
 ``` r
 res_multi <- multiple_treatment_group_analysis(
-  sim_data,
+  data = sim_data,
   treatment_groups = 25,
   periods_post = 5,
   periods_pre = 4,
@@ -95,43 +108,60 @@ res_multi <- multiple_treatment_group_analysis(
 #> Pre-treatment event times: -5 to -2 (testing 6 control groups: d+1 to d+6)
 #> Total estimations: 30 (6 post + 24 pre)
 #> 
-#>   Error for d=25, event_time=0: object 'DT' not found
-#>   Error for d=25, event_time=1: object 'DT' not found
-#>   Error for d=25, event_time=2: object 'DT' not found
-#>   Error for d=25, event_time=3: object 'DT' not found
-#>   Error for d=25, event_time=4: object 'DT' not found
-#>   Error for d=25, event_time=5: object 'DT' not found
-#>   Error for d=25, event_time=-5, dp=26: object 'DT' not found
-#>   Error for d=25, event_time=-5, dp=27: object 'DT' not found
-#>   Error for d=25, event_time=-5, dp=28: object 'DT' not found
-#>   Error for d=25, event_time=-5, dp=29: object 'DT' not found
-#>   Error for d=25, event_time=-5, dp=30: object 'DT' not found
-#>   Error for d=25, event_time=-5, dp=31: object 'DT' not found
-#>   Error for d=25, event_time=-4, dp=26: object 'DT' not found
-#>   Error for d=25, event_time=-4, dp=27: object 'DT' not found
-#>   Error for d=25, event_time=-4, dp=28: object 'DT' not found
-#>   Error for d=25, event_time=-4, dp=29: object 'DT' not found
-#>   Error for d=25, event_time=-4, dp=30: object 'DT' not found
-#>   Error for d=25, event_time=-4, dp=31: object 'DT' not found
-#>   Error for d=25, event_time=-3, dp=26: object 'DT' not found
-#>   Error for d=25, event_time=-3, dp=27: object 'DT' not found
-#>   Error for d=25, event_time=-3, dp=28: object 'DT' not found
-#>   Error for d=25, event_time=-3, dp=29: object 'DT' not found
-#>   Error for d=25, event_time=-3, dp=30: object 'DT' not found
-#>   Error for d=25, event_time=-3, dp=31: object 'DT' not found
-#>   Error for d=25, event_time=-2, dp=26: object 'DT' not found
-#>   Error for d=25, event_time=-2, dp=27: object 'DT' not found
-#>   Error for d=25, event_time=-2, dp=28: object 'DT' not found
-#>   Error for d=25, event_time=-2, dp=29: object 'DT' not found
-#>   Error for d=25, event_time=-2, dp=30: object 'DT' not found
-#>   Error for d=25, event_time=-2, dp=31: object 'DT' not found
+#> Progress: 1/30 (3.3%) | Elapsed: 0.0 min | Remaining: ~0.4 min
+#> Progress: 2/30 (6.7%) | Elapsed: 0.0 min | Remaining: ~0.4 min
+#> Progress: 3/30 (10.0%) | Elapsed: 0.0 min | Remaining: ~0.3 min
+#> Progress: 4/30 (13.3%) | Elapsed: 0.0 min | Remaining: ~0.3 min
+#> Progress: 5/30 (16.7%) | Elapsed: 0.1 min | Remaining: ~0.3 min
+#> Progress: 6/30 (20.0%) | Elapsed: 0.1 min | Remaining: ~0.3 min
+#> Progress: 7/30 (23.3%) | Elapsed: 0.1 min | Remaining: ~0.3 min
+#> Progress: 8/30 (26.7%) | Elapsed: 0.1 min | Remaining: ~0.3 min
+#> Progress: 9/30 (30.0%) | Elapsed: 0.1 min | Remaining: ~0.2 min
+#> Progress: 10/30 (33.3%) | Elapsed: 0.1 min | Remaining: ~0.2 min
+#> Progress: 11/30 (36.7%) | Elapsed: 0.1 min | Remaining: ~0.2 min
+#> Progress: 12/30 (40.0%) | Elapsed: 0.1 min | Remaining: ~0.2 min
+#> Progress: 13/30 (43.3%) | Elapsed: 0.1 min | Remaining: ~0.2 min
+#> Progress: 14/30 (46.7%) | Elapsed: 0.2 min | Remaining: ~0.2 min
+#> Progress: 15/30 (50.0%) | Elapsed: 0.2 min | Remaining: ~0.2 min
+#> Progress: 16/30 (53.3%) | Elapsed: 0.2 min | Remaining: ~0.2 min
+#> Progress: 17/30 (56.7%) | Elapsed: 0.2 min | Remaining: ~0.1 min
+#> Progress: 18/30 (60.0%) | Elapsed: 0.2 min | Remaining: ~0.1 min
+#> Progress: 19/30 (63.3%) | Elapsed: 0.2 min | Remaining: ~0.1 min
+#> Progress: 20/30 (66.7%) | Elapsed: 0.2 min | Remaining: ~0.1 min
+#> Progress: 21/30 (70.0%) | Elapsed: 0.2 min | Remaining: ~0.1 min
+#> Progress: 22/30 (73.3%) | Elapsed: 0.2 min | Remaining: ~0.1 min
+#> Progress: 23/30 (76.7%) | Elapsed: 0.3 min | Remaining: ~0.1 min
+#> Progress: 24/30 (80.0%) | Elapsed: 0.3 min | Remaining: ~0.1 min
+#> Progress: 25/30 (83.3%) | Elapsed: 0.3 min | Remaining: ~0.1 min
+#> Progress: 26/30 (86.7%) | Elapsed: 0.3 min | Remaining: ~0.0 min
+#> Progress: 27/30 (90.0%) | Elapsed: 0.3 min | Remaining: ~0.0 min
+#> Progress: 28/30 (93.3%) | Elapsed: 0.3 min | Remaining: ~0.0 min
+#> Progress: 29/30 (96.7%) | Elapsed: 0.3 min | Remaining: ~0.0 min
+#> Progress: 30/30 (100.0%) | Elapsed: 0.3 min | Remaining: ~0.0 min
 #> 
-#> Completed 0 estimations in 0.0 minutes
-#> 
-#> No valid result rows produced. Returning empty data.frame.
-
+#> Completed 30 estimations in 0.3 minutes
 head(res_multi)
-#> data frame with 0 columns and 0 rows
+#>    d dp  a event_time estimand     method           est           se
+#> 1 25 26 25          0      APO DID_Female  6.952063e+04 4.575281e+03
+#> 2 25 26 25          0      APO   DID_Male  7.046731e+04 4.219647e+03
+#> 3 25 26 25          0      ATE DID_Female -1.919906e+04 4.366312e+03
+#> 4 25 26 25          0      ATE   DID_Male -1.362064e+02 4.560543e+03
+#> 5 25 26 25          0    theta DID_Female -2.761635e-01 4.951042e-02
+#> 6 25 26 25          0    theta   DID_Male -1.932901e-03 6.464362e-02
+#>            ci_l          ci_h           t            p n_female_treat
+#> 1  6.055308e+04  7.848818e+04 15.19483147 3.826464e-52            341
+#> 2  6.219680e+04  7.873782e+04 16.69981011 1.314826e-62            341
+#> 3 -2.775703e+04 -1.064109e+04 -4.39708899 1.097124e-05            341
+#> 4 -9.074872e+03  8.802459e+03 -0.02986626 9.761737e-01            341
+#> 5 -3.732039e-01 -1.791231e-01 -5.57788631 2.434587e-08            341
+#> 6 -1.286344e-01  1.247686e-01 -0.02990088 9.761461e-01            341
+#>   n_female_control n_male_treat n_male_control
+#> 1              296          302            314
+#> 2              296          302            314
+#> 3              296          302            314
+#> 4              296          302            314
+#> 5              296          302            314
+#> 6              296          302            314
 ```
 
 ## Citation

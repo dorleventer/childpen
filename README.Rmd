@@ -4,7 +4,7 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -43,7 +43,7 @@ The package provides:
 
 Install the latest development version from GitHub:
 
-```{r}
+```{r install_package}
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 ```
@@ -53,28 +53,35 @@ remotes::install_github("dorleventer/childpen")
 The function *simulate_data()* creates a panel of synthetic individuals, with gender, treatment group (D), and earnings paths that are motivated by the child penalty application.
 It uses default DGP parameters bundled with the package that are based on observable earnings data in Israel. More data on the simulation can be found in the vignette. 
 
-```{r}
+```{r simulating_data}
 library(childpen)
 
-set.seed(123)
-sim_data <- simulate_data(n_individuals = 2000)
+sim_data <- simulate_data(n_individuals = 10000, seed = 42)
 head(sim_data)
 ```
+
+## Analyzing single 2-by-2s
+
+The work behind the scenes is done by the function below, which estimates all relevant parameters for a single 2-by-2 comparison. 
+
+```{r single_treatment}
+single_treatment_group_analysis(sim_data, d = 25, dp = 26, a = 25, pre = 1) |> head()
+```
+
 
 ## Analyzing multiple treatment groups
 
 The main function of the package provides estimates over a vector of treatment groups, up to *periods_post* post treatment. Pre-treatment periods used in validation test are set using *periods_pre*. The anticipation period can be set by the researcher using *pre*, default is one period before treatment. 
 
-```{r}
-# res_multi <- multiple_treatment_group_analysis(
-#   data = sim_data,
-#   treatment_groups = 25,
-#   periods_post = 5,
-#   periods_pre = 4,
-#   pre = 1
-# )
-# 
-# head(res_multi)
+```{r multiple_treatment}
+res_multi <- multiple_treatment_group_analysis(
+  data = sim_data,
+  treatment_groups = 25,
+  periods_post = 5,
+  periods_pre = 4,
+  pre = 1
+)
+head(res_multi)
 ```
 
 
