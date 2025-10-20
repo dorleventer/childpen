@@ -17,25 +17,26 @@ knitr::opts_chunk$set(
 
 
 
-# childpen <img src="man/figures/logo.png" align="right" height="120"/>
+
+
+# childpen <a href="https://dorleventer.github.io/childpen" title="childpen website"><img src="man/figures/logo.png" align="right" height="120" alt="childpen logo" /></a>
 
 <!-- badges: start -->
+[![pkgdown](https://github.com/dorleventer/childpen/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/dorleventer/childpen/actions/workflows/pkgdown.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 <!-- badges: end -->
 
-### Identification of Child Penalties: Estimators and Simulation Tools
+**Identification of Child Penalties: Estimators & Simulation Tools**
 
-The **`childpen`** package implements the core estimators and data-preparation utilities developed in the paper:
-
-> **Leventer, Dor (2025)**.  
-> *Identification of Child Penalties:*  
+> **Leventer, Dor (2025).** *Identification of Child Penalties.*  
 > Tel Aviv University, Job Market Paper.  
-> [link to paper or DOI once public]
+> [Preprint (coming soon)](#) · [Slides (coming soon)](#)
 
-The package provides:
-- **Formal implementations** of Difference-in-Differences (DID), Triple Differences (TD), and Normalized Event-Study (NTD) estimators used in child-penalty applications.  
-- **Alternative identification frameworks**, including conditional DID/TD and null-effect identification strategies.  
-- **Utility functions** for influence-function–based standard errors, balanced-panel construction, and data preparation.  
-- **Simulation tools** to generate artificial data consistent with theoretical child-penalty mechanisms.
+- 📦 **R package:** childpen  
+- 🧪 DID / TD / NTD estimators (single & multiple treatment groups)  
+- 🧰 Simulation tools and influence-function SEs  
+- 💻 **GitHub:** <https://github.com/dorleventer/childpen>  
+- 🌐 **Website:** <https://dorleventer.github.io/childpen> *(auto-built with pkgdown)*
 
 ---
 
@@ -56,7 +57,7 @@ It uses default DGP parameters bundled with the package that are based on observ
 ```{r simulating_data}
 library(childpen)
 
-sim_data <- simulate_data(n_individuals = 10000, seed = 42)
+sim_data <- simulate_data(n_individuals = 1000, seed = 42)
 head(sim_data)
 ```
 

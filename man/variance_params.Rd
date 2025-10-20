@@ -13,4 +13,4 @@ variance_params
 \description{
 Variance parameters for simulation
 }
-\keyword{datasets}
+\keyword{internal}

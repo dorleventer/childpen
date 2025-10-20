@@ -1,31 +1,27 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# childpen <img src="man/figures/logo.png" align="right" height="120"/>
+# childpen <a href="https://dorleventer.github.io/childpen" title="childpen website"><img src="man/figures/logo.png" align="right" height="120" alt="childpen logo" /></a>
 
 <!-- badges: start -->
 
+[![pkgdown](https://github.com/dorleventer/childpen/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/dorleventer/childpen/actions/workflows/pkgdown.yaml)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 <!-- badges: end -->
 
-### Identification of Child Penalties: Estimators and Simulation Tools
+**Identification of Child Penalties: Estimators & Simulation Tools**
 
-The **`childpen`** package implements the core estimators and
-data-preparation utilities developed in the paper:
-
-> **Leventer, Dor (2025)**.  
-> *Identification of Child Penalties:*  
+> **Leventer, Dor (2025).** *Identification of Child Penalties.*  
 > Tel Aviv University, Job Market Paper.  
-> \[link to paper or DOI once public\]
+> [Preprint (coming soon)](#) · [Slides (coming soon)](#)
 
-The package provides: - **Formal implementations** of
-Difference-in-Differences (DID), Triple Differences (TD), and Normalized
-Event-Study (NTD) estimators used in child-penalty applications.  
-- **Alternative identification frameworks**, including conditional
-DID/TD and null-effect identification strategies.  
-- **Utility functions** for influence-function–based standard errors,
-balanced-panel construction, and data preparation.  
-- **Simulation tools** to generate artificial data consistent with
-theoretical child-penalty mechanisms.
+- 📦 **R package:** childpen  
+- 🧪 DID / TD / NTD estimators (single & multiple treatment groups)  
+- 🧰 Simulation tools and influence-function SEs  
+- 💻 **GitHub:** <https://github.com/dorleventer/childpen>  
+- 🌐 **Website:** <https://dorleventer.github.io/childpen> *(auto-built
+  with pkgdown)*
 
 ------------------------------------------------------------------------
 
@@ -37,7 +33,7 @@ Install the latest development version from GitHub:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 #> Using GitHub PAT from the git credential store.
-#> Skipping install of 'childpen' from a github remote, the SHA1 (1b96fbe8) has not changed since last install.
+#> Skipping install of 'childpen' from a github remote, the SHA1 (f4d8eca8) has not changed since last install.
 #>   Use `force = TRUE` to force installation
 ```
 
@@ -52,15 +48,15 @@ More data on the simulation can be found in the vignette.
 ``` r
 library(childpen)
 
-sim_data <- simulate_data(n_individuals = 10000, seed = 42)
+sim_data <- simulate_data(n_individuals = 1000, seed = 42)
 head(sim_data)
 #>   id female age  D     Y_inf         Y
-#> 1  1      1  20 34  5409.207  5409.207
-#> 2  1      1  21 34  4111.729  4111.729
-#> 3  1      1  22 34  8901.461  8901.461
-#> 4  1      1  23 34 19872.782 19872.782
-#> 5  1      1  24 34 22623.541 22623.541
-#> 6  1      1  25 34 29288.630 29288.630
+#> 1  1      1  20 30  66775.08  66775.08
+#> 2  1      1  21 30  18105.66  18105.66
+#> 3  1      1  22 30  21744.97  21744.97
+#> 4  1      1  23 30  71501.84  71501.84
+#> 5  1      1  24 30 132133.43 132133.43
+#> 6  1      1  25 30 194425.57 194425.57
 ```
 
 ## Analyzing single 2-by-2s
@@ -71,19 +67,19 @@ estimates all relevant parameters for a single 2-by-2 comparison.
 ``` r
 single_treatment_group_analysis(sim_data, d = 25, dp = 26, a = 25, pre = 1) |> head()
 #>   estimand     method           est           se n_female_treat
-#> 1      APO DID_Female  6.952063e+04 4.575281e+03            341
-#> 2      APO   DID_Male  7.046731e+04 4.219647e+03            341
-#> 3      ATE DID_Female -1.919906e+04 4.366312e+03            341
-#> 4      ATE   DID_Male -1.362064e+02 4.560543e+03            341
-#> 5    theta DID_Female -2.761635e-01 4.951042e-02            341
-#> 6    theta   DID_Male -1.932901e-03 6.464362e-02            341
+#> 1      APO DID_Female  5.856580e+04 1.148401e+04             40
+#> 2      APO   DID_Male  6.598934e+04 1.025988e+04             40
+#> 3      ATE DID_Female -1.820565e+04 1.146700e+04             40
+#> 4      ATE   DID_Male  3.940978e+03 1.125230e+04             40
+#> 5    theta DID_Female -3.108580e-01 1.409049e-01             40
+#> 6    theta   DID_Male  5.972143e-02 1.753715e-01             40
 #>   n_female_control n_male_treat n_male_control
-#> 1              296          302            314
-#> 2              296          302            314
-#> 3              296          302            314
-#> 4              296          302            314
-#> 5              296          302            314
-#> 6              296          302            314
+#> 1               23           32             32
+#> 2               23           32             32
+#> 3               23           32             32
+#> 4               23           32             32
+#> 5               23           32             32
+#> 6               23           32             32
 ```
 
 ## Analyzing multiple treatment groups
@@ -108,60 +104,60 @@ res_multi <- multiple_treatment_group_analysis(
 #> Pre-treatment event times: -5 to -2 (testing 6 control groups: d+1 to d+6)
 #> Total estimations: 30 (6 post + 24 pre)
 #> 
-#> Progress: 1/30 (3.3%) | Elapsed: 0.0 min | Remaining: ~0.4 min
-#> Progress: 2/30 (6.7%) | Elapsed: 0.0 min | Remaining: ~0.4 min
-#> Progress: 3/30 (10.0%) | Elapsed: 0.0 min | Remaining: ~0.3 min
-#> Progress: 4/30 (13.3%) | Elapsed: 0.0 min | Remaining: ~0.3 min
-#> Progress: 5/30 (16.7%) | Elapsed: 0.1 min | Remaining: ~0.3 min
-#> Progress: 6/30 (20.0%) | Elapsed: 0.1 min | Remaining: ~0.3 min
-#> Progress: 7/30 (23.3%) | Elapsed: 0.1 min | Remaining: ~0.3 min
-#> Progress: 8/30 (26.7%) | Elapsed: 0.1 min | Remaining: ~0.3 min
-#> Progress: 9/30 (30.0%) | Elapsed: 0.1 min | Remaining: ~0.2 min
-#> Progress: 10/30 (33.3%) | Elapsed: 0.1 min | Remaining: ~0.2 min
-#> Progress: 11/30 (36.7%) | Elapsed: 0.1 min | Remaining: ~0.2 min
-#> Progress: 12/30 (40.0%) | Elapsed: 0.1 min | Remaining: ~0.2 min
-#> Progress: 13/30 (43.3%) | Elapsed: 0.1 min | Remaining: ~0.2 min
-#> Progress: 14/30 (46.7%) | Elapsed: 0.2 min | Remaining: ~0.2 min
-#> Progress: 15/30 (50.0%) | Elapsed: 0.2 min | Remaining: ~0.2 min
-#> Progress: 16/30 (53.3%) | Elapsed: 0.2 min | Remaining: ~0.2 min
-#> Progress: 17/30 (56.7%) | Elapsed: 0.2 min | Remaining: ~0.1 min
-#> Progress: 18/30 (60.0%) | Elapsed: 0.2 min | Remaining: ~0.1 min
-#> Progress: 19/30 (63.3%) | Elapsed: 0.2 min | Remaining: ~0.1 min
-#> Progress: 20/30 (66.7%) | Elapsed: 0.2 min | Remaining: ~0.1 min
-#> Progress: 21/30 (70.0%) | Elapsed: 0.2 min | Remaining: ~0.1 min
-#> Progress: 22/30 (73.3%) | Elapsed: 0.2 min | Remaining: ~0.1 min
-#> Progress: 23/30 (76.7%) | Elapsed: 0.3 min | Remaining: ~0.1 min
-#> Progress: 24/30 (80.0%) | Elapsed: 0.3 min | Remaining: ~0.1 min
-#> Progress: 25/30 (83.3%) | Elapsed: 0.3 min | Remaining: ~0.1 min
-#> Progress: 26/30 (86.7%) | Elapsed: 0.3 min | Remaining: ~0.0 min
-#> Progress: 27/30 (90.0%) | Elapsed: 0.3 min | Remaining: ~0.0 min
-#> Progress: 28/30 (93.3%) | Elapsed: 0.3 min | Remaining: ~0.0 min
-#> Progress: 29/30 (96.7%) | Elapsed: 0.3 min | Remaining: ~0.0 min
-#> Progress: 30/30 (100.0%) | Elapsed: 0.3 min | Remaining: ~0.0 min
+#> Progress: 1/30 (3.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 2/30 (6.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 3/30 (10.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 4/30 (13.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 5/30 (16.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 6/30 (20.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 7/30 (23.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 8/30 (26.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 9/30 (30.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 10/30 (33.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 11/30 (36.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 12/30 (40.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 13/30 (43.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 14/30 (46.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 15/30 (50.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 16/30 (53.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 17/30 (56.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 18/30 (60.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 19/30 (63.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 20/30 (66.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 21/30 (70.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 22/30 (73.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 23/30 (76.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 24/30 (80.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 25/30 (83.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 26/30 (86.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 27/30 (90.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 28/30 (93.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 29/30 (96.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 30/30 (100.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
 #> 
-#> Completed 30 estimations in 0.3 minutes
+#> Completed 30 estimations in 0.0 minutes
 head(res_multi)
 #>    d dp  a event_time estimand     method           est           se
-#> 1 25 26 25          0      APO DID_Female  6.952063e+04 4.575281e+03
-#> 2 25 26 25          0      APO   DID_Male  7.046731e+04 4.219647e+03
-#> 3 25 26 25          0      ATE DID_Female -1.919906e+04 4.366312e+03
-#> 4 25 26 25          0      ATE   DID_Male -1.362064e+02 4.560543e+03
-#> 5 25 26 25          0    theta DID_Female -2.761635e-01 4.951042e-02
-#> 6 25 26 25          0    theta   DID_Male -1.932901e-03 6.464362e-02
-#>            ci_l          ci_h           t            p n_female_treat
-#> 1  6.055308e+04  7.848818e+04 15.19483147 3.826464e-52            341
-#> 2  6.219680e+04  7.873782e+04 16.69981011 1.314826e-62            341
-#> 3 -2.775703e+04 -1.064109e+04 -4.39708899 1.097124e-05            341
-#> 4 -9.074872e+03  8.802459e+03 -0.02986626 9.761737e-01            341
-#> 5 -3.732039e-01 -1.791231e-01 -5.57788631 2.434587e-08            341
-#> 6 -1.286344e-01  1.247686e-01 -0.02990088 9.761461e-01            341
+#> 1 25 26 25          0      APO DID_Female  5.856580e+04 1.148401e+04
+#> 2 25 26 25          0      APO   DID_Male  6.598934e+04 1.025988e+04
+#> 3 25 26 25          0      ATE DID_Female -1.820565e+04 1.146700e+04
+#> 4 25 26 25          0      ATE   DID_Male  3.940978e+03 1.125230e+04
+#> 5 25 26 25          0    theta DID_Female -3.108580e-01 1.409049e-01
+#> 6 25 26 25          0    theta   DID_Male  5.972143e-02 1.753715e-01
+#>            ci_l          ci_h          t            p n_female_treat
+#> 1  3.605715e+04  8.107446e+04  5.0997699 3.400667e-07             40
+#> 2  4.587999e+04  8.609870e+04  6.4317871 1.261123e-10             40
+#> 3 -4.068098e+04  4.269676e+03 -1.5876554 1.123643e-01             40
+#> 4 -1.811354e+04  2.599549e+04  0.3502374 7.261605e-01             40
+#> 5 -5.870316e-01 -3.468443e-02 -2.2061549 2.737316e-02             40
+#> 6 -2.840067e-01  4.034495e-01  0.3405424 7.334481e-01             40
 #>   n_female_control n_male_treat n_male_control
-#> 1              296          302            314
-#> 2              296          302            314
-#> 3              296          302            314
-#> 4              296          302            314
-#> 5              296          302            314
-#> 6              296          302            314
+#> 1               23           32             32
+#> 2               23           32             32
+#> 3               23           32             32
+#> 4               23           32             32
+#> 5               23           32             32
+#> 6               23           32             32
 ```
 
 ## Citation
