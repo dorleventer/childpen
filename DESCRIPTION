@@ -1,8 +1,13 @@
 Package: childpen
 Title: Child Penalties Analysis
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
+Authors@R: c(
+    person("Dor", "Leventer", 
+           email = "dorleventer@gmail.com", 
+           role = c("aut", "cre"), 
+           comment = c(ORCID = "0000-0000-0000-0000"))
+)
+Maintainer: Dor Leventer <dorleventer@gmail.com>
 Description: Tools to compute DID, TD and NTD based estimands.
 License: MIT + file LICENSE
 URL: https://github.com/dorleventer/childpen, https://dorleventer.github.io/childpen/
