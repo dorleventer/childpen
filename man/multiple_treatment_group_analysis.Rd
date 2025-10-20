@@ -2,8 +2,7 @@
 % Please edit documentation in R/multiple_treatment_group_analysis.R
 \name{multiple_treatment_group_analysis}
 \alias{multiple_treatment_group_analysis}
-\title{Child penalty analysis over multiple treatment groups
-Event-study runner over treatment groups and horizons}
+\title{Child penalty analysis over multiple treatment groups}
 \usage{
 multiple_treatment_group_analysis(
   data,
@@ -49,5 +48,4 @@ A \code{data.frame} stacking results from \code{single_treatment_group_analysis(
 }
 \description{
 Child penalty analysis over multiple treatment groups
-Event-study runner over treatment groups and horizons
 }

@@ -37,38 +37,31 @@ Install the latest development version from GitHub:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 #> Using GitHub PAT from the git credential store.
-#> Skipping install of 'childpen' from a github remote, the SHA1 (cbafa28d) has not changed since last install.
+#> Skipping install of 'childpen' from a github remote, the SHA1 (9af195cd) has not changed since last install.
 #>   Use `force = TRUE` to force installation
 ```
 
 ## Simulating data
 
-The function simulate_data() creates a panel of synthetic individuals,
+The function *simulate_data()* creates a panel of synthetic individuals,
 with gender, treatment group (D), and earnings paths that are motivated
 by the child penalty application. It uses default DGP parameters bundled
 with the package that are based on observable earnings data in Israel.
 More data on the simulation can be found in the vignette.
 
 ``` r
-# set.seed(123)
-# sim_data <- simulate_data(n_individuals = 2000)
-# head(sim_data)
-```
+library(childpen)
 
-## Estimators
-
-The function single_treatment_group_analysis() computes a full set of
-estimators—DID, TD, NTD, and their alternatives—for one treatment group
-($`d`$) and one control offset ($`dp`$), at a given evaluation age
-($`a`$).
-
-``` r
-# # Prepare data
-# DT <- prep_data_table(sim_data)
-# 
-# # Estimate for a single 2×2 setup: treatment at D=27, control at D=29, evaluated at a=28
-# res_single <- single_treatment_group_analysis(DT, d = 27, dp = 29, a = 28, pre = 1)
-# res_single[, .(estimand, method, est, se, p)]
+set.seed(123)
+sim_data <- simulate_data(n_individuals = 2000)
+head(sim_data)
+#>   id female age  D     Y_inf         Y
+#> 1  1      1  20 39  4164.528  4164.528
+#> 2  1      1  21 39  7904.255  7904.255
+#> 3  1      1  22 39  6759.559  6759.559
+#> 4  1      1  23 39 12002.566 12002.566
+#> 5  1      1  24 39 17687.313 17687.313
+#> 6  1      1  25 39 23578.168 23578.168
 ```
 
 ## Analyzing multiple treatment groups
@@ -82,9 +75,9 @@ one period before treatment.
 ``` r
 # res_multi <- multiple_treatment_group_analysis(
 #   sim_data,
-#   treatment_groups = 24:28,
-#   periods_post = 2,
-#   periods_pre = 2,
+#   treatment_groups = 25,
+#   periods_post = 5,
+#   periods_pre = 4,
 #   pre = 1
 # )
 # 

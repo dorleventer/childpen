@@ -1,5 +1,4 @@
 #' Child penalty analysis over multiple treatment groups
-#' Event-study runner over treatment groups and horizons
 #'
 #' @param data A data.frame or data.table with the needed columns. Names can be
 #'   mapped via \code{Y_name}, \code{age_name}, \code{D_name}, \code{id_name}, \code{female_name}.
@@ -38,25 +37,22 @@ multiple_treatment_group_analysis <- function(data,
   options(datatable.verbose = FALSE, datatable.showProgress = FALSE)
   on.exit(options(datatable.verbose = old_verbose, datatable.showProgress = old_progress))
 
-  # Calculate total number of estimations
-  n_post <- length(treatment_groups) * periods_post
-  n_pre <- if (!is.null(periods_pre)) {
-    length(treatment_groups) * periods_pre * (periods_post + 1)
-  } else { 0 }
+  n_post <- length(treatment_groups) * (periods_post + 1L)
+  n_pre  <- if (!is.null(periods_pre)) {
+    length(treatment_groups) * periods_pre * (periods_post + 1L)
+  } else 0L
   n_total <- n_post + n_pre
 
   results_list <- list()
   idx <- 1
   completed <- 0
 
-  control_offsets = periods_post + 1
-
   if(verbose) {
     cat(sprintf("\nRunning analysis for %d treatment groups...\n", length(treatment_groups)))
     cat(sprintf("Post-treatment event times: 0 to %d\n", periods_post))
     if (!is.null(periods_pre)) {
       cat(sprintf("Pre-treatment event times: %d to %d (testing %d control groups: d+%d to d+%d)\n",
-                  -periods_pre-pre, -1-pre, control_offsets, 1, control_offsets))
+                  -periods_pre-pre, -1-pre, (periods_post + 1), 1, (periods_post + 1)))
     }
     cat(sprintf("Total estimations: %d (%d post + %d pre)\n\n", n_total, n_post, n_pre))
   }
@@ -117,7 +113,7 @@ multiple_treatment_group_analysis <- function(data,
         }
 
         # Test against multiple control groups
-        for (offset in control_offsets) {
+        for (offset in 1:(periods_post + 1)) {
           dp <- d + offset
 
           # Skip if control group would be out of range
@@ -155,18 +151,30 @@ multiple_treatment_group_analysis <- function(data,
   total_elapsed <- as.numeric(difftime(Sys.time(), start_time_total, units = "mins"))
   if(verbose) cat(sprintf("\nCompleted %d estimations in %.1f minutes\n\n", completed, total_elapsed))
 
-  # Combine all results
-  result_df <- do.call(rbind, results_list)
+  # ---- Combine all results; always return data.frame ----
+  if (length(results_list) == 0L) {
+    if (verbose) cat("No valid result rows produced. Returning empty data.frame.\n")
+    return(data.frame())
+  }
+
+  result_df <- do.call(rbind, lapply(results_list, function(x) {
+    if (is.data.frame(x)) x else as.data.frame(x, stringsAsFactors = FALSE)
+  }))
+
+  # Inferential cols
   result_df$ci_l <- result_df$est - 1.96 * result_df$se
   result_df$ci_h <- result_df$est + 1.96 * result_df$se
-  result_df$t <- result_df$est / result_df$se
-  result_df$p <- 2 * stats::pnorm(-abs(result_df$est / result_df$se))
+  result_df$t    <- result_df$est / result_df$se
+  result_df$p    <- 2 * stats::pnorm(-abs(result_df$est / result_df$se))
   result_df$event_time <- result_df$a - result_df$d
 
-  # Reorder columns for clarity
-  col_order <- c("d", "dp", "a", "event_time",
-                 "estimand", "method", "est", "se", "ci_l", "ci_h", "t", "p",
-                 "n_female_treat", "n_female_control", "n_male_treat", "n_male_control")
+  # Reorder safely (keep only existing cols) and DO NOT drop dims
+  col_order <- c("d","dp","a","event_time",
+                 "estimand","method","est","se","ci_l","ci_h","t","p",
+                 "n_female_treat","n_female_control","n_male_treat","n_male_control")
+  keep <- intersect(col_order, names(result_df))
+  result_df <- result_df[, c(keep, setdiff(names(result_df), keep)), drop = FALSE]
 
-  result_df[, col_order]
+  return(result_df)
+
 }
