@@ -59,17 +59,13 @@
 </div>
 <!-- badges: start -->
 
-<p><strong>Identification of Child Penalties: Estimators &amp; Simulation Tools</strong></p>
+<p><strong>childpen: Child Penalties Estimators &amp; Simulation Tools</strong></p>
 <blockquote>
-<p><strong>Leventer, Dor (2025).</strong> <em>Identification of Child Penalties.</em><br>
-Tel Aviv University, Job Market Paper.<br><a href="#">Preprint (coming soon)</a> · <a href="#">Slides (coming soon)</a></p>
+<p>This package accompanies my job market paper:<br><strong>Leventer, Dor (2025).</strong> <em>Identification of Child Penalties.</em><br><a href="#">Preprint (coming soon)</a></p>
 </blockquote>
 <ul>
-<li>📦 <strong>R package:</strong> childpen<br>
-</li>
-<li>🧪 DID / TD / NTD estimators (single &amp; multiple treatment groups)<br>
-</li>
-<li>🧰 Simulation tools and influence-function SEs<br>
+<li>🧪 DID / TD / NTD estimators (single &amp; multiple treatment groups)</li>
+<li>🧰 Simulation tools<br>
 </li>
 <li>💻 <strong>GitHub:</strong> <a href="https://github.com/dorleventer/childpen" class="external-link uri">https://github.com/dorleventer/childpen</a><br>
 </li>
@@ -78,6 +74,29 @@ Tel Aviv University, Job Market Paper.<br><a href="#">Preprint (coming soon)</a>
 </ul>
 <hr>
 <div class="section level2">
+<h2 id="roadmap">Roadmap<a class="anchor" aria-label="anchor" href="#roadmap"></a>
+</h2>
+<p><strong>Package functions</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked><strong>Estimation of single <span class="math inline">$`2\\times2`$</span></strong> — <code><a href="reference/single_treatment_group_analysis.html">single_treatment_group_analysis()</a></code></label></li>
+<li><label><input type="checkbox" checked><strong>Wrapper for multiple <span class="math inline">$`2\\times2`$</span></strong> — <code><a href="reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code></label></li>
+<li><label><input type="checkbox" checked><strong>Data simulation</strong> — <code><a href="reference/simulate_data.html">simulate_data()</a></code></label></li>
+<li><label><input type="checkbox"><strong>Aggregation over multiple groups</strong></label></li>
+</ul>
+<p><strong>Explainers</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked><strong>Data simulation</strong> — <a href="https://dorleventer.github.io/childpen/articles/simulation.html">vignette</a></label></li>
+<li><label><input type="checkbox"><strong>Intuition for NTD bias</strong> — <em>(in progress)</em></label></li>
+<li><label><input type="checkbox"><strong>DID estimation</strong></label></li>
+<li><label><input type="checkbox"><strong>TD bias</strong></label></li>
+<li><label><input type="checkbox"><strong>TD estimation</strong></label></li>
+<li><label><input type="checkbox"><strong>NTD baseline, alternative, and bias-corrected estimation</strong></label></li>
+<li><label><input type="checkbox"><strong>Validation tests</strong></label></li>
+<li><label><input type="checkbox"><strong>Aggregate estimates</strong></label></li>
+</ul>
+<hr>
+</div>
+<div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>Install the latest development version from GitHub:</p>
@@ -85,125 +104,8 @@ Tel Aviv University, Job Market Paper.<br><a href="#">Preprint (coming soon)</a>
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"dorleventer/childpen"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Using GitHub PAT from the git credential store.</span></span>
-<span><span class="co">#&gt; Skipping install of 'childpen' from a github remote, the SHA1 (f4d8eca8) has not changed since last install.</span></span>
+<span><span class="co">#&gt; Skipping install of 'childpen' from a github remote, the SHA1 (bd62e3d7) has not changed since last install.</span></span>
 <span><span class="co">#&gt;   Use `force = TRUE` to force installation</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="simulating-data">Simulating data<a class="anchor" aria-label="anchor" href="#simulating-data"></a>
-</h2>
-<p>The function <em>simulate_data()</em> creates a panel of synthetic individuals, with gender, treatment group (D), and earnings paths that are motivated by the child penalty application. It uses default DGP parameters bundled with the package that are based on observable earnings data in Israel. More data on the simulation can be found in the vignette.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dorleventer/childpen" class="external-link">childpen</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">1000</span>, seed <span class="op">=</span> <span class="fl">42</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   id female age  D     Y_inf         Y</span></span>
-<span><span class="co">#&gt; 1  1      1  20 30  66775.08  66775.08</span></span>
-<span><span class="co">#&gt; 2  1      1  21 30  18105.66  18105.66</span></span>
-<span><span class="co">#&gt; 3  1      1  22 30  21744.97  21744.97</span></span>
-<span><span class="co">#&gt; 4  1      1  23 30  71501.84  71501.84</span></span>
-<span><span class="co">#&gt; 5  1      1  24 30 132133.43 132133.43</span></span>
-<span><span class="co">#&gt; 6  1      1  25 30 194425.57 194425.57</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="analyzing-single-2-by-2s">Analyzing single 2-by-2s<a class="anchor" aria-label="anchor" href="#analyzing-single-2-by-2s"></a>
-</h2>
-<p>The work behind the scenes is done by the function below, which estimates all relevant parameters for a single 2-by-2 comparison.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/single_treatment_group_analysis.html">single_treatment_group_analysis</a></span><span class="op">(</span><span class="va">sim_data</span>, d <span class="op">=</span> <span class="fl">25</span>, dp <span class="op">=</span> <span class="fl">26</span>, a <span class="op">=</span> <span class="fl">25</span>, pre <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   estimand     method           est           se n_female_treat</span></span>
-<span><span class="co">#&gt; 1      APO DID_Female  5.856580e+04 1.148401e+04             40</span></span>
-<span><span class="co">#&gt; 2      APO   DID_Male  6.598934e+04 1.025988e+04             40</span></span>
-<span><span class="co">#&gt; 3      ATE DID_Female -1.820565e+04 1.146700e+04             40</span></span>
-<span><span class="co">#&gt; 4      ATE   DID_Male  3.940978e+03 1.125230e+04             40</span></span>
-<span><span class="co">#&gt; 5    theta DID_Female -3.108580e-01 1.409049e-01             40</span></span>
-<span><span class="co">#&gt; 6    theta   DID_Male  5.972143e-02 1.753715e-01             40</span></span>
-<span><span class="co">#&gt;   n_female_control n_male_treat n_male_control</span></span>
-<span><span class="co">#&gt; 1               23           32             32</span></span>
-<span><span class="co">#&gt; 2               23           32             32</span></span>
-<span><span class="co">#&gt; 3               23           32             32</span></span>
-<span><span class="co">#&gt; 4               23           32             32</span></span>
-<span><span class="co">#&gt; 5               23           32             32</span></span>
-<span><span class="co">#&gt; 6               23           32             32</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="analyzing-multiple-treatment-groups">Analyzing multiple treatment groups<a class="anchor" aria-label="anchor" href="#analyzing-multiple-treatment-groups"></a>
-</h2>
-<p>The main function of the package provides estimates over a vector of treatment groups, up to <em>periods_post</em> post treatment. Pre-treatment periods used in validation test are set using <em>periods_pre</em>. The anticipation period can be set by the researcher using <em>pre</em>, default is one period before treatment.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">sim_data</span>,</span>
-<span>  treatment_groups <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  periods_post <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  periods_pre <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  pre <span class="op">=</span> <span class="fl">1</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running analysis for 1 treatment groups...</span></span>
-<span><span class="co">#&gt; Post-treatment event times: 0 to 5</span></span>
-<span><span class="co">#&gt; Pre-treatment event times: -5 to -2 (testing 6 control groups: d+1 to d+6)</span></span>
-<span><span class="co">#&gt; Total estimations: 30 (6 post + 24 pre)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Progress: 1/30 (3.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 2/30 (6.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 3/30 (10.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 4/30 (13.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 5/30 (16.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 6/30 (20.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 7/30 (23.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 8/30 (26.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 9/30 (30.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 10/30 (33.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 11/30 (36.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 12/30 (40.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 13/30 (43.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 14/30 (46.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 15/30 (50.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 16/30 (53.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 17/30 (56.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 18/30 (60.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 19/30 (63.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 20/30 (66.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 21/30 (70.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 22/30 (73.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 23/30 (76.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 24/30 (80.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 25/30 (83.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 26/30 (86.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 27/30 (90.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 28/30 (93.3%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 29/30 (96.7%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; Progress: 30/30 (100.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Completed 30 estimations in 0.0 minutes</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res_multi</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    d dp  a event_time estimand     method           est           se</span></span>
-<span><span class="co">#&gt; 1 25 26 25          0      APO DID_Female  5.856580e+04 1.148401e+04</span></span>
-<span><span class="co">#&gt; 2 25 26 25          0      APO   DID_Male  6.598934e+04 1.025988e+04</span></span>
-<span><span class="co">#&gt; 3 25 26 25          0      ATE DID_Female -1.820565e+04 1.146700e+04</span></span>
-<span><span class="co">#&gt; 4 25 26 25          0      ATE   DID_Male  3.940978e+03 1.125230e+04</span></span>
-<span><span class="co">#&gt; 5 25 26 25          0    theta DID_Female -3.108580e-01 1.409049e-01</span></span>
-<span><span class="co">#&gt; 6 25 26 25          0    theta   DID_Male  5.972143e-02 1.753715e-01</span></span>
-<span><span class="co">#&gt;            ci_l          ci_h          t            p n_female_treat</span></span>
-<span><span class="co">#&gt; 1  3.605715e+04  8.107446e+04  5.0997699 3.400667e-07             40</span></span>
-<span><span class="co">#&gt; 2  4.587999e+04  8.609870e+04  6.4317871 1.261123e-10             40</span></span>
-<span><span class="co">#&gt; 3 -4.068098e+04  4.269676e+03 -1.5876554 1.123643e-01             40</span></span>
-<span><span class="co">#&gt; 4 -1.811354e+04  2.599549e+04  0.3502374 7.261605e-01             40</span></span>
-<span><span class="co">#&gt; 5 -5.870316e-01 -3.468443e-02 -2.2061549 2.737316e-02             40</span></span>
-<span><span class="co">#&gt; 6 -2.840067e-01  4.034495e-01  0.3405424 7.334481e-01             40</span></span>
-<span><span class="co">#&gt;   n_female_control n_male_treat n_male_control</span></span>
-<span><span class="co">#&gt; 1               23           32             32</span></span>
-<span><span class="co">#&gt; 2               23           32             32</span></span>
-<span><span class="co">#&gt; 3               23           32             32</span></span>
-<span><span class="co">#&gt; 4               23           32             32</span></span>
-<span><span class="co">#&gt; 5               23           32             32</span></span>
-<span><span class="co">#&gt; 6               23           32             32</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
-</h2>
-<p>If you use childpen, please cite:</p>
-<p>Leventer, Dor (2025). Identification of Child Penalties. Tel Aviv University, Job Market Paper. <a href="https://dorleventer.github.io/childpen" class="uri">https://dorleventer.github.io/childpen</a></p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
