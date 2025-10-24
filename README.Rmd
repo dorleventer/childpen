@@ -13,12 +13,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-
-
-
-
-
 # childpen <a href="https://dorleventer.github.io/childpen" title="childpen website"><img src="man/figures/logo.png" align="right" height="120" alt="childpen logo" /></a>
 
 <!-- badges: start -->
@@ -26,17 +20,38 @@ knitr::opts_chunk$set(
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 <!-- badges: end -->
 
-**Identification of Child Penalties: Estimators & Simulation Tools**
+**childpen: Child Penalties Estimators & Simulation Tools**
 
+> This package accompanies my job market paper:  
 > **Leventer, Dor (2025).** *Identification of Child Penalties.*  
-> Tel Aviv University, Job Market Paper.  
-> [Preprint (coming soon)](#) · [Slides (coming soon)](#)
+> [Preprint (coming soon)](#)
 
-- 📦 **R package:** childpen  
-- 🧪 DID / TD / NTD estimators (single & multiple treatment groups)  
-- 🧰 Simulation tools and influence-function SEs  
+- 🧪 DID / TD / NTD estimators (single & multiple treatment groups) 
+- 🧰 Simulation tools  
 - 💻 **GitHub:** <https://github.com/dorleventer/childpen>  
 - 🌐 **Website:** <https://dorleventer.github.io/childpen> *(auto-built with pkgdown)*
+
+---
+
+## Roadmap
+
+**Package functions**
+
+- [x] **Estimation of single $2\\times2$** — `single_treatment_group_analysis()`
+- [x] **Wrapper for multiple $2\\times2$** — `multiple_treatment_group_analysis()`
+- [x] **Data simulation** — `simulate_data()`
+- [ ] **Aggregation over multiple groups**
+
+**Explainers**
+
+- [x] **Data simulation** — [vignette](https://dorleventer.github.io/childpen/articles/simulation.html)
+- [ ] **Intuition for NTD bias** — *(in progress)*
+- [ ] **DID estimation**
+- [ ] **TD bias**
+- [ ] **TD estimation**
+- [ ] **NTD baseline, alternative, and bias-corrected estimation**
+- [ ] **Validation tests**
+- [ ] **Aggregate estimates**
 
 ---
 
@@ -48,49 +63,3 @@ Install the latest development version from GitHub:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 ```
-
-## Simulating data 
-
-The function *simulate_data()* creates a panel of synthetic individuals, with gender, treatment group (D), and earnings paths that are motivated by the child penalty application.
-It uses default DGP parameters bundled with the package that are based on observable earnings data in Israel. More data on the simulation can be found in the vignette. 
-
-```{r simulating_data}
-library(childpen)
-
-sim_data <- simulate_data(n_individuals = 1000, seed = 42)
-head(sim_data)
-```
-
-## Analyzing single 2-by-2s
-
-The work behind the scenes is done by the function below, which estimates all relevant parameters for a single 2-by-2 comparison. 
-
-```{r single_treatment}
-single_treatment_group_analysis(sim_data, d = 25, dp = 26, a = 25, pre = 1) |> head()
-```
-
-
-## Analyzing multiple treatment groups
-
-The main function of the package provides estimates over a vector of treatment groups, up to *periods_post* post treatment. Pre-treatment periods used in validation test are set using *periods_pre*. The anticipation period can be set by the researcher using *pre*, default is one period before treatment. 
-
-```{r multiple_treatment}
-res_multi <- multiple_treatment_group_analysis(
-  data = sim_data,
-  treatment_groups = 25,
-  periods_post = 5,
-  periods_pre = 4,
-  pre = 1
-)
-head(res_multi)
-```
-
-
-## Citation
-
-If you use childpen, please cite:
-
-Leventer, Dor (2025).
-Identification of Child Penalties.
-Tel Aviv University, Job Market Paper.
-https://dorleventer.github.io/childpen
