@@ -45,7 +45,7 @@ knitr::opts_chunk$set(
 **Explainers**
 
 - [x] **Data simulation** — [vignette](https://dorleventer.github.io/childpen/articles/simulation.html)
-- [ ] **Intuition for NTD bias** — *(in progress)*
+- [x] **Intuition for NTD bias** — [vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
 - [ ] **DID estimation**
 - [ ] **TD bias**
 - [ ] **TD estimation**

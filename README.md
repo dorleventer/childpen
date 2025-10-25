@@ -38,7 +38,8 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 - [x] **Data simulation** —
   [vignette](https://dorleventer.github.io/childpen/articles/simulation.html)
-- [ ] **Intuition for NTD bias** — *(in progress)*
+- [x] **Intuition for NTD bias** —
+  [vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
 - [ ] **DID estimation**
 - [ ] **TD bias**
 - [ ] **TD estimation**
@@ -56,6 +57,6 @@ Install the latest development version from GitHub:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 #> Using GitHub PAT from the git credential store.
-#> Skipping install of 'childpen' from a github remote, the SHA1 (ed431d84) has not changed since last install.
+#> Skipping install of 'childpen' from a github remote, the SHA1 (03e30b06) has not changed since last install.
 #>   Use `force = TRUE` to force installation
 ```
