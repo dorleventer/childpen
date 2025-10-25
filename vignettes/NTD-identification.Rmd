@@ -533,6 +533,6 @@ ggplot(bar_age_three3, aes(x = age, y = value, fill = component)) +
 
 - **Blue (Truth)**: The true ratio $\theta$ we want to estimate
 - **Teal (Bias A)**: PT / DID APO - drops out when differencing across gender
-- **Green (Bias B)**: $\theta \times \frac{\text{PT bias}}{\text{DID APO}}}$ - is not equal between gender, since $\theta$ is allowed to be different between gender $\rightarrow$ hence bias remains when differencing
+- **Green (Bias B)**: $\theta \times \frac{\text{PT bias}}{\text{DID APO}}$ - is not equal between gender, since $\theta$ is allowed to be different between gender $\rightarrow$ hence bias remains when differencing
 
 Note that the size of bias (in Bias B in the above plot) depends on relation of PT bias to APO (where this relation is constant by gender under NTD). 
