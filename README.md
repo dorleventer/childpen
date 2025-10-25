@@ -19,8 +19,7 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 - 🧪 DID / TD / NTD estimators (single & multiple treatment groups)
 - 🧰 Simulation tools  
 - 💻 **GitHub:** <https://github.com/dorleventer/childpen>  
-- 🌐 **Website:** <https://dorleventer.github.io/childpen> *(auto-built
-  with pkgdown)*
+- 🌐 **Website:** <https://dorleventer.github.io/childpen>
 
 ------------------------------------------------------------------------
 
@@ -57,6 +56,15 @@ Install the latest development version from GitHub:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 #> Using GitHub PAT from the git credential store.
-#> Skipping install of 'childpen' from a github remote, the SHA1 (03e30b06) has not changed since last install.
-#>   Use `force = TRUE` to force installation
+#> Downloading GitHub repo dorleventer/childpen@HEAD
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>      checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpWAMLSR/remotes41ef533b8aca/dorleventer-childpen-680f246/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpWAMLSR/remotes41ef533b8aca/dorleventer-childpen-680f246/DESCRIPTION’
+#>   ─  preparing ‘childpen’:
+#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building ‘childpen_0.0.0.9000.tar.gz’
+#>      
+#> 
 ```

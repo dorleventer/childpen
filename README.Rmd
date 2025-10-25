@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 - 🧪 DID / TD / NTD estimators (single & multiple treatment groups) 
 - 🧰 Simulation tools  
 - 💻 **GitHub:** <https://github.com/dorleventer/childpen>  
-- 🌐 **Website:** <https://dorleventer.github.io/childpen> *(auto-built with pkgdown)*
+- 🌐 **Website:** <https://dorleventer.github.io/childpen> 
 
 ---
 
