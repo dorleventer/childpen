@@ -63,34 +63,34 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>Normalized event studies are widely used in labor economics to
-compare treatment effects across groups with different baseline levels
-(e.g., comparing earnings penalties from childbirth for men and women).
-The standard approach divides effects by earnings levels to make them
-comparable.</p>
+<p>The aim of this vignette is to create intuition on the normalized
+triple differences (NTD) identification framework discussed in the
+paper. NTD is the underlying identification framework for normalized
+event studies, a common empirical strategy in the child penalty
+literature.</p>
 <p><strong>This vignette demonstrates:</strong></p>
 <ol style="list-style-type: decimal">
-<li>What identification assumption makes normalized comparisons
-valid</li>
-<li>The bias structure that emerges from normalizing</li>
-<li>How this bias behaves when comparing across groups</li>
+<li>The identification assumption in NTD</li>
+<li>The bias that emerges from normalizing</li>
 </ol>
-<p>We’ll use a simple data generating process (DGP) to visualize exactly
-where bias comes from and why it matters.</p>
+<p>We’ll use a simple data generating process (DGP) to visualize
+everything. You are encouraged to play with the code to see how the bias
+changes under different parameters.</p>
+<hr>
 </div>
 <div class="section level2">
-<h2 id="setup-a-dgp-where-normalized-parallel-trends-holds">Setup: A DGP where normalized parallel trends holds<a class="anchor" aria-label="anchor" href="#setup-a-dgp-where-normalized-parallel-trends-holds"></a>
+<h2 id="the-dgp">The DGP<a class="anchor" aria-label="anchor" href="#the-dgp"></a>
 </h2>
-<p>We create a world with:</p>
+<p>We create a DGP with:</p>
 <ul>
 <li>Two genders: women and men (with men earning more)</li>
 <li>Two treatment cohorts: early (D=25) and late (D=30)<br>
 </li>
-<li>Linear earnings growth (late cohorts have steeper slopes)</li>
-<li>Treatment effects (earnings penalties from childbirth)</li>
+<li>Linear earnings growth, with late cohorts have steeper slopes</li>
+<li>Earnings penalties from childbirth</li>
 </ul>
-<p>The key design feature: <strong>ratios are preserved</strong> such
-that normalized parallel trends violations are equal across gender.</p>
+<p>The key feature: when taking ratios within gender, the difference
+between men and women is netted out</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Parameters</span></span>
 <span><span class="va">baseline</span>    <span class="op">&lt;-</span> <span class="fl">500</span></span>
@@ -132,8 +132,10 @@ that normalized parallel trends violations are equal across gender.</p>
 <div class="section level2">
 <h2 id="verifying-the-ntd-assumption-holds">Verifying the NTD Assumption Holds<a class="anchor" aria-label="anchor" href="#verifying-the-ntd-assumption-holds"></a>
 </h2>
+<p>Recall, that NTD assumea that normalized violations of parallel
+trends are equal across genders.</p>
 <p>Before visualizing the bias, let’s verify that this DGP actually
-satisfies the normalized parallel trends assumption.</p>
+satisfies this assumption.</p>
 <div class="section level3">
 <h3 id="parallel-trends-violation-in-levels">Parallel trends violation in levels<a class="anchor" aria-label="anchor" href="#parallel-trends-violation-in-levels"></a>
 </h3>
@@ -162,18 +164,18 @@ within gender:</p>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">age</span>, y <span class="op">=</span> <span class="va">diff_trend</span>, color <span class="op">=</span> <span class="va">gender</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.1</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Parallel Trends Violation in Levels"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Different across gender → standard parallel trends fails"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Parallel Trends Violation in Levels by Gender"</span>,</span>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, </span>
-<span>    y <span class="op">=</span> <span class="st">"Difference in counterfactual trends (dollars)"</span>, </span>
+<span>    y <span class="op">=</span> <span class="st">"Difference in counterfactual trends"</span>, </span>
 <span>    color <span class="op">=</span> <span class="st">"Gender"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/verify_pt_levels-1.png" width="1200"></p>
-<p><strong>Key observation:</strong> The parallel trends violations in
-levels are <strong>not equal</strong> across gender. Men’s violations
-are much larger because they have higher baseline earnings. This
-violates standard parallel trends.</p>
+<p><img src="NTD-identification_files/figure-html/verify_pt_levels-1.png" width="768"></p>
+<p>The parallel trends violations in levels are <strong>not
+equal</strong> across gender. Men’s violations are much larger because
+they have higher earnings. This violates both difference-in-differences
+(DID), whichassumes no violation, and triple differences (TD), which
+assumes equal violations in levels across genders.</p>
 </div>
 <div class="section level3">
 <h3 id="normalized-parallel-trends-violation">Normalized parallel trends violation<a class="anchor" aria-label="anchor" href="#normalized-parallel-trends-violation"></a>
@@ -202,23 +204,22 @@ violates standard parallel trends.</p>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.1</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Normalized Parallel Trends Violation"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Identical across gender → NTD assumption holds!"</span>,</span>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, </span>
-<span>    y <span class="op">=</span> <span class="st">"Normalized difference (proportion of earnings)"</span>, </span>
+<span>    y <span class="op">=</span> <span class="st">"Normalized difference in counterfactual trends"</span>, </span>
 <span>    color <span class="op">=</span> <span class="st">"Gender"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html" class="external-link">percent_format</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/verify_normalized_pt-1.png" width="1200"></p>
-<p><strong>Critical result:</strong> The normalized parallel trends
-violations are <strong>identical</strong> for men and women at every
-age. The lines overlap perfectly. This is exactly what the NTD
-(normalized triple differences) identification assumption requires.</p>
+<p><img src="NTD-identification_files/figure-html/verify_normalized_pt-1.png" width="768"></p>
+<p><strong>Taekaway:</strong> The normalized parallel trends violations
+are identical for men and women at every age. This is exactly what the
+NTD identification assumption requires.</p>
 <p><strong>Why does this work?</strong> By construction, late cohort
 slopes are a constant multiple of early slopes (within gender), and
 men’s slopes are a constant multiple of women’s slopes (within cohort).
-These constant multiples cancel out when we take ratios, ensuring the
-normalized PT violations are equal across gender.</p>
+These constant multiples for men cancel out when we take ratios,
+ensuring the normalized PT violations are equal across gender.</p>
+<p>–</p>
 </div>
 </div>
 <div class="section level2">
@@ -266,17 +267,15 @@ counterfactuals:</p>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Earnings"</span>, color <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig1_setup-1.png" width="1200"></p>
-<p><strong>Key observations:</strong></p>
+<p><img src="NTD-identification_files/figure-html/fig1_setup-1.png" width="768"></p>
 <ul>
 <li>The solid blue line shows what we observe for the early cohort after
 treatment at age 25</li>
 <li>Light blue dashed: what would have happened without treatment (early
 cohort)</li>
-<li>Orange dashed: what would have happened for the late cohort
-(different slope!)</li>
-<li>The gap between solid and light blue dashed = true treatment
-effect</li>
+<li>Orange dashed: counterfactual for late treatment group</li>
+<li>The gap between solid and light blue dashed = average treatment
+effect (ATE)</li>
 </ul>
 <p><strong>The problem:</strong> We don’t observe the light blue line.
 We need to impute it somehow.</p>
@@ -284,8 +283,8 @@ We need to impute it somehow.</p>
 <div class="section level2">
 <h2 id="the-did-approach---using-late-cohort-as-control">The DID Approach - Using Late Cohort as Control<a class="anchor" aria-label="anchor" href="#the-did-approach---using-late-cohort-as-control"></a>
 </h2>
-<p>Standard difference-in-differences uses the late cohort to impute the
-counterfactual for the early cohort:</p>
+<p>DID uses the trend of the late cohort to impute the counterfactual
+for the early cohort:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate DID-imputed counterfactual</span></span>
 <span><span class="va">did_cf</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">g</span><span class="op">)</span> <span class="op">{</span></span>
@@ -333,36 +332,40 @@ counterfactual for the early cohort:</p>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Earnings"</span>, color <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig2_did-1.png" width="1200"></p>
-<p><strong>The key insight:</strong> The green line (DID imputation)
-doesn’t match the light blue line (truth). This difference is
-<strong>parallel trends bias</strong> - it happens because the late
-cohort has a steeper slope.</p>
-<p><strong>Important property of this DGP:</strong> When you divide the
-green line by the light blue dashed line, you get the <strong>same
-ratio</strong> for men and women at every age. This is an implication of
-thee normalized parallel trends assumption.</p>
+<p><img src="NTD-identification_files/figure-html/fig2_did-1.png" width="768"></p>
+<p>The green line (DID imputed counterfactual) doesn’t match the light
+blue line (true counterfactual). This difference is bias due to parallel
+trend violations. It happens because the late cohort has a steeper slope
+for counterfactual earnings.</p>
 </div>
 <div class="section level2">
 <h2 id="decomposing-did-estimates-into-truth-and-bias">Decomposing DID Estimates into Truth and Bias<a class="anchor" aria-label="anchor" href="#decomposing-did-estimates-into-truth-and-bias"></a>
 </h2>
-<p>Let’s break down what DID gives us. For each age, we can
-decompose:</p>
+<p>Let’s break down what DID gives us. First, in the above figure, we
+have:</p>
 <ul>
-<li>
-<strong>DID APO</strong> (average potential outcome) = Truth - PT
-Bias<br>
-</li>
-<li>
-<strong>DID ATE</strong> (average treatment effect) = Truth + PT
-Bias</li>
+<li>DID APO (green line)</li>
+<li>Truth APO (light blue line)</li>
+<li>DID ATE (difference between green and light blue lines)</li>
+<li>Truth ATE (difference between blue and light blue lines)</li>
+<li>PT Bias (difference between green and light blue lines)</li>
 </ul>
+<p>For each age, we can decompose:</p>
+<ul>
+<li>DID APO = True APO + PT Bias</li>
+<li>DID ATE = True ATE - PT Bias (DID ATE is difference between orange
+and green lines, so PT bias comes here in minus)</li>
+</ul>
+<p>Below, I calculate the APO and ATE under DID. And then show the
+decomposition of these value, by age and gender, into truth and
+bias.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate true APO and ATE</span></span>
 <span><span class="va">early_true_age</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">D</span> <span class="op">==</span> <span class="va">d_early</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">female</span>, <span class="va">age</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">summarise</span><span class="op">(</span>APO_true <span class="op">=</span> <span class="va">y_0</span>, ATE_true <span class="op">=</span> <span class="va">y</span> <span class="op">-</span> <span class="va">y_0</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span></span>
+<span>  <span class="fu">summarise</span><span class="op">(</span>APO_true <span class="op">=</span> <span class="va">y_0</span>, APO_obs <span class="op">=</span> <span class="va">y</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>ATE_true <span class="op">=</span> <span class="va">APO_obs</span> <span class="op">-</span> <span class="va">APO_true</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Calculate DID APO</span></span>
 <span><span class="va">early_did_age</span> <span class="op">&lt;-</span> <span class="va">did_cf</span> <span class="op">%&gt;%</span></span>
@@ -373,8 +376,8 @@ Bias</li>
 <span><span class="va">summary_age</span> <span class="op">&lt;-</span> <span class="va">early_true_age</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">left_join</span><span class="op">(</span><span class="va">early_did_age</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"female"</span>, <span class="st">"age"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span></span>
-<span>    PT_bias <span class="op">=</span> <span class="va">APO_true</span> <span class="op">-</span> <span class="va">APO_did</span>,  <span class="co"># parallel trends bias</span></span>
-<span>    ATE_did <span class="op">=</span> <span class="va">ATE_true</span> <span class="op">+</span> <span class="va">PT_bias</span>,  <span class="co"># DID ATE = truth + bias</span></span>
+<span>    PT_bias <span class="op">=</span> <span class="va">APO_did</span> <span class="op">-</span> <span class="va">APO_true</span>,  <span class="co"># parallel trends bias</span></span>
+<span>    ATE_did <span class="op">=</span> <span class="va">APO_obs</span> <span class="op">-</span> <span class="va">APO_did</span>,  <span class="co"># DID ATE = truth + bias</span></span>
 <span>    gender  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu">if_else</span><span class="op">(</span><span class="va">female</span> <span class="op">==</span> <span class="fl">1</span>, <span class="st">"Women"</span>, <span class="st">"Men"</span><span class="op">)</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Women"</span>, <span class="st">"Men"</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
@@ -383,7 +386,7 @@ Bias</li>
 <span>  <span class="fu">transmute</span><span class="op">(</span></span>
 <span>    <span class="va">gender</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
 <span>    measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="st">"APO"</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"APO"</span>, <span class="st">"ATE"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    total <span class="op">=</span> <span class="va">APO_did</span>, comp_true <span class="op">=</span> <span class="va">APO_true</span>, comp_bias <span class="op">=</span> <span class="op">-</span><span class="va">PT_bias</span></span>
+<span>    total <span class="op">=</span> <span class="va">APO_did</span>, comp_true <span class="op">=</span> <span class="va">APO_true</span>, comp_bias <span class="op">=</span> <span class="va">PT_bias</span></span>
 <span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">pivot_longer</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">comp_true</span>, <span class="va">comp_bias</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"component"</span>, values_to <span class="op">=</span> <span class="st">"value"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>component <span class="op">=</span> <span class="fu">if_else</span><span class="op">(</span><span class="va">component</span> <span class="op">==</span> <span class="st">"comp_true"</span>, <span class="st">"Truth"</span>, <span class="st">"PT bias"</span><span class="op">)</span><span class="op">)</span></span>
@@ -392,7 +395,7 @@ Bias</li>
 <span>  <span class="fu">transmute</span><span class="op">(</span></span>
 <span>    <span class="va">gender</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
 <span>    measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="st">"ATE"</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"APO"</span>, <span class="st">"ATE"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    total <span class="op">=</span> <span class="va">ATE_did</span>, comp_true <span class="op">=</span> <span class="va">ATE_true</span>, comp_bias <span class="op">=</span> <span class="va">PT_bias</span></span>
+<span>    total <span class="op">=</span> <span class="va">ATE_did</span>, comp_true <span class="op">=</span> <span class="va">ATE_true</span>, comp_bias <span class="op">=</span> <span class="op">-</span><span class="va">PT_bias</span></span>
 <span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">pivot_longer</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">comp_true</span>, <span class="va">comp_bias</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"component"</span>, values_to <span class="op">=</span> <span class="st">"value"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>component <span class="op">=</span> <span class="fu">if_else</span><span class="op">(</span><span class="va">component</span> <span class="op">==</span> <span class="st">"comp_true"</span>, <span class="st">"Truth"</span>, <span class="st">"PT bias"</span><span class="op">)</span><span class="op">)</span></span>
@@ -407,51 +410,40 @@ Bias</li>
 <span>    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Truth"</span>, <span class="st">"PT bias"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Decomposing DID"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Top row: DID APO (DID imputed counterfactual earnings) | Bottom row: DID ATE (DID imputed treatment effect)"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Decomposing DID into effect and bias"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Top row: DID APO | Bottom row: DID ATE"</span>,</span>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig3_decomposition-1.png" width="1200"></p>
-<p><strong>What this shows:</strong></p>
-<ul>
-<li>
-<strong>APO row:</strong> DID estimates of counterfactual earnings =
-True counterfactual (blue) minus PT bias (orange)</li>
-<li>
-<strong>ATE row:</strong> DID estimates of treatment effects = True
-effect (blue) plus PT bias (orange)</li>
-</ul>
-<p>The bias has opposite signs because the DID counterfactual overshoots
-the truth (steeper slope).</p>
+<p><img src="NTD-identification_files/figure-html/fig3_decomposition-1.png" width="768"></p>
+<p>This is not suprising: when counterfactual trends are not equal, DID
+does not identify the APO, and hence doesnt identify the ATE.</p>
 </div>
 <div class="section level2">
 <h2 id="the-bias-from-normalizing">The Bias from Normalizing<a class="anchor" aria-label="anchor" href="#the-bias-from-normalizing"></a>
 </h2>
 <p>Now for the key question: <strong>What happens when we
 normalize?</strong></p>
-<p>In normalized event studies, we compute:
+<p>In NTD, we compute:
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>θ</mi></msub><mo>=</mo><mfrac><mtext mathvariant="normal">DID ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">\delta_{\theta} = \frac{\text{DID ATE}}{\text{DID APO}}</annotation></semantics></math></p>
 <p>This is meant to estimate the true ratio:
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mfrac><mtext mathvariant="normal">True ATE</mtext><mtext mathvariant="normal">True APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">\theta = \frac{\text{True ATE}}{\text{True APO}}</annotation></semantics></math></p>
-<p>Let’s see what bias emerges when we compute
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mi>θ</mi></msub><annotation encoding="application/x-tex">\delta_{\theta}</annotation></semantics></math>.</p>
 <div class="section level3">
 <h3 id="step-1-the-pt-bias-component">Step 1: The PT Bias Component<a class="anchor" aria-label="anchor" href="#step-1-the-pt-bias-component"></a>
 </h3>
 <p>Note that
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>θ</mi></msub><mo>=</mo><mfrac><mtext mathvariant="normal">DID ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">TRUE ATE</mtext><mo>+</mo><mtext mathvariant="normal">PT Bias</mtext></mrow><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>=</mo><mfrac><mtext mathvariant="normal">TRUE ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>+</mo><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">\delta_{\theta} = \frac{\text{DID ATE}}{\text{DID APO}}=\frac{\text{TRUE ATE} + \text{PT Bias}}{\text{DID APO}}=\frac{\text{TRUE ATE}}{\text{DID APO}}+\frac{\text{PT Bias}}{\text{DID APO}}</annotation></semantics></math></p>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>θ</mi></msub><mo>=</mo><mfrac><mtext mathvariant="normal">DID ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">TRUE ATE</mtext><mo>−</mo><mtext mathvariant="normal">PT Bias</mtext></mrow><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>=</mo><mfrac><mtext mathvariant="normal">TRUE ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>−</mo><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">\delta_{\theta} = \frac{\text{DID ATE}}{\text{DID APO}}=\frac{\text{TRUE ATE} - \text{PT Bias}}{\text{DID APO}}=\frac{\text{TRUE ATE}}{\text{DID APO}}-\frac{\text{PT Bias}}{\text{DID APO}}</annotation></semantics></math></p>
 <p>We will now analyze
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mtext mathvariant="normal">TRUE ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>+</mo><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">\frac{\text{TRUE ATE}}{\text{DID APO}}+\frac{\text{PT Bias}}{\text{DID APO}}</annotation></semantics></math>.
 Since this is a sum, will go one by one. Start with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><annotation encoding="application/x-tex">\frac{\text{PT Bias}}{\text{DID APO}}</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">-\frac{\text{PT Bias}}{\text{DID APO}}</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pt_ratio_df</span> <span class="op">&lt;-</span> <span class="va">summary_age</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">transmute</span><span class="op">(</span></span>
 <span>    <span class="va">gender</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
 <span>    measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="st">"Ratios"</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"APO"</span>,<span class="st">"ATE"</span>,<span class="st">"Ratios"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    component <span class="op">=</span> <span class="st">"PT / DID APO"</span>,</span>
-<span>    value <span class="op">=</span> <span class="va">PT_bias</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">APO_true</span> <span class="op">-</span> <span class="va">PT_bias</span>, <span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">)</span></span>
+<span>    value <span class="op">=</span> <span class="op">-</span><span class="va">PT_bias</span> <span class="op">/</span> <span class="va">APO_did</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">bar_age_three</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span></span>
@@ -474,14 +466,14 @@ Since this is a sum, will go one by one. Start with
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig4_pt_ratio-1.png" width="1200"></p>
-<p><strong>Critical observation:</strong> The bottom row (PT / DID APO)
-is <strong>identical for men and women</strong> at every age. Hence,
-differencing across gender cancels out this bias parameter. This is an
-implication of the NTD assumption.</p>
+<p><img src="NTD-identification_files/figure-html/fig4_pt_ratio-1.png" width="768"></p>
+<p><strong>Takeaway:</strong> The bottom row (PT / DID APO) is
+<strong>identical for men and women</strong> at every age. Hence, under
+NTD, differencing across gender cancels out this bias parameter.</p>
+<p>We now continue with the second component</p>
 </div>
 <div class="section level3">
-<h3 id="step-2-the-complete-ratio">Step 2: The Complete Ratio<a class="anchor" aria-label="anchor" href="#step-2-the-complete-ratio"></a>
+<h3 id="step-2-the-effect-component">Step 2: The Effect Component<a class="anchor" aria-label="anchor" href="#step-2-the-effect-component"></a>
 </h3>
 <p>Now let’s add the second part of the sum,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mtext mathvariant="normal">ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><annotation encoding="application/x-tex">\frac{\text{ATE}}{\text{DID APO}}</annotation></semantics></math>.</p>
@@ -490,8 +482,8 @@ implication of the NTD assumption.</p>
 <span>  <span class="fu">transmute</span><span class="op">(</span></span>
 <span>    <span class="va">gender</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
 <span>    measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="st">"Ratios"</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"APO"</span>,<span class="st">"ATE"</span>,<span class="st">"Ratios"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    `PT ratio`  <span class="op">=</span> <span class="va">PT_bias</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">APO_true</span> <span class="op">-</span> <span class="va">PT_bias</span>, <span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">)</span>,</span>
-<span>    `ATE ratio` <span class="op">=</span> <span class="va">ATE_true</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">APO_true</span> <span class="op">-</span> <span class="va">PT_bias</span>, <span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">)</span></span>
+<span>    `PT ratio`  <span class="op">=</span> <span class="op">-</span><span class="va">PT_bias</span> <span class="op">/</span> <span class="va">APO_did</span>,</span>
+<span>    `ATE ratio` <span class="op">=</span> <span class="va">ATE_true</span> <span class="op">/</span> <span class="va">APO_did</span></span>
 <span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">pivot_longer</span><span class="op">(</span></span>
 <span>    cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">`PT ratio`</span>, <span class="va">`ATE ratio`</span><span class="op">)</span>, </span>
@@ -520,46 +512,80 @@ implication of the NTD assumption.</p>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig5_full_ratio-1.png" width="1200"></p>
-<p><strong>The bottom row shows:</strong></p>
+<p><img src="NTD-identification_files/figure-html/fig5_full_ratio-1.png" width="768"></p>
+<p>The bottom row shows:</p>
 <ul>
 <li>Light teal (PT / DID APO): Same across gender
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math>
 cancels when we difference between gender</li>
-<li>Dark green (ATE / DID APO): Different across gender
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math>
-now we need to understand, if we difference this between gender, how
-much is bias? How much is effect?</li>
+<li>Dark green (ATE / DID APO): Different across gender</li>
 </ul>
+<p>Now we need to examine, if we difference (ATE / DID APO) between
+gender, does this capture the gender gap in normalized effects?</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="the-multiplicative-bias-structure">The Multiplicative Bias Structure<a class="anchor" aria-label="anchor" href="#the-multiplicative-bias-structure"></a>
+<h2 id="the-multiplicative-bias">The Multiplicative Bias<a class="anchor" aria-label="anchor" href="#the-multiplicative-bias"></a>
 </h2>
-<p>Here’s where it gets interesting. The dark green component (ATE / DID
-APO) can be rewritten to reveal a multiplicative bias:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mtext mathvariant="normal">ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>=</mo><mfrac><mtext mathvariant="normal">ATE</mtext><mrow><mtext mathvariant="normal">True APO</mtext><mo>−</mo><mtext mathvariant="normal">PT bias</mtext></mrow></mfrac><mo>=</mo><mi>θ</mi><mo>⋅</mo><mfrac><mtext mathvariant="normal">True APO</mtext><mrow><mtext mathvariant="normal">True APO</mtext><mo>−</mo><mtext mathvariant="normal">PT bias</mtext></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{\text{ATE}}{\text{DID APO}} = \frac{\text{ATE}}{\text{True APO} - \text{PT bias}} = \theta \cdot \frac{\text{True APO}}{\text{True APO} - \text{PT bias}}</annotation></semantics></math></p>
-<p>where
+<p>Here’s where it gets interesting. The (ATE / DID APO) (dark green in
+above figure) can be rewritten to reveal a multiplicative bias:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mtext mathvariant="normal">True ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">True APO</mtext><mo>⋅</mo><mi>θ</mi></mrow><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>=</mo><mi>θ</mi><mo>⋅</mo><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">\frac{\text{True ATE}}{\text{DID APO}} = \frac{\text{True APO} \cdot \theta}{\text{DID APO}} = \theta \cdot \frac{\text{True APO}}{\text{DID APO}}</annotation></semantics></math></p>
+<p>where, recall,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mtext mathvariant="normal">True ATE</mtext><mi>/</mi><mtext mathvariant="normal">True APO</mtext></mrow><annotation encoding="application/x-tex">\theta = \text{True ATE} / \text{True APO}</annotation></semantics></math>
-is the true ratio we want.</p>
-<p>This simplifies to:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mtext mathvariant="normal">ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>=</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mo>⋅</mo><mfrac><mtext mathvariant="normal">PT bias</mtext><mrow><mtext mathvariant="normal">True APO</mtext><mo>−</mo><mtext mathvariant="normal">PT bias</mtext></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{\text{ATE}}{\text{DID APO}} = \theta + \theta \cdot \frac{\text{PT bias}}{\text{True APO} - \text{PT bias}}</annotation></semantics></math></p>
+is the causal estimand we are interested in. Or, at least, the gender
+gap in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>.</p>
+<p>Adding and subtracting
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>,
+and using the definition of DID APO = True APO + PT Bias, we can
+re-write the above as
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mfrac><mtext mathvariant="normal">True ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mo>−</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">True APO - True APO - PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mo>−</mo><mi>θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{aligned}
+\frac{\text{True ATE}}{\text{DID APO}} &amp;= \theta \frac{\text{True APO}}{\text{DID APO}} \\
+&amp;= \theta - \theta + \theta \frac{\text{True APO}}{\text{DID APO}} \\
+&amp;= \theta + \theta \left(\frac{\text{True APO}}{\text{DID APO}} - 1\right) \\
+&amp;= \theta + \theta \left(\frac{\text{True APO - True APO - PT Bias}}{\text{DID APO}}\right) \\
+&amp;= \theta - \theta \left(\frac{\text{PT Bias}}{\text{DID APO}}\right)
+\end{aligned}
+</annotation></semantics></math></p>
 <p>The second term is <strong>multiplicative bias</strong> - the true
 effect gets scaled by the ratio of PT bias to DID APO. As we discussed
 above, this quantity
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mtext mathvariant="normal">PT bias</mtext><mrow><mtext mathvariant="normal">True APO</mtext><mo>−</mo><mtext mathvariant="normal">PT bias</mtext></mrow></mfrac><annotation encoding="application/x-tex">\frac{\text{PT bias}}{\text{True APO} - \text{PT bias}}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mtext mathvariant="normal">PT bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><annotation encoding="application/x-tex">\frac{\text{PT bias}}{\text{DID APO}}</annotation></semantics></math>
 is constant between genders. So both genders treatment effects are
 scaled by the same factor.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">eps</span> <span class="op">&lt;-</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span></span>
+<code class="sourceCode R"><span></span>
+<span><span class="co">## sanity check</span></span>
+<span><span class="va">summary_age</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">transmute</span><span class="op">(</span></span>
+<span>    <span class="va">gender</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
+<span>    measure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="st">"Ratios"</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"APO"</span>,<span class="st">"ATE"</span>,<span class="st">"Ratios"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    `ATE ratio` <span class="op">=</span> <span class="va">ATE_true</span> <span class="op">/</span> <span class="va">APO_did</span>,</span>
+<span>    `ATE ratio check` <span class="op">=</span> <span class="op">(</span><span class="va">ATE_true</span> <span class="op">/</span> <span class="va">APO_true</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">ATE_true</span> <span class="op">/</span> <span class="va">APO_true</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="va">PT_bias</span> <span class="op">/</span> <span class="va">APO_did</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 22 × 5</span></span></span>
+<span><span class="co">#&gt;    gender age   measure `ATE ratio` `ATE ratio check`</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Men    20    Ratios       0                 0     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Men    21    Ratios       0                 0     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Men    22    Ratios       0                 0     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Men    23    Ratios       0                 0     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Men    24    Ratios       0                 0     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Men    25    Ratios      -<span style="color: #BB0000;">0.049</span><span style="color: #BB0000; text-decoration: underline;">4</span>           -<span style="color: #BB0000;">0.057</span><span style="color: #BB0000; text-decoration: underline;">3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Men    26    Ratios      -<span style="color: #BB0000;">0.044</span><span style="color: #BB0000; text-decoration: underline;">4</span>           -<span style="color: #BB0000;">0.058</span><span style="color: #BB0000; text-decoration: underline;">1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Men    27    Ratios      -<span style="color: #BB0000;">0.040</span><span style="color: #BB0000; text-decoration: underline;">4</span>           -<span style="color: #BB0000;">0.058</span><span style="color: #BB0000; text-decoration: underline;">4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Men    28    Ratios      -<span style="color: #BB0000;">0.037</span><span style="color: #BB0000; text-decoration: underline;">0</span>           -<span style="color: #BB0000;">0.058</span><span style="color: #BB0000; text-decoration: underline;">2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Men    29    Ratios      -<span style="color: #BB0000;">0.034</span><span style="color: #BB0000; text-decoration: underline;">2</span>           -<span style="color: #BB0000;">0.057</span><span style="color: #BB0000; text-decoration: underline;">8</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more rows</span></span></span>
 <span></span>
 <span><span class="va">theta_df</span> <span class="op">&lt;-</span> <span class="va">summary_age</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">transmute</span><span class="op">(</span></span>
 <span>    <span class="va">gender</span>, age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
 <span>    <span class="va">APO_true</span>, <span class="va">ATE_true</span>, <span class="va">APO_did</span>, <span class="va">PT_bias</span>,</span>
-<span>    theta_true <span class="op">=</span> <span class="va">ATE_true</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">APO_true</span>, <span class="va">eps</span><span class="op">)</span>,</span>
-<span>    bias_A <span class="op">=</span> <span class="va">PT_bias</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">APO_true</span> <span class="op">-</span> <span class="va">PT_bias</span>, <span class="va">eps</span><span class="op">)</span>,</span>
-<span>    bias_B <span class="op">=</span> <span class="va">theta_true</span> <span class="op">*</span> <span class="op">(</span><span class="va">APO_true</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">APO_true</span> <span class="op">-</span> <span class="va">PT_bias</span>, <span class="va">eps</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>    theta_true <span class="op">=</span> <span class="va">ATE_true</span> <span class="op">/</span> <span class="va">APO_true</span>,</span>
+<span>    bias_A <span class="op">=</span> <span class="op">-</span><span class="va">PT_bias</span> <span class="op">/</span> <span class="va">APO_did</span>,</span>
+<span>    bias_B <span class="op">=</span> <span class="op">-</span> <span class="va">theta_true</span> <span class="op">*</span> <span class="op">(</span><span class="va">PT_bias</span> <span class="op">/</span> <span class="va">APO_did</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">theta_stack</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span></span>
@@ -600,7 +626,7 @@ scaled by the same factor.</p>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig6_multiplicative-1.png" width="1200"></p>
+<p><img src="NTD-identification_files/figure-html/fig6_multiplicative-1.png" width="768"></p>
 <p><strong>Bottom row interpretation:</strong></p>
 <ul>
 <li>
@@ -611,39 +637,17 @@ we want to estimate</li>
 <strong>Teal (Bias A)</strong>: PT / DID APO - drops out when
 differencing across gender</li>
 <li>
-<strong>Green (Bias B)</strong>:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>×</mo><mfrac><mtext mathvariant="normal">PT bias</mtext><mrow><mtext mathvariant="normal">True APO</mtext><mo>−</mo><mtext mathvariant="normal">PT bias</mtext></mrow></mfrac></mrow><annotation encoding="application/x-tex">\theta \times \frac{\text{PT bias}}{\text{True APO} - \text{PT bias}}</annotation></semantics></math>
-- is not equal between gender, since
+<strong>Green (Bias B)</strong>: <span class="math inline">$\theta
+\times \frac{\text{PT bias}}{\text{DID APO}}}$</span> - is not equal
+between gender, since
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
 is allowed to be different between gender
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>→</mo><annotation encoding="application/x-tex">\rightarrow</annotation></semantics></math>
 hence bias remains when differencing</li>
 </ul>
-</div>
-<div class="section level2">
-<h2 id="key-takeaways">Key Takeaways<a class="anchor" aria-label="anchor" href="#key-takeaways"></a>
-</h2>
-<ol style="list-style-type: decimal">
-<li><p><strong>But normalization creates multiplicative bias</strong>:
-Even when the identifying assumption holds, the estimated ratio contains
-bias that scales with the true effect</p></li>
-<li>
-<p><strong>The bias structure</strong>:</p>
-<ul>
-<li>Additive part (teal): Cancels when differencing across groups</li>
-<li>Multiplicative part (green): Remains after differencing</li>
-</ul>
-</li>
-<li><p><strong>Magnitude matters</strong>: The multiplicative bias is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>⋅</mo><mfrac><mi>λ</mi><mrow><mn>1</mn><mo>−</mo><mi>λ</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">\theta \cdot \frac{\lambda}{1-\lambda}</annotation></semantics></math>
-where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mtext mathvariant="normal">PT bias</mtext><mi>/</mi><mtext mathvariant="normal">True APO</mtext></mrow><annotation encoding="application/x-tex">\lambda = \text{PT bias} / \text{True APO}</annotation></semantics></math>.
-As
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
-increases, the bias increases.</p></li>
-</ol>
-<p>This is the size of PT violations is crucial for interpreting
-normalized event study estimates.</p>
+<p>Note that the size of bias (in Bias B in the above plot) depends on
+relation of PT bias to APO (where this relation is constant by gender
+under NTD).</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
