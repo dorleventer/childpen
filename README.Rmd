@@ -37,8 +37,8 @@ knitr::opts_chunk$set(
 
 **Package functions**
 
-- [x] **Estimation of single $2\times2$** — `single_treatment_group_analysis()`
-- [x] **Wrapper for multiple $2\times2$** — `multiple_treatment_group_analysis()`
+- [x] **Estimation of single 2×2** — `single_treatment_group_analysis()`
+- [x] **Wrapper for multiple 2×2** — `multiple_treatment_group_analysis()`
 - [x] **Data simulation** — `simulate_data()`
 - [ ] **Aggregation over multiple groups**
 

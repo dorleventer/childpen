@@ -28,9 +28,8 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **Package functions**
 
-- [x] **Estimation of single $`2\times2`$** —
-  `single_treatment_group_analysis()`
-- [x] **Wrapper for multiple $`2\times2`$** —
+- [x] **Estimation of single 2×2** — `single_treatment_group_analysis()`
+- [x] **Wrapper for multiple 2×2** —
   `multiple_treatment_group_analysis()`
 - [x] **Data simulation** — `simulate_data()`
 - [ ] **Aggregation over multiple groups**
@@ -57,15 +56,6 @@ Install the latest development version from GitHub:
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
 #> Using GitHub PAT from the git credential store.
-#> Downloading GitHub repo dorleventer/childpen@HEAD
-#> 
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpbFCdKs/remotes2ecc59d9c544/dorleventer-childpen-29f2fbb/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpbFCdKs/remotes2ecc59d9c544/dorleventer-childpen-29f2fbb/DESCRIPTION’
-#>   ─  preparing ‘childpen’:
-#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-#>   ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>   ─  building ‘childpen_0.0.0.9000.tar.gz’
-#>      
-#> 
+#> Skipping install of 'childpen' from a github remote, the SHA1 (ed431d84) has not changed since last install.
+#>   Use `force = TRUE` to force installation
 ```
