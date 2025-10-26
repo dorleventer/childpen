@@ -38,10 +38,11 @@ articles:
     contents:
       - simulation
       - NTD-identification
+      - DID-estimation
 
 authors:
   Dor Leventer:
-    href: https://dorleventer.github.io
+    href: https://sites.google.com/mail.tau.ac.il/dor-leventer/home
 
 development:
   mode: auto

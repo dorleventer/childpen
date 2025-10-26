@@ -39,7 +39,7 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
   [vignette](https://dorleventer.github.io/childpen/articles/simulation.html)
 - [x] **Intuition for NTD bias** —
   [vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
-- [ ] **DID estimation**
+- [x] **DID estimation** (in progress)
 - [ ] **TD bias**
 - [ ] **TD estimation**
 - [ ] **NTD baseline, alternative, and bias-corrected estimation**
@@ -59,7 +59,7 @@ remotes::install_github("dorleventer/childpen")
 #> Downloading GitHub repo dorleventer/childpen@HEAD
 #> 
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpWAMLSR/remotes41ef533b8aca/dorleventer-childpen-680f246/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpWAMLSR/remotes41ef533b8aca/dorleventer-childpen-680f246/DESCRIPTION’
+#>      checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpGBkyEK/remotes65077c39ce6a/dorleventer-childpen-9170e51/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/RtmpGBkyEK/remotes65077c39ce6a/dorleventer-childpen-9170e51/DESCRIPTION’
 #>   ─  preparing ‘childpen’:
 #>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
 #>   ─  checking for LF line-endings in source and make files and shell scripts
@@ -67,4 +67,7 @@ remotes::install_github("dorleventer/childpen")
 #>   ─  building ‘childpen_0.0.0.9000.tar.gz’
 #>      
 #> 
+#> Warning in i.p(...): installation of package
+#> '/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T//RtmpGBkyEK/file6507371ed0dd/childpen_0.0.0.9000.tar.gz'
+#> had non-zero exit status
 ```

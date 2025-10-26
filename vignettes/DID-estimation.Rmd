@@ -1,0 +1,136 @@
+---
+title: "DID-estimation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{NTD-identification}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment  = "#>",
+  fig.width = 8,
+  fig.height = 8,
+  message = FALSE,
+  warning = FALSE
+)
+library(ggplot2); library(dplyr); library(tidyr)
+options(dplyr.summarise.inform = FALSE, scipen = 999, digits = 5)
+theme_set(theme_bw(base_size = 12))
+```
+
+## Overview
+
+The aim of this vignette is show how to estimate DID using closest-not-yet-treated control groups using `childpen`.
+
+## Simulate data
+
+The package has a built in simulation function to draw data resembling child penalty studies. 
+
+```{r draw_data}
+library(childpen)
+
+N <- 20000
+data <- simulate_data(n_individuals = N)
+data |> tibble()
+```
+
+## Multiple treatment group analysis
+
+We will now do the main heavy lifting. Say you want to estimate DID with closest-not-yet-treated control groups. This will be many $2\times2$s. `childpen` easily allows it using the wrapper function below, `multiple_treatment_group_analysis()`. Note that the column names of the data are the same as the default for the function, so no need to input explicitly. 
+
+```{r estimation}
+res = multiple_treatment_group_analysis(data = data,
+                                  treatment_groups = 25:30, # which treatment groups to run in the analysis
+                                  periods_post = 5, # estimate results for post periods 0:5
+                                  periods_pre = NULL, # estimate pre-trend diagnostics, set to NULL to omit from estimation
+                                  max_age = 40, # dont estimate results if age is above 40
+                                  min_age = 20, # dont estimate results if age is below 20
+                                  pre = 1, # use 1 period before treatment, can make further away if anticipation is conern
+                                  verbose = FALSE # set to TRUE to output progress (i like to time loops) set to FALSE to omit messages
+                                  ) 
+```
+
+## Only DID, plot post-treatment results
+
+The above function outputs results for all estimation methods discussed in the paper. Let save only DID results, and graph them. For benchmarking, I also add to the plots the mean observed earnings from the raw data. 
+
+```{r results}
+obs_tidy = data |> 
+  mutate(event_time = age - D) |> 
+  rename(d = D) |> 
+  group_by(female, d, event_time) |> 
+  summarize(est = mean(Y)) |> 
+  mutate(estimand = "APO", method = "Observed") |> 
+  filter(event_time %in% -3:5, d %in% 25:30)
+
+plot_data = res |> 
+  filter(method %in% c("DID_Female", "DID_Male")) |> 
+  mutate(female = ifelse(method == "DID_Female", 1, 0)) |> 
+  select(d, event_time, estimand, female, est, ci_l, ci_h) |> 
+  mutate(method = "DID")
+
+plot_data = plot_data |> 
+  dplyr::bind_rows(obs_tidy)
+
+plot_data |> 
+  filter(female == 1) |> 
+  ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = method, fill = method)) + 
+  geom_ribbon(color = NA, alpha = .2) +
+  geom_point() + geom_line() + 
+  facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") + 
+  labs(x = "Event Time", y = "Estimate +/- 95% CI", color = "Method", fill = "Method") + 
+  theme(legend.position = "bottom")
+```
+
+
+## Compare to real effects in the simulation
+
+The simulation offers also potential outcomes so we can see effect: Null for fathers and 30\% decline with some constant recovery for mothers.
+
+```{r truth}
+PO_tidy = data |> 
+  mutate(event_time = age - D) |> 
+  rename(d = D) |> 
+  group_by(female, d, event_time) |> 
+  summarize(APO_obs = mean(Y), APO = mean(Y_inf)) |> 
+  mutate(ATE = APO_obs - APO, 
+         theta = ATE / APO) |> 
+  filter(event_time %in% 0:5, d %in% 25:30) |> 
+  select(-APO_obs) |> 
+  pivot_longer(
+    !c(female, d, event_time), names_to = "estimand", values_to = "est"
+  ) |> 
+  mutate(method = "Truth")
+
+plot_data = plot_data |> 
+  dplyr::bind_rows(PO_tidy)
+
+plot_data |> 
+  filter(female == 1) |> 
+  ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = method, fill = method)) + 
+  geom_ribbon(color = NA, alpha = .2) +
+  geom_point() + geom_line() + 
+  facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") + 
+  labs(x = "Event Time", y = "Estimate +/- 95% CI", color = "Method", fill = "Method") + 
+  theme(legend.position = "bottom")
+```
+
+The intuition for this result, discussed in the paper, is that later treatment groups are positively selected compared to earlier treatment groups, and hence DID is overstating treatment effects for those groups. 
+
+
+## For completness, show for men as well
+
+```{r}
+plot_data |> 
+  filter(female == 0) |> 
+  ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = method, fill = method)) + 
+  geom_ribbon(color = NA, alpha = .2) +
+  geom_point() + geom_line() + 
+  facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") + 
+  labs(x = "Event Time", y = "Estimate +/- 95% CI", color = "Method", fill = "Method") + 
+  theme(legend.position = "bottom")
+```
+
