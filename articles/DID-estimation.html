@@ -63,8 +63,9 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>The aim of this vignette is show how to estimate DID using
-closest-not-yet-treated control groups using <code>childpen</code>.</p>
+<p>The aim of this vignette is show how to estimate difference in
+differences (DID) using closest-not-yet-treated control groups using
+<code>childpen</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
@@ -74,23 +75,88 @@ resembling child penalty studies.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dorleventer/childpen" class="external-link">childpen</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">20000</span></span>
+<span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">2000</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="va">N</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">|&gt;</span> <span class="fu">tibble</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 420,000 × 6</span></span></span>
-<span><span class="co">#&gt;       id female   age     D   Y_inf       Y</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>     1      1    20    37   <span style="text-decoration: underline;">4</span>455.   <span style="text-decoration: underline;">4</span>455.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>     1      1    21    37   <span style="text-decoration: underline;">7</span>057.   <span style="text-decoration: underline;">7</span>057.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>     1      1    22    37  <span style="text-decoration: underline;">15</span>138.  <span style="text-decoration: underline;">15</span>138.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>     1      1    23    37  <span style="text-decoration: underline;">31</span>188.  <span style="text-decoration: underline;">31</span>188.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>     1      1    24    37  <span style="text-decoration: underline;">26</span>199.  <span style="text-decoration: underline;">26</span>199.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     1      1    25    37  <span style="text-decoration: underline;">45</span>635.  <span style="text-decoration: underline;">45</span>635.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     1      1    26    37  <span style="text-decoration: underline;">46</span>719.  <span style="text-decoration: underline;">46</span>719.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     1      1    27    37  <span style="text-decoration: underline;">39</span>892.  <span style="text-decoration: underline;">39</span>892.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     1      1    28    37 <span style="text-decoration: underline;">127</span>141. <span style="text-decoration: underline;">127</span>141.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     1      1    29    37 <span style="text-decoration: underline;">109</span>342. <span style="text-decoration: underline;">109</span>342.</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 419,990 more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 42,000 × 6</span></span></span>
+<span><span class="co">#&gt;       id female   age     D  Y_inf      Y</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>     1      1    20    37  <span style="text-decoration: underline;">7</span>337.  <span style="text-decoration: underline;">7</span>337.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>     1      1    21    37 <span style="text-decoration: underline;">10</span>446. <span style="text-decoration: underline;">10</span>446.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>     1      1    22    37 <span style="text-decoration: underline;">25</span>834. <span style="text-decoration: underline;">25</span>834.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>     1      1    23    37 <span style="text-decoration: underline;">38</span>254. <span style="text-decoration: underline;">38</span>254.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>     1      1    24    37 <span style="text-decoration: underline;">60</span>609. <span style="text-decoration: underline;">60</span>609.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     1      1    25    37 <span style="text-decoration: underline;">46</span>775. <span style="text-decoration: underline;">46</span>775.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     1      1    26    37 <span style="text-decoration: underline;">26</span>192. <span style="text-decoration: underline;">26</span>192.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     1      1    27    37 <span style="text-decoration: underline;">32</span>976. <span style="text-decoration: underline;">32</span>976.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     1      1    28    37 <span style="text-decoration: underline;">27</span>096. <span style="text-decoration: underline;">27</span>096.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     1      1    29    37 <span style="text-decoration: underline;">75</span>304. <span style="text-decoration: underline;">75</span>304.</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 41,990 more rows</span></span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="did-estimands-and-estimators">DID Estimands and Estimators<a class="anchor" aria-label="anchor" href="#did-estimands-and-estimators"></a>
+</h2>
+<p>DIDs starting point is a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo>×</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">2\times2</annotation></semantics></math>
+comparison. We consider some treatment group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+(e.g., 25), and want to effects for some target age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+(e.g., 30). The pre-treatment period is initially set to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d-1</annotation></semantics></math>
+(e.g., 24), but this can be changed in <code>childpen</code> using the
+argument <code>pre</code>. The control group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mi>′</mi></msup><annotation encoding="application/x-tex">d^\prime</annotation></semantics></math>
+is always set to the closest-not-yet-treated group, i.e.,
+<code>childpen</code> automatically sets
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mi>′</mi></msup><mo>=</mo><mi>a</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d^\prime=a+1</annotation></semantics></math>.
+For example, for target age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mn>30</mn></mrow><annotation encoding="application/x-tex">a=30</annotation></semantics></math>,
+the closest group that is not yet treated is parents that had their
+first child at 31.</p>
+<p>DID calculates average potential outcomes in the counterfactual
+without childbirth by adding to the treatment group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+the trend for the control group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mi>′</mi></msup><annotation encoding="application/x-tex">d^\prime</annotation></semantics></math>
+between ages
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d-1</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>.
+Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mi>f</mi><mo>,</mo><mi>m</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">G\in\{f,m\}</annotation></semantics></math>
+be female or male gender,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>
+the age at first childbirth,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>
+the outcome. We write the DID counterfactual average potential outcomes
+as
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>Y</mi><mrow><mi>d</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>+</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>−</mo><msub><mi>Y</mi><mrow><mi>d</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><msup><mi>d</mi><mi>′</mi></msup><mo stretchy="true" form="postfix">]</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\delta_{\mathrm{APO}}(g,d,d^\prime,a)=\mathbb{E}[Y_{d-1}\mid G=g, D=d]+\mathbb{E}[Y_a-Y_{d-1}\mid G=g, D=d^\prime].
+</annotation></semantics></math> The DID average treatment effect (in
+levels) for defined for gender
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
+and treatment group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+is written as
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>𝔼</mi><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+\delta_{\mathrm{ATE}}(g,d,d^\prime,a)=\mathbb{E}[Y_a\mid G=g, D=d]-\delta_{\mathrm{APO}}(g,d,d^\prime,a)
+</annotation></semantics></math> Finally, in the child penalty
+application, many studies consider a normalized target, which divides
+the level effects by the estimated counterfactual. DID can calculate
+that via
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>θ</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+\delta_{\theta}(g,d,d^\prime,a)=\frac{\delta_{\mathrm{ATE}}(g,d,d^\prime,a)}{\delta_{\mathrm{APO}}(g,d,d^\prime,a)}
+</annotation></semantics></math> All
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>δ</mi><annotation encoding="application/x-tex">\delta</annotation></semantics></math>s
+are descriptive estimands. Descriptive, in the sense that the do not
+include potential outcomes, only observable data. Estimands, in the
+sense that they include population expectations.</p>
+<p>The equivalent estimators simply replace population estimands with
+sample means. Since all estimators are combinations of simple averages,
+it is easy to construct influence functions with which variances can be
+estimated. For more details, see the estimation appendix in the
+paper.</p>
 </div>
 <div class="section level2">
 <h2 id="multiple-treatment-group-analysis">Multiple treatment group analysis<a class="anchor" aria-label="anchor" href="#multiple-treatment-group-analysis"></a>
@@ -199,6 +265,13 @@ groups.</p>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>, color <span class="op">=</span> <span class="st">"Method"</span>, fill <span class="op">=</span> <span class="st">"Method"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="DID-estimation_files/figure-html/unnamed-chunk-1-1.png" width="768"></p>
+</div>
+<div class="section level2">
+<h2 id="validation-tests">Validation tests<a class="anchor" aria-label="anchor" href="#validation-tests"></a>
+</h2>
+<p>For a discussion on how to perform validation tests, and what type of
+tests are correct for this type of estimation, see the validation test
+vignette.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
