@@ -23,7 +23,7 @@ theme_set(theme_bw(base_size = 12))
 
 ## Overview
 
-The aim of this vignette is show how to estimate DID using closest-not-yet-treated control groups using `childpen`.
+The aim of this vignette is show how to estimate difference in differences (DID) using closest-not-yet-treated control groups using `childpen`.
 
 ## Simulate data
 
@@ -32,10 +32,30 @@ The package has a built in simulation function to draw data resembling child pen
 ```{r draw_data}
 library(childpen)
 
-N <- 20000
+N <- 2000
 data <- simulate_data(n_individuals = N)
 data |> tibble()
 ```
+
+## DID Estimands and Estimators
+
+DIDs starting point is a $2\times2$ comparison. We consider some treatment group $d$ (e.g., 25), and want to effects for some target age $a$ (e.g., 30). The pre-treatment period is initially set to $d-1$ (e.g., 24), but this can be changed in `childpen` using the argument `pre`. The control group $d^\prime$ is always set to the closest-not-yet-treated group, i.e., `childpen` automatically sets $d^\prime=a+1$. For example, for target age $a=30$, the closest group that is not yet treated is parents that had their first child at 31. 
+
+DID calculates average potential outcomes in the counterfactual without childbirth by adding to the treatment group $d$ the trend for the control group $d^\prime$ between ages $d-1$ and $a$. Let $G\in\{f,m\}$ be female or male gender, $D$ the age at first childbirth, $Y$ the outcome. We write the DID counterfactual average potential outcomes as
+\[
+\delta_{\mathrm{APO}}(g,d,d^\prime,a)=\mathbb{E}[Y_{d-1}\mid G=g, D=d]+\mathbb{E}[Y_a-Y_{d-1}\mid G=g, D=d^\prime].
+\]
+The DID average treatment effect (in levels) for defined for gender $g$ and treatment group $d$ is written as
+\[
+\delta_{\mathrm{ATE}}(g,d,d^\prime,a)=\mathbb{E}[Y_a\mid G=g, D=d]-\delta_{\mathrm{APO}}(g,d,d^\prime,a)
+\]
+Finally, in the child penalty application, many studies consider a normalized target, which divides the level effects by the estimated counterfactual. DID can calculate that via 
+\[
+\delta_{\theta}(g,d,d^\prime,a)=\frac{\delta_{\mathrm{ATE}}(g,d,d^\prime,a)}{\delta_{\mathrm{APO}}(g,d,d^\prime,a)}
+\]
+All $\delta$s are descriptive estimands. Descriptive, in the sense that the do not include potential outcomes, only observable data. Estimands, in the sense that they include population expectations.
+
+The equivalent estimators simply replace population estimands with sample means. Since all estimators are combinations of simple averages, it is easy to construct influence functions with which variances can be estimated. For more details, see the estimation appendix in the paper. 
 
 ## Multiple treatment group analysis
 
@@ -133,4 +153,10 @@ plot_data |>
   labs(x = "Event Time", y = "Estimate +/- 95% CI", color = "Method", fill = "Method") + 
   theme(legend.position = "bottom")
 ```
+
+
+## Validation tests
+
+For a discussion on how to perform validation tests, and what type of tests are correct for this type of estimation, see the validation test vignette. 
+
 

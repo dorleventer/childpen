@@ -39,6 +39,7 @@ articles:
       - simulation
       - NTD-identification
       - DID-estimation
+      - validation_tests
 
 authors:
   Dor Leventer:
