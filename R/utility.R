@@ -25,6 +25,26 @@ prep_data_table <- function(data,
 
   DT <- data.table::as.data.table(data)
 
+  # Strip haven_labelled class that arrives when data is loaded via haven::read_dta().
+  # We intentionally avoid adding haven as a dependency: the check uses the class
+  # string directly.  Each labelled column is coerced to its underlying base type
+  # (integer if storage mode is "integer", numeric otherwise) so that subsequent
+  # as.integer() / data.table operations work without warnings.
+  haven_cols <- names(DT)[vapply(DT, function(col) inherits(col, "haven_labelled"), logical(1))]
+  if (length(haven_cols)) {
+    for (col in haven_cols) {
+      # unclass() drops haven_labelled (and any co-inherited vctrs class) before
+      # coercing, so base as.integer()/as.numeric() are used rather than any
+      # vctrs dispatch that would error on the labelled class.
+      raw <- unclass(DT[[col]])
+      if (identical(typeof(raw), "integer")) {
+        data.table::set(DT, j = col, value = as.integer(raw))
+      } else {
+        data.table::set(DT, j = col, value = as.numeric(raw))
+      }
+    }
+  }
+
   # Map provided names -> canonical names (id, age, D, female, Y)
   rename_map <- c(
     stats::setNames(id_name,     "id"),
