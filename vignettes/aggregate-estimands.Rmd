@@ -21,7 +21,7 @@ options(dplyr.summarise.inform = FALSE, scipen = 999, digits = 5)
 theme_set(theme_bw(base_size = 12))
 ```
 
-> **Notation.** For symbol definitions, see the [simulation vignette](simulation.html).
+> **Notation.** For symbol definitions, see the [notation vignette](notation.html).
 
 ## Overview
 

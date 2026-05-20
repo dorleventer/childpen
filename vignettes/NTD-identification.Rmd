@@ -21,13 +21,13 @@ options(dplyr.summarise.inform = FALSE, scipen = 999, digits = 5)
 theme_set(theme_bw(base_size = 12))
 ```
 
-> **Notation.** For symbol definitions used throughout these vignettes, see the [simulation vignette](simulation.html). For the formal identification results, see [Leventer (2025)](https://arxiv.org/abs/2602.07486).
+> **Notation.** For symbol definitions, see the [notation vignette](notation.html). For the formal identification results, see [Leventer (2025)](https://arxiv.org/abs/2602.07486).
 
 > **Note.** This vignette uses a stylised DGP designed to make the NTD identification assumption hold exactly by construction. The treatment effects and earnings levels are chosen for pedagogical clarity, not to reproduce the empirical magnitudes in the paper.
 
 ## Overview
 
-The aim of this vignette is to create intuition on the normalized triple differences (NTD) identification framework discussed in the paper. Specifically, it analyzes the `NTD_Conv` (conventional) estimand — the gender gap in normalised effects, $\theta(f) - \theta(m)$. For the alternative `NTD_New` estimand ($\Delta\rho$), see the [TD-NTD estimation vignette](TD-NTD-estimation.html). NTD is the underlying identification framework for normalized event studies, a common empirical strategy in the child penalty literature.
+The aim of this vignette is to create intuition on the normalized triple differences (NTD) identification framework discussed in the paper. Specifically, it analyzes the `NTD_Conv` (conventional) estimand — the gender gap in normalised effects, $\theta(f) - \theta(m)$. For the alternative `NTD_New` estimand ($\Delta\rho$), see the [estimation vignette](estimation.html). NTD is the underlying identification framework for normalized event studies, a common empirical strategy in the child penalty literature.
 
 **This vignette demonstrates:**
 

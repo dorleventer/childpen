@@ -36,11 +36,10 @@ articles:
     description: >
       The following vignettes show how to use the code in the package, as well as the main take-aways from the paper.
     contents:
-      - simulation
+      - notation
+      - estimation
       - NTD-identification
       - TD-identification
-      - DID-estimation
-      - TD-NTD-estimation
       - validation_tests
       - aggregate-estimands
 
