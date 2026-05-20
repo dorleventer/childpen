@@ -38,8 +38,11 @@ articles:
     contents:
       - simulation
       - NTD-identification
+      - TD-identification
       - DID-estimation
+      - TD-NTD-estimation
       - validation_tests
+      - aggregate-estimands
 
 authors:
   Dor Leventer:

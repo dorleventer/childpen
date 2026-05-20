@@ -2,7 +2,7 @@
 title: "DID-estimation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{NTD-identification}
+  %\VignetteIndexEntry{DID-estimation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -34,7 +34,7 @@ library(childpen)
 
 N <- 2000
 data <- simulate_data(n_individuals = N)
-data |> tibble()
+head(data)
 ```
 
 ## DID Estimands and Estimators

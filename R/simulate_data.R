@@ -28,6 +28,7 @@
 simulate_data <- function(n_individuals   = 10000,
                           seed            = 42) {
 
+  set.seed(seed)
 
   male_profiles   <- get("male_profiles",   envir = asNamespace("childpen"))
   female_params   <- get("female_params",   envir = asNamespace("childpen"))

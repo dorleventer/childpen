@@ -41,7 +41,7 @@ library(childpen)
 
 N <- 100000
 sim_data <- simulate_data(n_individuals = N)
-sim_data |> tibble()
+head(sim_data)
 ```
 
 The `id` column is the individual id. `female` is binary indicator, = 1 indicates females and = 0 indicates males. `age` indicates the age at which the earnings are observed. `D` is the treatment variable --- age at first childbirth. `Y_inf` represents $Y_{i,a}(\infty)$, that is the potential earnings under never having a child. `Y` represents observed earnings, equal to potential earnings under having a child at $D$. 

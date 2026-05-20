@@ -75,7 +75,7 @@ multiple_treatment_group_analysis <- function(data,
       }
 
       tryCatch({
-        res <- single_treatment_group_analysis(data, d, dp, a, pre)
+        res <- single_treatment_group_analysis(DT, d, dp, a, pre)
         res$d <- d
         res$dp <- dp
         res$a <- a
@@ -120,7 +120,7 @@ multiple_treatment_group_analysis <- function(data,
           if (dp > max_age) next
 
           tryCatch({
-            res <- single_treatment_group_analysis(data, d, dp, a, pre)
+            res <- single_treatment_group_analysis(DT, d, dp, a, pre)
             res$d <- d
             res$dp <- dp
             res$a <- a

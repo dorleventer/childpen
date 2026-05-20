@@ -2,7 +2,7 @@
 title: "validation_tests"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{NTD-identification}
+  %\VignetteIndexEntry{validation-tests}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -6,6 +6,7 @@
 <!-- badges: start -->
 
 [![pkgdown](https://github.com/dorleventer/childpen/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/dorleventer/childpen/actions/workflows/pkgdown.yaml)
+[![R-CMD-check](https://github.com/dorleventer/childpen/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dorleventer/childpen/actions/workflows/R-CMD-check.yaml)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 <!-- badges: end -->
@@ -31,7 +32,7 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 - [x] **Wrapper for multiple 2×2** —
   `multiple_treatment_group_analysis()`
 - [x] **Data simulation** — `simulate_data()`
-- [ ] **Aggregation over multiple groups**
+- [x] **Aggregation over multiple groups** — `aggregate_estimands()`
 
 **Explainers**
 
@@ -41,12 +42,14 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
   [vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
 - [x] **DID estimation** —
   [vignette](https://dorleventer.github.io/childpen/articles/DID-estimation.html)
-- [ ] **TD bias**
-- [ ] **TD estimation**
-- [ ] **NTD baseline, alternative, and bias-corrected estimation**
+- [x] **TD bias** —
+  [vignette](https://dorleventer.github.io/childpen/articles/TD-identification.html)
+- [x] **TD / NTD estimation** —
+  [vignette](https://dorleventer.github.io/childpen/articles/TD-NTD-estimation.html)
 - [x] **Validation tests** —
   [vignette](https://dorleventer.github.io/childpen/articles/validation_tests.html)
-- [ ] **Aggregate estimates**
+- [x] **Aggregate estimates** —
+  [vignette](https://dorleventer.github.io/childpen/articles/aggregate-estimands.html)
 
 ------------------------------------------------------------------------
 
