@@ -11,7 +11,7 @@ event time:
 aggregate_estimands(
   results,
   weights = NULL,
-  methods = c("DID_Female", "DID_Male", "TD", "NTD", "NTD_Alt"),
+  methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New"),
   include_pre = FALSE
 )
 ```
@@ -82,7 +82,7 @@ A `data.frame` with one row per `event_time` × `estimand` × `method` ×
 
 - **gender_ineq** (\\\Delta\rho\_{\text{Agg}}\\):
 
-  Weighted average of `NTD_Alt` (estimand == "theta") across treatment
+  Weighted average of `NTD_New` (estimand == "theta") across treatment
   groups — the aggregate gender-inequality estimand.
 
 **Standard errors.** Because the raw influence functions are not stored

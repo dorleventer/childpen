@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,8 @@
 </h2>
 <p>The aim of this vignette is show how to estimate difference in
 differences (DID) using closest-not-yet-treated control groups using
-<code>childpen</code>.</p>
+<code>childpen</code>. For notation used throughout these vignettes, see
+the <a href="simulation.html">simulation vignette</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
@@ -145,11 +146,16 @@ that via
 are descriptive estimands. Descriptive, in the sense that the do not
 include potential outcomes, only observable data. Estimands, in the
 sense that they include population expectations.</p>
+<p>These are <em>descriptive</em> estimands: they use only observable
+population means, with no causal interpretation. The control group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mi>a</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d' = a + 1</annotation></semantics></math>
+is the cohort whose first birth occurs one year after the target age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>.</p>
 <p>The equivalent estimators simply replace population estimands with
 sample means. Since all estimators are combinations of simple averages,
 it is easy to construct influence functions with which variances can be
-estimated. For more details, see the estimation appendix in the
-paper.</p>
+estimated. For more details, see the <a href="https://arxiv.org/abs/2602.07486" class="external-link">estimation appendix</a>
+(Appendix G).</p>
 </div>
 <div class="section level2">
 <h2 id="multiple-treatment-group-analysis">Multiple treatment group analysis<a class="anchor" aria-label="anchor" href="#multiple-treatment-group-analysis"></a>

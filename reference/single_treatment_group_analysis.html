@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,7 +87,7 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>data.frame</code> with one row per estimand/method combination:</p><ul><li><p><code>estimand</code> — one of <code>"APO"</code>, <code>"ATE"</code>, <code>"theta"</code></p></li>
 <li><p><code>method</code> — one of <code>"DID_Female"</code>, <code>"DID_Male"</code>, <code>"TD"</code>,
-<code>"NTD"</code>, <code>"NTD_Alt"</code>, <code>"TD_Null"</code>, <code>"NTD_Null"</code></p></li>
+<code>"NTD_Conv"</code>, <code>"NTD_New"</code>, <code>"TD_Null"</code>, <code>"NTD_Conv_Null"</code></p></li>
 <li><p><code>est</code> — estimate</p></li>
 <li><p><code>se</code> — cluster-robust standard error</p></li>
 <li><p><code>n_female_treat</code>, <code>n_female_control</code>,
@@ -101,9 +101,9 @@ The core components are:</p><ul><li><p><strong>APO</strong>(g; d, d', a) \(= Y(d
 <li><p><strong>ATE</strong>(g; d, d', a) \(= Y(a, g, d) - \mathrm{APO}(g; d, d', a)\)</p></li>
 <li><p><strong>\(\theta\)(g)</strong> \(= \mathrm{ATE}(g) / \mathrm{APO}(g)\)</p></li>
 </ul><p>From these, the cross-gender contrasts are formed:</p><ul><li><p><strong>TD</strong> \(= \mathrm{ATE}(F) - \mathrm{ATE}(M)\)</p></li>
-<li><p><strong>NTD</strong> \(= \theta(F) - \theta(M)\)</p></li>
-<li><p><strong>NTD Alt</strong> \(= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}\)</p></li>
-<li><p><strong>TD Null</strong> and <strong>NTD Null</strong> variants are defined analogously
+<li><p><strong>NTD_Conv</strong> \(= \theta(F) - \theta(M)\)</p></li>
+<li><p><strong>NTD_New</strong> \(= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}\)</p></li>
+<li><p><strong>TD Null</strong> and <strong>NTD_Conv_Null</strong> variants are defined analogously
 under a null-effect-for-fathers bias-correction.</p></li>
 </ul><p>Internally, influence functions for all pieces are written into temporary
 columns of a <code>data.table</code> via <code>compute_mean_if()</code>, and cluster-robust

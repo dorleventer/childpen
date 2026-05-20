@@ -12,12 +12,12 @@ Source:
 [`DESCRIPTION`](https://github.com/dorleventer/childpen/blob/main/DESCRIPTION)
 
 Leventer D (2026). *childpen: Child Penalties Analysis*. R package
-version 0.0.0.9000, <https://github.com/dorleventer/childpen>.
+version 0.2.0, <https://github.com/dorleventer/childpen>.
 
     @Manual{,
       title = {childpen: Child Penalties Analysis},
       author = {Dor Leventer},
       year = {2026},
-      note = {R package version 0.0.0.9000},
+      note = {R package version 0.2.0},
       url = {https://github.com/dorleventer/childpen},
     }

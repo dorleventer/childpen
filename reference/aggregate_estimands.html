@@ -11,7 +11,7 @@ time:"><meta property="og:image" content="https://dorleventer.github.io/childpen
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,7 +45,7 @@ time:</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">aggregate_estimands</span><span class="op">(</span></span>
 <span>  <span class="va">results</span>,</span>
 <span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DID_Female"</span>, <span class="st">"DID_Male"</span>, <span class="st">"TD"</span>, <span class="st">"NTD"</span>, <span class="st">"NTD_Alt"</span><span class="op">)</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DID_Female"</span>, <span class="st">"DID_Male"</span>, <span class="st">"TD"</span>, <span class="st">"NTD_Conv"</span>, <span class="st">"NTD_New"</span><span class="op">)</span>,</span>
 <span>  include_pre <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -108,7 +108,7 @@ implicit weight on each group is \(p_d \cdot \text{APO}_d\), giving
 higher-earning groups more influence.</p></dd>
 
 <dt><strong>gender_ineq</strong> (\(\Delta\rho_{\text{Agg}}\))</dt>
-<dd><p>Weighted average of <code>NTD_Alt</code> (estimand == "theta") across
+<dd><p>Weighted average of <code>NTD_New</code> (estimand == "theta") across
 treatment groups — the aggregate gender-inequality estimand.</p></dd>
 
 

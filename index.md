@@ -62,19 +62,4 @@ Install the latest development version from GitHub:
 
 # install.packages("remotes")
 remotes::install_github("dorleventer/childpen")
-#> Using GitHub PAT from the git credential store.
-#> Downloading GitHub repo dorleventer/childpen@HEAD
-#> 
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/Rtmp6T3gxH/remotes17a9dffa6abc/dorleventer-childpen-d4380b0/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T/Rtmp6T3gxH/remotes17a9dffa6abc/dorleventer-childpen-d4380b0/DESCRIPTION’
-#>   ─  preparing ‘childpen’:
-#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-#>   ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>   ─  building ‘childpen_0.0.0.9000.tar.gz’
-#>      
-#> 
-#> Warning in i.p(...): installation of package
-#> '/var/folders/ls/2dzknzwx5q1fdfh311w86m3h0000gn/T//Rtmp6T3gxH/file17a9d17564d6/childpen_0.0.0.9000.tar.gz'
-#> had non-zero exit status
 ```

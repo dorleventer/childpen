@@ -1,5 +1,8 @@
 # validation_tests
 
+> **Notation.** For symbol definitions, see the [simulation
+> vignette](https://dorleventer.github.io/childpen/articles/simulation.md).
+
 ## Overview
 
 The aim of this vignette is show how to perform correct validation tests
@@ -39,7 +42,9 @@ See the DID vignette
 ([link](https://dorleventer.github.io/childpen/articles/DID-estimation.html))
 for an explainer on the $`2\times2`$ comparisons in `childpen`. Recall
 that $`d`$ is the treatment group, $`a`$ is the target age, and
-$`d^\prime=a+1`$ is the closest not-yet-treated control group.
+$`d^\prime=a+1`$ is the closest not-yet-treated control group. Recall
+that the control group is $`d' = a + 1`$, the cohort whose first birth
+is one year after the target age.
 
 Assume that when presenting results, post-treatment, you report
 estimates for event times $`e=0,...,5`$. Then, for each treatment group
@@ -59,7 +64,7 @@ For completeness, the validation tests are:
 1.  Difference-in-differences (DID) estimates the average treatment
     effect (ATE) in pre-periods
 2.  Triple differences (TD) estimates the gender gap in the ATE in
-    pre-preiods
+    pre-periods
 3.  Normalized triple differences (NTD) estimates the gender gap in
     normalized effects in pre-periods
 
@@ -104,8 +109,8 @@ res |> tibble()
 #>  5    25    26    25          0 theta    DID_Female    -3.61e-1 3.58e-2 -4.31e-1
 #>  6    25    26    25          0 theta    DID_Male       5.51e-3 4.33e-2 -7.93e-2
 #>  7    25    26    25          0 ATE      TD            -2.89e+4 5.13e+3 -3.90e+4
-#>  8    25    26    25          0 theta    NTD           -3.66e-1 5.62e-2 -4.76e-1
-#>  9    25    26    25          0 theta    NTD_Alt       -3.96e-1 7.06e-2 -5.35e-1
+#>  8    25    26    25          0 theta    NTD_Conv      -3.66e-1 5.62e-2 -4.76e-1
+#>  9    25    26    25          0 theta    NTD_New       -3.96e-1 7.06e-2 -5.35e-1
 #> 10    25    26    25          0 APO      TD_Null        7.96e+4 5.10e+3  6.96e+4
 #> # ℹ 710 more rows
 #> # ℹ 7 more variables: ci_h <dbl>, t <dbl>, p <dbl>, n_female_treat <int>,
@@ -116,7 +121,9 @@ Focusing on $`d=25`$, lets examine pre-trends. We will start with DID of
 females. Generally, valid pre-trend validation tests would behave such
 that the confidence intervals include 0, and there is no obvious trend
 in the pre-period, and there is no systematic difference between control
-groups.
+groups. A valid pre-trend test shows point estimates near zero with
+confidence intervals covering zero and no systematic trend across
+pre-treatment event times.
 
 Note that in the plot below I define `control_offset` as the difference
 between the control group $`d^\prime`$ and the treatment group $`d`$.
@@ -188,7 +195,7 @@ Finally, can do this for all methods.
 res |> 
   filter(a < d, 
          estimand == "ATE" & (method == "DID_Female" | method == "DID_Male" | method == "TD") |
-           estimand == "theta" & method == "NTD") |> 
+           estimand == "theta" & method == "NTD_Conv") |>
   mutate(control_offset = dp - d, 
          control_offset = factor(control_offset)) |> 
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset, fill = control_offset)) +

@@ -1,16 +1,32 @@
 # NTD-identification
 
+> **Notation.** For symbol definitions used throughout these vignettes,
+> see the [simulation
+> vignette](https://dorleventer.github.io/childpen/articles/simulation.md).
+> For the formal identification results, see [Leventer
+> (2025)](https://arxiv.org/abs/2602.07486).
+
+> **Note.** This vignette uses a stylised DGP designed to make the NTD
+> identification assumption hold exactly by construction. The treatment
+> effects and earnings levels are chosen for pedagogical clarity, not to
+> reproduce the empirical magnitudes in the paper.
+
 ## Overview
 
 The aim of this vignette is to create intuition on the normalized triple
-differences (NTD) identification framework discussed in the paper. NTD
-is the underlying identification framework for normalized event studies,
-a common empirical strategy in the child penalty literature.
+differences (NTD) identification framework discussed in the paper.
+Specifically, it analyzes the `NTD_Conv` (conventional) estimand — the
+gender gap in normalised effects, $`\theta(f) - \theta(m)`$. For the
+alternative `NTD_New` estimand ($`\Delta\rho`$), see the [TD-NTD
+estimation
+vignette](https://dorleventer.github.io/childpen/articles/TD-NTD-estimation.md).
+NTD is the underlying identification framework for normalized event
+studies, a common empirical strategy in the child penalty literature.
 
 **This vignette demonstrates:**
 
-1.  The identification assumption in NTD
-2.  The bias that emerges from normalizing
+1.  The NTD identification assumption
+2.  The bias that emerges from normalizing under this assumption
 
 We’ll use a simple data generating process (DGP) to visualize
 everything. You are encouraged to play with the code to see how the bias
@@ -72,7 +88,7 @@ data <- bind_rows(
 
 ## Verifying the NTD Assumption Holds
 
-Recall, that NTD assumea that normalized violations of parallel trends
+Recall, that NTD assumes that normalized violations of parallel trends
 are equal across genders.
 
 Before visualizing the bias, let’s verify that this DGP actually
@@ -119,14 +135,15 @@ expand_grid(
 
 The parallel trends violations in levels are **not equal** across
 gender. Men’s violations are much larger because they have higher
-earnings. This violates both difference-in-differences (DID),
-whichassumes no violation, and triple differences (TD), which assumes
-equal violations in levels across genders.
+earnings. This violates both difference-in-differences (DID), which
+assumes no violation, and triple differences (TD), which assumes equal
+violations in levels across genders.
 
 ### Normalized parallel trends violation
 
-Now let’s normalize by dividing by the average potential earnings (APO)
-in the absence of treatment:
+Now let’s normalize by dividing by the average potential earnings (APO —
+average potential outcome, counterfactual earnings absent children) in
+the absence of treatment:
 
 ``` r
 
@@ -161,7 +178,7 @@ expand_grid(
 
 ![](NTD-identification_files/figure-html/verify_normalized_pt-1.png)
 
-**Taekaway:** The normalized parallel trends violations are identical
+**Takeaway:** The normalized parallel trends violations are identical
 for men and women at every age. This is exactly what the NTD
 identification assumption requires.
 
@@ -301,8 +318,8 @@ Let’s break down what DID gives us. First, in the above figure, we have:
 
 - DID APO (green line)
 - Truth APO (light blue line)
-- DID ATE (difference between green and light blue lines)
-- Truth ATE (difference between blue and light blue lines)
+- DID ATE (difference between observed earnings and green line)
+- Truth ATE (difference between observed earnings and light blue line)
 - PT Bias (difference between green and light blue lines)
 
 For each age, we can decompose:
@@ -333,7 +350,7 @@ summary_age <- early_true_age %>%
   left_join(early_did_age, by = c("female", "age")) %>%
   mutate(
     PT_bias = APO_did - APO_true,  # parallel trends bias
-    ATE_did = APO_obs - APO_did,  # DID ATE = truth + bias
+    ATE_did = APO_obs - APO_did,  # DID ATE = truth - PT bias
     gender  = factor(if_else(female == 1, "Women", "Men"), levels = c("Women", "Men"))
   )
 
@@ -375,8 +392,8 @@ ggplot(bar_age_df, aes(x = age, y = value, fill = component)) +
 
 ![](NTD-identification_files/figure-html/fig3_decomposition-1.png)
 
-This is not suprising: when counterfactual trends are not equal, DID
-does not identify the APO, and hence doesnt identify the ATE.
+This is not surprising: when counterfactual trends are not equal, DID
+does not identify the APO, and hence doesn’t identify the ATE.
 
 ## The Bias from Normalizing
 
@@ -392,6 +409,9 @@ This is meant to estimate the true ratio:
 \theta = \frac{\text{True ATE}}{\text{True APO}}
 ```
 
+where $`\theta = \text{ATE}/\text{APO}`$ is the normalised effect (the
+causal estimand we care about).
+
 ### Step 1: The PT Bias Component
 
 Note that
@@ -399,10 +419,9 @@ Note that
 \delta_{\theta} = \frac{\text{DID ATE}}{\text{DID APO}}=\frac{\text{TRUE ATE} - \text{PT Bias}}{\text{DID APO}}=\frac{\text{TRUE ATE}}{\text{DID APO}}-\frac{\text{PT Bias}}{\text{DID APO}}
 ```
 
-We will now analyze
-$`\frac{\text{TRUE ATE}}{\text{DID APO}}+\frac{\text{PT Bias}}{\text{DID APO}}`$.
-Since this is a sum, will go one by one. Start with
-$`-\frac{\text{PT Bias}}{\text{DID APO}}`$.
+We will now analyze each of the two terms:
+$`\frac{\text{TRUE ATE}}{\text{DID APO}}`$ and
+$`-\frac{\text{PT Bias}}{\text{DID APO}}`$. Start with the second term.
 
 ``` r
 
@@ -509,7 +528,7 @@ above figure) can be rewritten to reveal a multiplicative bias:
 
 where, recall, $`\theta = \text{True ATE} / \text{True APO}`$ is the
 causal estimand we are interested in. Or, at least, the gender gap in
-$`\theta`$.
+normalised effects, $`\theta(f) - \theta(m)`$.
 
 Adding and subtracting $`\theta`$, and using the definition of DID APO =
 True APO + PT Bias, we can re-write the above as
@@ -537,7 +556,7 @@ summary_age %>%
     gender, age = factor(age),
     measure = factor("Ratios", levels = c("APO","ATE","Ratios")),
     `ATE ratio` = ATE_true / APO_did,
-    `ATE ratio check` = (ATE_true / APO_true) + (ATE_true / APO_true) * (PT_bias / APO_did)
+    `ATE ratio check` = (ATE_true / APO_true) - (ATE_true / APO_true) * (PT_bias / APO_did)
   )
 #> # A tibble: 22 × 5
 #>    gender age   measure `ATE ratio` `ATE ratio check`
@@ -547,11 +566,11 @@ summary_age %>%
 #>  3 Men    22    Ratios       0                 0     
 #>  4 Men    23    Ratios       0                 0     
 #>  5 Men    24    Ratios       0                 0     
-#>  6 Men    25    Ratios      -0.0494           -0.0573
-#>  7 Men    26    Ratios      -0.0444           -0.0581
-#>  8 Men    27    Ratios      -0.0404           -0.0584
-#>  9 Men    28    Ratios      -0.0370           -0.0582
-#> 10 Men    29    Ratios      -0.0342           -0.0578
+#>  6 Men    25    Ratios      -0.0494           -0.0494
+#>  7 Men    26    Ratios      -0.0444           -0.0444
+#>  8 Men    27    Ratios      -0.0404           -0.0404
+#>  9 Men    28    Ratios      -0.0370           -0.0370
+#> 10 Men    29    Ratios      -0.0342           -0.0342
 #> # ℹ 12 more rows
 
 theta_df <- summary_age %>%

@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,6 +60,9 @@
 
     
     
+<blockquote>
+<p><strong>Notation.</strong> For symbol definitions, see the <a href="simulation.html">simulation vignette</a>.</p>
+</blockquote>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -105,7 +108,10 @@ is the treatment group,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
 is the target age, and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mi>′</mi></msup><mo>=</mo><mi>a</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d^\prime=a+1</annotation></semantics></math>
-is the closest not-yet-treated control group.</p>
+is the closest not-yet-treated control group. Recall that the control
+group is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mi>a</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d' = a + 1</annotation></semantics></math>,
+the cohort whose first birth is one year after the target age.</p>
 <p>Assume that when presenting results, post-treatment, you report
 estimates for event times
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>=</mo><mn>0</mn><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">e=0,...,5</annotation></semantics></math>.
@@ -127,7 +133,7 @@ as we show below.</p>
 <li>Difference-in-differences (DID) estimates the average treatment
 effect (ATE) in pre-periods</li>
 <li>Triple differences (TD) estimates the gender gap in the ATE in
-pre-preiods</li>
+pre-periods</li>
 <li>Normalized triple differences (NTD) estimates the gender gap in
 normalized effects in pre-periods</li>
 </ol>
@@ -170,8 +176,8 @@ above.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>    25    26    25          0 theta    DID_Female    -<span style="color: #BB0000;">3.61</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 3.58<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">4.31</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>    25    26    25          0 theta    DID_Male       5.51<span style="color: #949494;">e</span><span style="color: #BB0000;">-3</span> 4.33<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">7.93</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>    25    26    25          0 ATE      TD            -<span style="color: #BB0000;">2.89</span><span style="color: #949494;">e</span>+4 5.13<span style="color: #949494;">e</span>+3 -<span style="color: #BB0000;">3.90</span><span style="color: #949494;">e</span>+4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>    25    26    25          0 theta    NTD           -<span style="color: #BB0000;">3.66</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 5.62<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">4.76</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>    25    26    25          0 theta    NTD_Alt       -<span style="color: #BB0000;">3.96</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 7.06<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">5.35</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>    25    26    25          0 theta    NTD_Conv      -<span style="color: #BB0000;">3.66</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 5.62<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">4.76</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>    25    26    25          0 theta    NTD_New       -<span style="color: #BB0000;">3.96</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 7.06<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">5.35</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    25    26    25          0 APO      TD_Null        7.96<span style="color: #949494;">e</span>+4 5.10<span style="color: #949494;">e</span>+3  6.96<span style="color: #949494;">e</span>+4</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 710 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: ci_h &lt;dbl&gt;, t &lt;dbl&gt;, p &lt;dbl&gt;, n_female_treat &lt;int&gt;,</span></span></span>
@@ -181,7 +187,10 @@ above.</p>
 lets examine pre-trends. We will start with DID of females. Generally,
 valid pre-trend validation tests would behave such that the confidence
 intervals include 0, and there is no obvious trend in the pre-period,
-and there is no systematic difference between control groups.</p>
+and there is no systematic difference between control groups. A valid
+pre-trend test shows point estimates near zero with confidence intervals
+covering zero and no systematic trend across pre-treatment event
+times.</p>
 <p>Note that in the plot below I define <code>control_offset</code> as
 the difference between the control group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mi>′</mi></msup><annotation encoding="application/x-tex">d^\prime</annotation></semantics></math>
@@ -241,7 +250,7 @@ offsets on same plot.</p>
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">a</span> <span class="op">&lt;</span> <span class="va">d</span>, </span>
 <span>         <span class="va">estimand</span> <span class="op">==</span> <span class="st">"ATE"</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"DID_Female"</span> <span class="op">|</span> <span class="va">method</span> <span class="op">==</span> <span class="st">"DID_Male"</span> <span class="op">|</span> <span class="va">method</span> <span class="op">==</span> <span class="st">"TD"</span><span class="op">)</span> <span class="op">|</span></span>
-<span>           <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span> <span class="op">&amp;</span> <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>           <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span> <span class="op">&amp;</span> <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Conv"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>control_offset <span class="op">=</span> <span class="va">dp</span> <span class="op">-</span> <span class="va">d</span>, </span>
 <span>         control_offset <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">control_offset</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>, color <span class="op">=</span> <span class="va">control_offset</span>, fill <span class="op">=</span> <span class="va">control_offset</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>

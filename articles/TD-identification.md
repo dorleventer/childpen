@@ -1,5 +1,12 @@
 # TD-identification
 
+> **Notation.** For symbol definitions, see the [simulation
+> vignette](https://dorleventer.github.io/childpen/articles/simulation.md).
+
+> **Note.** This vignette uses a stylised DGP to illustrate the TD
+> identification assumption. Treatment effects are chosen for clarity,
+> not calibrated to empirical magnitudes.
+
 ## Overview
 
 The aim of this vignette is to create intuition on the triple
@@ -22,6 +29,9 @@ cohort comparison $`(d, d')`$ is:
 \gamma_{\text{PT}}(g) = \left[Y_0(a, g, d') - Y_0(d-1, g, d')\right] - \left[Y_0(a, g, d) - Y_0(d-1, g, d)\right]
 ```
 
+where $`Y_0(a,g,d)`$ is the counterfactual earnings (potential outcome
+under no treatment, $`Y_a(\infty)`$ in our notation).
+
 The TD identifying assumption is:
 $`\gamma_{\text{PT}}(\text{female}) = \gamma_{\text{PT}}(\text{male})`$.
 
@@ -30,7 +40,7 @@ $`\gamma_{\text{PT}}(\text{female}) = \gamma_{\text{PT}}(\text{male})`$.
 1.  The TD identifying assumption and when it holds
 2.  How TD recovers the true gender gap in ATE when the assumption holds
 3.  What goes wrong when the assumption fails
-4.  Why NTD’s assumption is weaker than TD’s
+4.  Why NTD_Conv’s assumption is weaker than TD’s
 
 We’ll use a simple DGP to visualize everything. You are encouraged to
 play with the code to see how results change under different parameters.
@@ -460,10 +470,11 @@ anchor).
 
 ------------------------------------------------------------------------
 
-## Connection to NTD
+## Connection to NTD_Conv
 
-NTD’s identifying assumption is **weaker** than TD’s. NTD requires only
-that the *normalized* PT violations are equal across gender:
+NTD_Conv’s identifying assumption is **weaker** than TD’s. NTD_Conv
+requires only that the *normalized* PT violations are equal across
+gender:
 
 ``` math
 \frac{\gamma_{\text{PT}}(\text{female})}{\text{APO}(\text{female})} = \frac{\gamma_{\text{PT}}(\text{male})}{\text{APO}(\text{male})}
@@ -472,7 +483,8 @@ that the *normalized* PT violations are equal across gender:
 This allows the levels violations to differ across gender — as long as
 the differences are proportional to each gender’s earnings level. In the
 broken DGP above, if men’s larger slope bonus were exactly proportional
-to their higher earnings, NTD would still be valid while TD would fail.
+to their higher earnings, NTD_Conv would still be valid while TD would
+fail.
 
 In short:
 
@@ -480,8 +492,8 @@ In short:
 |------------|---------------------------------------------------------|
 | DID        | No PT violation within any gender                       |
 | **TD**     | PT violations in levels are equal across gender         |
-| NTD        | PT violations normalized by APO are equal across gender |
+| NTD_Conv   | PT violations normalized by APO are equal across gender |
 
-NTD is the most permissive of the three. See the `NTD-identification`
-vignette for a detailed walkthrough of NTD and the multiplicative bias
-that arises from normalization.
+NTD_Conv is the most permissive of the three. See the
+`NTD-identification` vignette for a detailed walkthrough of NTD_Conv and
+the multiplicative bias that arises from normalization.

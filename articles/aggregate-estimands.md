@@ -1,5 +1,8 @@
 # aggregate-estimands
 
+> **Notation.** For symbol definitions, see the [simulation
+> vignette](https://dorleventer.github.io/childpen/articles/simulation.md).
+
 ## Overview
 
 [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md)
@@ -15,16 +18,22 @@ distribution of first-birth ages?*
 Three aggregate estimands are available:
 
 - **avg_of_ratios** ($`\theta_{\text{Agg},1}`$): weighted average of
-  each group’s normalized effect $`\theta(g,d,d+e)`$. Preferred because
-  normalization happens within each group before aggregation, so
-  baseline differences do not inflate the average.
+  each group’s normalized effect $`\theta(g,d,d+e)`$. Formally,
+  $`\theta_{\text{Agg},1}(g,e) = \sum_d w_d \cdot \theta(g,d,d+e)`$,
+  where $`w_d`$ are population weights normalised to sum to one.
+  Preferred because normalization happens within each group before
+  aggregation, so baseline differences do not inflate the average.
 - **ratio_of_avgs** ($`\theta_{\text{Agg},2}`$): ratio of the
-  weighted-average ATE to the weighted-average APO. This implicitly
-  up-weights high-earning groups (because a given ATE is a smaller share
-  of a larger APO), so it differs from $`\theta_{\text{Agg},1}`$ when
-  earnings vary across groups.
+  weighted-average ATE to the weighted-average APO. Formally,
+  $`\theta_{\text{Agg},2}(g,e) = \sum_d w_d \cdot \text{ATE}(g,d,d+e) \;/\; \sum_d w_d \cdot \text{APO}(g,d,d+e)`$.
+  This implicitly up-weights high-earning groups (their larger APO
+  contributes proportionally more to the pooled denominator), so it
+  differs from $`\theta_{\text{Agg},1}`$ when earnings vary across
+  groups.
 - **gender_ineq** ($`\Delta\rho_{\text{Agg}}`$): weighted average of
-  `NTD_Alt` theta estimates — the aggregate gender-inequality penalty.
+  `NTD_New` theta estimates — the aggregate gender-inequality penalty.
+  Formally,
+  $`\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)`$.
 
 ## Simulate data
 
@@ -94,13 +103,13 @@ out due to `max_age`/`min_age` bounds.
 
 ## Plot aggregate results
 
-Plot the `avg_of_ratios` aggregate for the NTD method across event
-times, with 95% confidence ribbons.
+Plot the `avg_of_ratios` aggregate for the `NTD_Conv` method across
+event times, with 95% confidence ribbons.
 
 ``` r
 
 agg |>
-  filter(agg_type == "avg_of_ratios", method == "NTD", estimand == "theta") |>
+  filter(agg_type == "avg_of_ratios", method == "NTD_Conv", estimand == "theta") |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h)) +
   geom_ribbon(fill = "steelblue", alpha = 0.25, color = NA) +
   geom_line(color = "steelblue") +
@@ -109,7 +118,7 @@ agg |>
   labs(
     x     = "Event time",
     y     = expression(theta[Agg * "," * 1] ~ "(avg of ratios)"),
-    title = "NTD aggregate: avg_of_ratios"
+    title = "NTD_Conv aggregate: avg_of_ratios"
   )
 ```
 
@@ -198,7 +207,7 @@ bind_rows(
 ) |>
   filter(
     agg_type == "avg_of_ratios",
-    method   == "NTD",
+    method   == "NTD_Conv",
     estimand == "theta"
   ) |>
   ggplot(aes(
@@ -216,7 +225,7 @@ bind_rows(
   labs(
     x     = "Event time",
     y     = expression(theta[Agg * "," * 1]),
-    title = "Aggregate NTD estimate under different first-birth distributions",
+    title = "Aggregate NTD_Conv estimate under different first-birth distributions",
     color = "Population weights",
     fill  = "Population weights"
   ) +
@@ -233,7 +242,7 @@ depends on the first-birth distribution.
 ## Gender inequality aggregate
 
 The `gender_ineq` aggregate ($`\Delta\rho_{\text{Agg}}`$) is the
-weighted average of `NTD_Alt` theta estimates across treatment groups.
+weighted average of `NTD_New` theta estimates across treatment groups.
 It measures how parenthood affects the female-to-male earnings ratio:
 negative values indicate that mothers bear a larger proportional penalty
 — the female-to-male earnings ratio is lower post-birth than the
@@ -242,7 +251,7 @@ counterfactual ratio.
 ``` r
 
 agg |>
-  filter(agg_type == "gender_ineq", estimand == "theta", method == "NTD_Alt") |>
+  filter(agg_type == "gender_ineq", estimand == "theta", method == "NTD_New") |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h)) +
   geom_ribbon(fill = "tomato", alpha = 0.25, color = NA) +
   geom_line(color = "tomato") +
@@ -251,12 +260,12 @@ agg |>
   labs(
     x     = "Event time",
     y     = expression(Delta * rho[Agg]),
-    title = "Gender inequality aggregate (NTD_Alt, avg of ratios)"
+    title = "Gender inequality aggregate (NTD_New, avg of ratios)"
   )
 ```
 
 ![](aggregate-estimands_files/figure-html/gender_ineq-1.png)
 
-A flat, positive profile indicates a persistent gender gap; a declining
-profile suggests the gap narrows as parents age away from the birth
-event.
+A flat, negative profile indicates a persistent parenthood-driven gender
+gap; values closer to zero at later event times suggest the gap narrows
+as parents age away from the birth event.

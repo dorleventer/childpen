@@ -38,7 +38,25 @@ first childbirth. `Y_inf` represents $`Y_{i,a}(\infty)`$, that is the
 potential earnings under never having a child. `Y` represents observed
 earnings, equal to potential earnings under having a child at $`D`$.
 
-### How as the DGP generated
+#### Notation
+
+Throughout the package vignettes we use the following symbols (see
+[Leventer 2025, §2–3](https://arxiv.org/abs/2602.07486) for formal
+definitions):
+
+| Symbol | Definition |
+|----|----|
+| $`G \in \{f,m\}`$ | Gender (female, male) |
+| $`D`$ | Age at first childbirth (treatment timing) |
+| $`Y_{i,a}(d)`$ | Potential earnings of individual $`i`$ at age $`a`$ if first birth occurs at age $`d`$ |
+| $`Y_{i,a}(\infty)`$ | Potential earnings under never having a child |
+| $`\text{APO}(g,d,a) = \mathbb{E}[Y_a(\infty) \mid G=g, D=d]`$ | Average counterfactual earnings |
+| $`\text{ATE}(g,d,a) = \mathbb{E}[Y_a(d) - Y_a(\infty) \mid G=g, D=d]`$ | Average treatment effect of parenthood |
+| $`\theta(g,d,a) = \text{ATE}/\text{APO}`$ | Normalised effect (proportional earnings change) |
+| $`\rho(d,a) = \text{APO}(f,d,a) / \text{APO}(m,d,a)`$ | Gender earnings ratio (counterfactual) |
+| $`\Delta\rho(d,a)`$ | Effect of parenthood on the gender earnings ratio |
+
+### How was the DGP generated
 
 The DGP is supposed to serve as a realistic DGP for simulations studies
 of child penalty applications.
@@ -46,7 +64,7 @@ of child penalty applications.
 The goal is to construct life-cycle earning profiles for the potential
 earnings under the observed treatment and under the counterfactual
 treatment of never having a child. The problem is that identifying these
-life-cycle patterns for counterfactual earnings is diffcult. So the DGP
+life-cycle patterns for counterfactual earnings is difficult. So the DGP
 does some simplifying assumptions, to construct a process which creates
 life-cycle earnings, which are motivated by the empirical data.
 
@@ -134,6 +152,9 @@ sim_data |>
 ![](simulation_files/figure-html/counterfactual_earnings-1.png)
 
 By construction, counterfactual gender inequality kicks in from age 28.
+The ratio $`\rho`$ is the female-to-male counterfactual earnings ratio.
+Values below 1 indicate that women would earn less than men even absent
+children.
 
 ``` r
 

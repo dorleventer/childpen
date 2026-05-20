@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,14 +60,17 @@
 
     
     
+<blockquote>
+<p><strong>Notation.</strong> For symbol definitions, see the <a href="simulation.html">simulation vignette</a>.</p>
+</blockquote>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>This vignette covers the gender-gap estimands returned by
 <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code>: <strong>TD</strong>,
-<strong>NTD</strong>, and <strong>NTD_Alt</strong>. For the underlying
-gender-specific DID estimands (DID_Female, DID_Male) that these build
-on, see the DID-estimation vignette.</p>
+<strong>NTD_Conv</strong>, and <strong>NTD_New</strong>. For the
+underlying gender-specific DID estimands (DID_Female, DID_Male) that
+these build on, see the DID-estimation vignette.</p>
 <p>All three estimands compare the female and male child-penalty
 estimates to characterise the <em>gender earnings gap</em> induced by
 parenthood.</p>
@@ -76,27 +79,33 @@ parenthood.</p>
 \mathrm{TD}(d, d^\prime, a) = \delta_{\mathrm{ATE}}(f, d, d^\prime, a) - \delta_{\mathrm{ATE}}(m, d, d^\prime, a).
 </annotation></semantics></math> It answers: how much larger (in
 currency units) is the earnings drop for mothers than for fathers?</p>
-<p><strong>NTD</strong> (Normalised Treatment Difference) is the gap in
-normalised effects — what the literature calls the conventional child
-penalty:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">D</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
-\mathrm{NTD}(d, d^\prime, a) = \delta_{\theta}(f, d, d^\prime, a) - \delta_{\theta}(m, d, d^\prime, a).
+<p><strong>NTD_Conv</strong> (Conventional Normalised Treatment
+Difference) is the gap in normalised effects — what the literature calls
+the conventional child penalty:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">_</mi><mi mathvariant="normal">C</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">v</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\mathrm{NTD\_Conv}(d, d^\prime, a) = \delta_{\theta}(f, d, d^\prime, a) - \delta_{\theta}(m, d, d^\prime, a).
 </annotation></semantics></math> It answers: how much larger is the
 proportional earnings drop for mothers relative to their own
-counterfactual, compared to that of fathers relative to theirs?</p>
-<p><strong>NTD_Alt</strong> (Alternative Normalised Treatment
-Difference) is a new estimand from the paper. Instead of differencing
-two gender-specific normalised effects, it measures the effect of
-parenthood on the <em>gender earnings ratio</em> directly:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">_</mi><mi mathvariant="normal">A</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">t</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>∣</mo><mi>f</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow><mrow><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>∣</mo><mi>m</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow></mfrac><mo>−</mo><mfrac><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>=</mo><mi mathvariant="normal">Δ</mi><mi>ρ</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
-\mathrm{NTD\_Alt}(d, d^\prime, a) = \frac{\mathbb{E}[Y_a \mid f, D=d]}{\mathbb{E}[Y_a \mid m, D=d]} - \frac{\delta_{\mathrm{APO}}(f, d, d^\prime, a)}{\delta_{\mathrm{APO}}(m, d, d^\prime, a)} = \Delta\rho.
+counterfactual, compared to that of fathers relative to theirs? Here
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mi>θ</mi></msub><annotation encoding="application/x-tex">\delta_\theta</annotation></semantics></math>
+is defined in the <a href="DID-estimation.html">DID estimation
+vignette</a>.</p>
+<p>The gender earnings ratio is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d,d',a) = \text{APO}(f,d,d',a) / \text{APO}(m,d,d',a)</annotation></semantics></math>.
+NTD_New measures how parenthood changes this ratio:</p>
+<p><strong>NTD_New</strong> (New Normalised Treatment Difference) is a
+new estimand from the paper. Instead of differencing two gender-specific
+normalised effects, it measures the effect of parenthood on the
+<em>gender earnings ratio</em> directly:
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">_</mi><mi mathvariant="normal">N</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">w</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>∣</mo><mi>f</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow><mrow><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>∣</mo><mi>m</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow></mfrac><mo>−</mo><mfrac><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>=</mo><mi mathvariant="normal">Δ</mi><mi>ρ</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\mathrm{NTD\_New}(d, d^\prime, a) = \frac{\mathbb{E}[Y_a \mid f, D=d]}{\mathbb{E}[Y_a \mid m, D=d]} - \frac{\delta_{\mathrm{APO}}(f, d, d^\prime, a)}{\delta_{\mathrm{APO}}(m, d, d^\prime, a)} = \Delta\rho.
 </annotation></semantics></math> It answers: by how much does having a
 child reduce the female-to-male earnings ratio, measured against what
 the ratio would have been without children?</p>
-<p>NTD and NTD_Alt differ because NTD normalises each gender’s effect by
-its own counterfactual and then differences, whereas NTD_Alt normalises
-the <em>joint</em> gender ratio. When the male child penalty is
-non-negligible, the two estimands diverge.</p>
+<p>NTD_Conv and NTD_New differ because NTD_Conv normalises each gender’s
+effect by its own counterfactual and then differences, whereas NTD_New
+normalises the <em>joint</em> gender ratio. When the male child penalty
+is non-negligible, the two estimands diverge.</p>
 </div>
 <div class="section level2">
 <h2 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
@@ -160,18 +169,18 @@ estimand against its true value.</p>
 <span>         ci_l <span class="op">=</span> <span class="cn">NA_real_</span>, ci_h <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
 <span>         truth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># NTD truth: theta(female) - theta(male)</span></span>
-<span><span class="va">truth_ntd</span> <span class="op">&lt;-</span> <span class="va">PO_tidy</span> <span class="op">|&gt;</span></span>
+<span><span class="co"># NTD_Conv truth: theta(female) - theta(male)</span></span>
+<span><span class="va">truth_ntd_conv</span> <span class="op">&lt;-</span> <span class="va">PO_tidy</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">female</span>, <span class="va">d</span>, <span class="va">event_time</span>, <span class="va">theta</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">female</span>, values_from <span class="op">=</span> <span class="va">theta</span>, names_prefix <span class="op">=</span> <span class="st">"th_f"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">rename</span><span class="op">(</span>th_female <span class="op">=</span> <span class="va">th_f1</span>, th_male <span class="op">=</span> <span class="va">th_f0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>est <span class="op">=</span> <span class="va">th_female</span> <span class="op">-</span> <span class="va">th_male</span>,</span>
-<span>         method <span class="op">=</span> <span class="st">"NTD"</span>, estimand <span class="op">=</span> <span class="st">"theta"</span>,</span>
+<span>         method <span class="op">=</span> <span class="st">"NTD_Conv"</span>, estimand <span class="op">=</span> <span class="st">"theta"</span>,</span>
 <span>         ci_l <span class="op">=</span> <span class="cn">NA_real_</span>, ci_h <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
 <span>         truth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># NTD_Alt truth: Y(f)/Y(m) - APO(f)/APO(m)</span></span>
-<span><span class="va">truth_ntd_alt</span> <span class="op">&lt;-</span> <span class="va">PO_tidy</span> <span class="op">|&gt;</span></span>
+<span><span class="co"># NTD_New truth: Y(f)/Y(m) - APO(f)/APO(m)</span></span>
+<span><span class="va">truth_ntd_new</span> <span class="op">&lt;-</span> <span class="va">PO_tidy</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">female</span>, <span class="va">d</span>, <span class="va">event_time</span>, <span class="va">APO_obs</span>, <span class="va">APO</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">female</span>,</span>
 <span>              values_from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">APO_obs</span>, <span class="va">APO</span><span class="op">)</span>,</span>
@@ -179,11 +188,11 @@ estimand against its true value.</p>
 <span>  <span class="fu">rename</span><span class="op">(</span>Y_female <span class="op">=</span> <span class="va">APO_obs_f1</span>, Y_male <span class="op">=</span> <span class="va">APO_obs_f0</span>,</span>
 <span>         APO_female <span class="op">=</span> <span class="va">APO_f1</span>, APO_male <span class="op">=</span> <span class="va">APO_f0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>est <span class="op">=</span> <span class="op">(</span><span class="va">Y_female</span> <span class="op">/</span> <span class="va">Y_male</span><span class="op">)</span> <span class="op">-</span> <span class="op">(</span><span class="va">APO_female</span> <span class="op">/</span> <span class="va">APO_male</span><span class="op">)</span>,</span>
-<span>         method <span class="op">=</span> <span class="st">"NTD_Alt"</span>, estimand <span class="op">=</span> <span class="st">"theta"</span>,</span>
+<span>         method <span class="op">=</span> <span class="st">"NTD_New"</span>, estimand <span class="op">=</span> <span class="st">"theta"</span>,</span>
 <span>         ci_l <span class="op">=</span> <span class="cn">NA_real_</span>, ci_h <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
 <span>         truth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">truth_all</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_td</span>, <span class="va">truth_ntd</span>, <span class="va">truth_ntd_alt</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span><span class="va">truth_all</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_td</span>, <span class="va">truth_ntd_conv</span>, <span class="va">truth_ntd_new</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">method</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span>, <span class="va">truth</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -218,9 +227,9 @@ intervals widening for later groups (smaller sample sizes in each
 cell).</p>
 </div>
 <div class="section level2">
-<h2 id="ntd-results">NTD results<a class="anchor" aria-label="anchor" href="#ntd-results"></a>
+<h2 id="ntd_conv-results">NTD_Conv results<a class="anchor" aria-label="anchor" href="#ntd_conv-results"></a>
 </h2>
-<p>NTD measures the gap in <em>normalised</em> effects:
+<p>NTD_Conv measures the gap in <em>normalised</em> effects:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_\theta(f) - \delta_\theta(m)</annotation></semantics></math>.
 This is the conventional child penalty reported in most of the
 literature. A value of
@@ -229,14 +238,14 @@ means mothers’ earnings fall 20 percentage points more (relative to
 their own counterfactual) than fathers’ earnings do relative to
 theirs.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plot_ntd</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">plot_ntd_conv</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Conv"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>truth <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">method</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span>, <span class="va">truth</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_all</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">truth</span>, <span class="st">"Truth"</span>, <span class="st">"NTD"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_all</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Conv"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">truth</span>, <span class="st">"Truth"</span>, <span class="st">"NTD_Conv"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">plot_ntd</span> <span class="op">|&gt;</span></span>
+<span><span class="va">plot_ntd_conv</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>,</span>
 <span>             color <span class="op">=</span> <span class="va">label</span>, fill <span class="op">=</span> <span class="va">label</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -244,34 +253,34 @@ theirs.</p>
 <span>  <span class="fu">facet_grid</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">estimand</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>,</span>
 <span>       color <span class="op">=</span> <span class="st">"Method"</span>, fill <span class="op">=</span> <span class="st">"Method"</span>,</span>
-<span>       title <span class="op">=</span> <span class="st">"NTD: theta(female) - theta(male)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>       title <span class="op">=</span> <span class="st">"NTD_Conv: theta(female) - theta(male)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="TD-NTD-estimation_files/figure-html/ntd_plot-1.png" class="r-plt" alt="" width="768"></p>
-<p>Because the simulation sets the male child penalty to zero, NTD and
-TD tell a similar story here. They diverge when fathers also experience
-earnings effects.</p>
+<p><img src="TD-NTD-estimation_files/figure-html/ntd_conv_plot-1.png" class="r-plt" alt="" width="768"></p>
+<p>Because the simulation sets the male child penalty to zero, NTD_Conv
+and TD tell a similar story here. They diverge when fathers also
+experience earnings effects.</p>
 </div>
 <div class="section level2">
-<h2 id="ntd_alt-results">NTD_Alt results<a class="anchor" aria-label="anchor" href="#ntd_alt-results"></a>
+<h2 id="ntd_new-results">NTD_New results<a class="anchor" aria-label="anchor" href="#ntd_new-results"></a>
 </h2>
-<p>NTD_Alt measures the effect of parenthood on the female-to-male
+<p>NTD_New measures the effect of parenthood on the female-to-male
 earnings <em>ratio</em>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi></mrow><annotation encoding="application/x-tex">\Delta\rho</annotation></semantics></math>.
-Unlike NTD, it does not normalise each gender separately; instead it
-asks by how much the gender pay ratio shifts when the couple has a
+Unlike NTD_Conv, it does not normalise each gender separately; instead
+it asks by how much the gender pay ratio shifts when the couple has a
 child. A value of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.15</mn></mrow><annotation encoding="application/x-tex">-0.15</annotation></semantics></math>
 means the female-to-male earnings ratio falls by 15 percentage points
 due to parenthood.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plot_ntd_alt</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Alt"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">plot_ntd_new</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_New"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>truth <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">method</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span>, <span class="va">truth</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_all</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Alt"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">truth</span>, <span class="st">"Truth"</span>, <span class="st">"NTD_Alt"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_all</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_New"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">truth</span>, <span class="st">"Truth"</span>, <span class="st">"NTD_New"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">plot_ntd_alt</span> <span class="op">|&gt;</span></span>
+<span><span class="va">plot_ntd_new</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>,</span>
 <span>             color <span class="op">=</span> <span class="va">label</span>, fill <span class="op">=</span> <span class="va">label</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -279,37 +288,38 @@ due to parenthood.</p>
 <span>  <span class="fu">facet_grid</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">estimand</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>,</span>
 <span>       color <span class="op">=</span> <span class="st">"Method"</span>, fill <span class="op">=</span> <span class="st">"Method"</span>,</span>
-<span>       title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"NTD_Alt: "</span>, <span class="va">Delta</span>, <span class="va">rho</span>, <span class="st">" (effect on gender earnings ratio)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>       title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"NTD_New: "</span>, <span class="va">Delta</span>, <span class="va">rho</span>, <span class="st">" (effect on gender earnings ratio)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="TD-NTD-estimation_files/figure-html/ntd_alt_plot-1.png" class="r-plt" alt="" width="768"></p>
-<p>NTD_Alt is most informative when male and female earnings levels
+<p><img src="TD-NTD-estimation_files/figure-html/ntd_new_plot-1.png" class="r-plt" alt="" width="768"></p>
+<p>NTD_New is most informative when male and female earnings levels
 differ substantially, because the ratio is sensitive to the baseline
 gender gap as well as to the child penalty itself.</p>
 </div>
 <div class="section level2">
-<h2 id="bias-corrected-estimators-td_null-and-ntd_null">Bias-corrected estimators: TD_Null and NTD_Null<a class="anchor" aria-label="anchor" href="#bias-corrected-estimators-td_null-and-ntd_null"></a>
+<h2 id="bias-corrected-estimators-td_null-and-ntd_conv_null">Bias-corrected estimators: TD_Null and NTD_Conv_Null<a class="anchor" aria-label="anchor" href="#bias-corrected-estimators-td_null-and-ntd_conv_null"></a>
 </h2>
 <p>A common assumption in the child-penalty literature is that
 <em>fathers are unaffected</em> by having a child,
 i.e. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mi>m</mi></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\theta_m = 0</annotation></semantics></math>.
-<code>childpen</code> provides bias-corrected versions of TD and NTD
-that impose this restriction, labelled <code>TD_Null</code> and
-<code>NTD_Null</code>.</p>
+<code>childpen</code> provides bias-corrected versions of TD and
+NTD_Conv that impose this restriction, labelled <code>TD_Null</code> and
+<code>NTD_Conv_Null</code>.</p>
 <p>Under
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mi>m</mi></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\theta_m = 0</annotation></semantics></math>,
 the male ATE is absorbed into the female counterfactual. Formally,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mtext mathvariant="normal">Null</mtext></msubsup><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta^{\text{Null}}_{\mathrm{APO}}(f) = \delta_{\mathrm{APO}}(f) + \delta_{\mathrm{ATE}}(m)</annotation></semantics></math>.
 These null-restricted estimands act as a robustness check: if the
-uncorrected TD/NTD and their null-restricted counterparts agree, the
-results are insensitive to whether fathers are actually affected.</p>
+uncorrected TD/NTD_Conv and their null-restricted counterparts agree,
+the results are insensitive to whether fathers are actually
+affected.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Combine TD and TD_Null</span></span>
 <span><span class="va">plot_null</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TD"</span>, <span class="st">"TD_Null"</span>, <span class="st">"NTD"</span>, <span class="st">"NTD_Null"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TD"</span>, <span class="st">"TD_Null"</span>, <span class="st">"NTD_Conv"</span>, <span class="st">"NTD_Conv_Null"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">method</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>family <span class="op">=</span> <span class="fu">case_when</span><span class="op">(</span></span>
-<span>    <span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TD"</span>, <span class="st">"TD_Null"</span><span class="op">)</span>   <span class="op">~</span> <span class="st">"TD family"</span>,</span>
-<span>    <span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NTD"</span>, <span class="st">"NTD_Null"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"NTD family"</span></span>
+<span>    <span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TD"</span>, <span class="st">"TD_Null"</span><span class="op">)</span>               <span class="op">~</span> <span class="st">"TD family"</span>,</span>
+<span>    <span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NTD_Conv"</span>, <span class="st">"NTD_Conv_Null"</span><span class="op">)</span>   <span class="op">~</span> <span class="st">"NTD_Conv family"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">plot_null</span> <span class="op">|&gt;</span></span>
@@ -327,7 +337,7 @@ results are insensitive to whether fathers are actually affected.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">plot_null</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span>, <span class="va">family</span> <span class="op">==</span> <span class="st">"NTD family"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span>, <span class="va">family</span> <span class="op">==</span> <span class="st">"NTD_Conv family"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>,</span>
 <span>             color <span class="op">=</span> <span class="va">method</span>, fill <span class="op">=</span> <span class="va">method</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -335,14 +345,14 @@ results are insensitive to whether fathers are actually affected.</p>
 <span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span> <span class="va">d</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>,</span>
 <span>       color <span class="op">=</span> <span class="st">"Method"</span>, fill <span class="op">=</span> <span class="st">"Method"</span>,</span>
-<span>       title <span class="op">=</span> <span class="st">"NTD vs NTD_Null (theta estimand)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>       title <span class="op">=</span> <span class="st">"NTD_Conv vs NTD_Conv_Null (theta estimand)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="TD-NTD-estimation_files/figure-html/null_plot-2.png" class="r-plt" alt="" width="768"></p>
 <p>In this simulation the male child penalty is zero by construction, so
-TD and TD_Null (and NTD and NTD_Null) are numerically similar. In
-empirical applications where fathers exhibit a modest earnings response,
-the null-restricted versions will differ and the gap provides a sense of
-how much the assumption matters.</p>
+TD and TD_Null (and NTD_Conv and NTD_Conv_Null) are numerically similar.
+In empirical applications where fathers exhibit a modest earnings
+response, the null-restricted versions will differ and the gap provides
+a sense of how much the assumption matters.</p>
 </div>
 <div class="section level2">
 <h2 id="when-to-use-which-estimand">When to use which estimand<a class="anchor" aria-label="anchor" href="#when-to-use-which-estimand"></a>
@@ -366,34 +376,35 @@ how much the assumption matters.</p>
 units across genders.</td>
 </tr>
 <tr class="even">
-<td><strong>NTD</strong></td>
+<td><strong>NTD_Conv</strong></td>
 <td>Proportional</td>
-<td>You want the conventional child penalty; each gender is normalised
-by its own counterfactual.</td>
+<td>Conventional child penalty — directly comparable to the existing
+literature (Kleven et al. 2019).</td>
 </tr>
 <tr class="odd">
-<td><strong>NTD_Alt</strong></td>
+<td><strong>NTD_New</strong></td>
 <td>Ratio change</td>
-<td>You care about the gender earnings ratio and how parenthood shifts
-it.</td>
+<td>Effect on gender earnings ratio — identified under NTD without
+additional assumptions (Theorem 2 in the paper).</td>
 </tr>
 <tr class="even">
 <td>
-<strong>TD_Null</strong> / <strong>NTD_Null</strong>
+<strong>TD_Null</strong> / <strong>NTD_Conv_Null</strong>
 </td>
-<td>Same as TD / NTD</td>
+<td>Same as TD / NTD_Conv</td>
 <td>Robustness check under the assumption that fathers are
 unaffected.</td>
 </tr>
 </tbody>
 </table>
-<p>For most applied work, <strong>NTD</strong> is the directly
+<p>For most applied work, <strong>NTD_Conv</strong> is the directly
 comparable quantity to the existing child-penalty literature.
-<strong>NTD_Alt</strong> is preferable when the research question is
-about gender inequality in earnings rather than individual career costs.
-<strong>TD</strong> is useful when policy interest is in absolute
-earnings gaps. The null-corrected variants are always worth reporting
-alongside the main estimates as a sensitivity analysis.</p>
+<strong>NTD_New</strong> is the correctly identified estimand under the
+NTD assumption (see the <a href="https://arxiv.org/abs/2602.07486" class="external-link">paper</a>, Theorem 2) and is
+preferable when the research question is about gender inequality in
+earnings. <strong>TD</strong> is useful when policy interest is in
+absolute earnings gaps. The null-corrected variants are always worth
+reporting alongside the main estimates as a sensitivity analysis.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

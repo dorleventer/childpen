@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,9 +97,69 @@ that is the potential earnings under never having a child.
 <code>Y</code> represents observed earnings, equal to potential earnings
 under having a child at
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math>.</p>
+<div class="section level4">
+<h4 id="notation">Notation<a class="anchor" aria-label="anchor" href="#notation"></a>
+</h4>
+<p>Throughout the package vignettes we use the following symbols (see <a href="https://arxiv.org/abs/2602.07486" class="external-link">Leventer 2025, §2–3</a> for
+formal definitions):</p>
+<table class="table">
+<colgroup>
+<col width="42%">
+<col width="57%">
+</colgroup>
+<thead><tr class="header">
+<th>Symbol</th>
+<th>Definition</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mi>f</mi><mo>,</mo><mi>m</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">G \in \{f,m\}</annotation></semantics></math></td>
+<td>Gender (female, male)</td>
+</tr>
+<tr class="even">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math></td>
+<td>Age at first childbirth (treatment timing)</td>
+</tr>
+<tr class="odd">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_{i,a}(d)</annotation></semantics></math></td>
+<td>Potential earnings of individual
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+at age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+if first birth occurs at age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+</td>
+</tr>
+<tr class="even">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_{i,a}(\infty)</annotation></semantics></math></td>
+<td>Potential earnings under never having a child</td>
+</tr>
+<tr class="odd">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\text{APO}(g,d,a) = \mathbb{E}[Y_a(\infty) \mid G=g, D=d]</annotation></semantics></math></td>
+<td>Average counterfactual earnings</td>
+</tr>
+<tr class="even">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">ATE</mtext><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>Y</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\text{ATE}(g,d,a) = \mathbb{E}[Y_a(d) - Y_a(\infty) \mid G=g, D=d]</annotation></semantics></math></td>
+<td>Average treatment effect of parenthood</td>
+</tr>
+<tr class="odd">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mtext mathvariant="normal">ATE</mtext><mi>/</mi><mtext mathvariant="normal">APO</mtext></mrow><annotation encoding="application/x-tex">\theta(g,d,a) = \text{ATE}/\text{APO}</annotation></semantics></math></td>
+<td>Normalised effect (proportional earnings change)</td>
+</tr>
+<tr class="even">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d,a) = \text{APO}(f,d,a) / \text{APO}(m,d,a)</annotation></semantics></math></td>
+<td>Gender earnings ratio (counterfactual)</td>
+</tr>
+<tr class="odd">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Delta\rho(d,a)</annotation></semantics></math></td>
+<td>Effect of parenthood on the gender earnings ratio</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section level3">
-<h3 id="how-as-the-dgp-generated">How as the DGP generated<a class="anchor" aria-label="anchor" href="#how-as-the-dgp-generated"></a>
+<h3 id="how-was-the-dgp-generated">How was the DGP generated<a class="anchor" aria-label="anchor" href="#how-was-the-dgp-generated"></a>
 </h3>
 <p>The DGP is supposed to serve as a realistic DGP for simulations
 studies of child penalty applications.</p>
@@ -107,7 +167,7 @@ studies of child penalty applications.</p>
 potential earnings under the observed treatment and under the
 counterfactual treatment of never having a child. The problem is that
 identifying these life-cycle patterns for counterfactual earnings is
-diffcult. So the DGP does some simplifying assumptions, to construct a
+difficult. So the DGP does some simplifying assumptions, to construct a
 process which creates life-cycle earnings, which are motivated by the
 empirical data.</p>
 <ol style="list-style-type: decimal">
@@ -183,7 +243,10 @@ capital)</li>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Mean Earnings (Y / Y_inf)"</span>, color <span class="op">=</span> <span class="st">"Type of Earnings"</span>, subtitle <span class="op">=</span> <span class="st">"Facets = Treatment groups"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="simulation_files/figure-html/counterfactual_earnings-1.png" class="r-plt" alt="" width="720"></p>
 <p>By construction, counterfactual gender inequality kicks in from age
-28.</p>
+28. The ratio
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>
+is the female-to-male counterfactual earnings ratio. Values below 1
+indicate that women would earn less than men even absent children.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_data</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">D</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">30</span>, <span class="fl">35</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>

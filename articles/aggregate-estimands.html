@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,6 +60,9 @@
 
     
     
+<blockquote>
+<p><strong>Notation.</strong> For symbol definitions, see the <a href="simulation.html">simulation vignette</a>.</p>
+</blockquote>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -79,21 +82,29 @@ distribution of first-birth ages?</em></p>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mrow><mtext mathvariant="normal">Agg</mtext><mo>,</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\theta_{\text{Agg},1}</annotation></semantics></math>):
 weighted average of each group’s normalized effect
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(g,d,d+e)</annotation></semantics></math>.
-Preferred because normalization happens within each group before
-aggregation, so baseline differences do not inflate the average.</li>
+Formally,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mrow><mtext mathvariant="normal">Agg</mtext><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><mo>⋅</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta_{\text{Agg},1}(g,e) = \sum_d w_d \cdot \theta(g,d,d+e)</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>w</mi><mi>d</mi></msub><annotation encoding="application/x-tex">w_d</annotation></semantics></math>
+are population weights normalised to sum to one. Preferred because
+normalization happens within each group before aggregation, so baseline
+differences do not inflate the average.</li>
 <li>
 <strong>ratio_of_avgs</strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mrow><mtext mathvariant="normal">Agg</mtext><mo>,</mo><mn>2</mn></mrow></msub><annotation encoding="application/x-tex">\theta_{\text{Agg},2}</annotation></semantics></math>):
-ratio of the weighted-average ATE to the weighted-average APO. This
-implicitly up-weights high-earning groups (because a given ATE is a
-smaller share of a larger APO), so it differs from
+ratio of the weighted-average ATE to the weighted-average APO. Formally,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mrow><mtext mathvariant="normal">Agg</mtext><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><mo>⋅</mo><mtext mathvariant="normal">ATE</mtext><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.278em"></mspace><mi>/</mi><mspace width="0.278em"></mspace><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><mo>⋅</mo><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta_{\text{Agg},2}(g,e) = \sum_d w_d \cdot \text{ATE}(g,d,d+e) \;/\; \sum_d w_d \cdot \text{APO}(g,d,d+e)</annotation></semantics></math>.
+This implicitly up-weights high-earning groups (their larger APO
+contributes proportionally more to the pooled denominator), so it
+differs from
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mrow><mtext mathvariant="normal">Agg</mtext><mo>,</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\theta_{\text{Agg},1}</annotation></semantics></math>
 when earnings vary across groups.</li>
 <li>
 <strong>gender_ineq</strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>ρ</mi><mtext mathvariant="normal">Agg</mtext></msub></mrow><annotation encoding="application/x-tex">\Delta\rho_{\text{Agg}}</annotation></semantics></math>):
-weighted average of <code>NTD_Alt</code> theta estimates — the aggregate
-gender-inequality penalty.</li>
+weighted average of <code>NTD_New</code> theta estimates — the aggregate
+gender-inequality penalty. Formally,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>ρ</mi><mtext mathvariant="normal">Agg</mtext></msub><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><mo>⋅</mo><mi mathvariant="normal">Δ</mi><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)</annotation></semantics></math>.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -159,11 +170,12 @@ out due to <code>max_age</code>/<code>min_age</code> bounds.</p>
 <div class="section level2">
 <h2 id="plot-aggregate-results">Plot aggregate results<a class="anchor" aria-label="anchor" href="#plot-aggregate-results"></a>
 </h2>
-<p>Plot the <code>avg_of_ratios</code> aggregate for the NTD method
-across event times, with 95% confidence ribbons.</p>
+<p>Plot the <code>avg_of_ratios</code> aggregate for the
+<code>NTD_Conv</code> method across event times, with 95% confidence
+ribbons.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"avg_of_ratios"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"avg_of_ratios"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Conv"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_ribbon</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"steelblue"</span>, alpha <span class="op">=</span> <span class="fl">0.25</span>, color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -172,7 +184,7 @@ across event times, with 95% confidence ribbons.</p>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
 <span>    x     <span class="op">=</span> <span class="st">"Event time"</span>,</span>
 <span>    y     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">theta</span><span class="op">[</span><span class="va">Agg</span> <span class="op">*</span> <span class="st">","</span> <span class="op">*</span> <span class="fl">1</span><span class="op">]</span> <span class="op">~</span> <span class="st">"(avg of ratios)"</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"NTD aggregate: avg_of_ratios"</span></span>
+<span>    title <span class="op">=</span> <span class="st">"NTD_Conv aggregate: avg_of_ratios"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="aggregate-estimands_files/figure-html/plot_avg_of_ratios-1.png" class="r-plt" alt="" width="768"></p>
 </div>
@@ -257,7 +269,7 @@ births concentrate at older ages.</li>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
 <span>    <span class="va">agg_type</span> <span class="op">==</span> <span class="st">"avg_of_ratios"</span>,</span>
-<span>    <span class="va">method</span>   <span class="op">==</span> <span class="st">"NTD"</span>,</span>
+<span>    <span class="va">method</span>   <span class="op">==</span> <span class="st">"NTD_Conv"</span>,</span>
 <span>    <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
@@ -275,7 +287,7 @@ births concentrate at older ages.</li>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
 <span>    x     <span class="op">=</span> <span class="st">"Event time"</span>,</span>
 <span>    y     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">theta</span><span class="op">[</span><span class="va">Agg</span> <span class="op">*</span> <span class="st">","</span> <span class="op">*</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"Aggregate NTD estimate under different first-birth distributions"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Aggregate NTD_Conv estimate under different first-birth distributions"</span>,</span>
 <span>    color <span class="op">=</span> <span class="st">"Population weights"</span>,</span>
 <span>    fill  <span class="op">=</span> <span class="st">"Population weights"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -291,14 +303,14 @@ depends on the first-birth distribution.</p>
 </h2>
 <p>The <code>gender_ineq</code> aggregate
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>ρ</mi><mtext mathvariant="normal">Agg</mtext></msub></mrow><annotation encoding="application/x-tex">\Delta\rho_{\text{Agg}}</annotation></semantics></math>)
-is the weighted average of <code>NTD_Alt</code> theta estimates across
+is the weighted average of <code>NTD_New</code> theta estimates across
 treatment groups. It measures how parenthood affects the female-to-male
 earnings ratio: negative values indicate that mothers bear a larger
 proportional penalty — the female-to-male earnings ratio is lower
 post-birth than the counterfactual ratio.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"gender_ineq"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Alt"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"gender_ineq"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_New"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_ribbon</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"tomato"</span>, alpha <span class="op">=</span> <span class="fl">0.25</span>, color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"tomato"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -307,12 +319,12 @@ post-birth than the counterfactual ratio.</p>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
 <span>    x     <span class="op">=</span> <span class="st">"Event time"</span>,</span>
 <span>    y     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">Delta</span> <span class="op">*</span> <span class="va">rho</span><span class="op">[</span><span class="va">Agg</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"Gender inequality aggregate (NTD_Alt, avg of ratios)"</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Gender inequality aggregate (NTD_New, avg of ratios)"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="aggregate-estimands_files/figure-html/gender_ineq-1.png" class="r-plt" alt="" width="768"></p>
-<p>A flat, positive profile indicates a persistent gender gap; a
-declining profile suggests the gap narrows as parents age away from the
-birth event.</p>
+<p>A flat, negative profile indicates a persistent parenthood-driven
+gender gap; values closer to zero at later event times suggest the gap
+narrows as parents age away from the birth event.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

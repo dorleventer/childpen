@@ -64,8 +64,8 @@ A `data.frame` with one row per estimand/method combination:
 
 - `estimand` — one of `"APO"`, `"ATE"`, `"theta"`
 
-- `method` — one of `"DID_Female"`, `"DID_Male"`, `"TD"`, `"NTD"`,
-  `"NTD_Alt"`, `"TD_Null"`, `"NTD_Null"`
+- `method` — one of `"DID_Female"`, `"DID_Male"`, `"TD"`, `"NTD_Conv"`,
+  `"NTD_New"`, `"TD_Null"`, `"NTD_Conv_Null"`
 
 - `est` — estimate
 
@@ -91,13 +91,13 @@ From these, the cross-gender contrasts are formed:
 
 - **TD** \\= \mathrm{ATE}(F) - \mathrm{ATE}(M)\\
 
-- **NTD** \\= \theta(F) - \theta(M)\\
+- **NTD_Conv** \\= \theta(F) - \theta(M)\\
 
-- **NTD Alt** \\= \frac{Y(a,F,d)}{Y(a,M,d)} -
+- **NTD_New** \\= \frac{Y(a,F,d)}{Y(a,M,d)} -
   \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}\\
 
-- **TD Null** and **NTD Null** variants are defined analogously under a
-  null-effect-for-fathers bias-correction.
+- **TD Null** and **NTD_Conv_Null** variants are defined analogously
+  under a null-effect-for-fathers bias-correction.
 
 Internally, influence functions for all pieces are written into
 temporary columns of a `data.table` via `compute_mean_if()`, and

@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Unreleased version">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,6 +60,14 @@
 
     
     
+<blockquote>
+<p><strong>Notation.</strong> For symbol definitions, see the <a href="simulation.html">simulation vignette</a>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Note.</strong> This vignette uses a stylised DGP to
+illustrate the TD identification assumption. Treatment effects are
+chosen for clarity, not calibrated to empirical magnitudes.</p>
+</blockquote>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -78,6 +86,11 @@ and cohort comparison
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(d, d')</annotation></semantics></math>
 is:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mtext mathvariant="normal">PT</mtext></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>Y</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>g</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>Y</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>g</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo stretchy="false" form="postfix">)</mo><mo stretchy="true" form="postfix">]</mo></mrow><mo>−</mo><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>Y</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>Y</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="true" form="postfix">]</mo></mrow></mrow><annotation encoding="application/x-tex">\gamma_{\text{PT}}(g) = \left[Y_0(a, g, d') - Y_0(d-1, g, d')\right] - \left[Y_0(a, g, d) - Y_0(d-1, g, d)\right]</annotation></semantics></math></p>
+<p>where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_0(a,g,d)</annotation></semantics></math>
+is the counterfactual earnings (potential outcome under no treatment,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_a(\infty)</annotation></semantics></math>
+in our notation).</p>
 <p>The TD identifying assumption is:
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mtext mathvariant="normal">PT</mtext></msub><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">female</mtext><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>γ</mi><mtext mathvariant="normal">PT</mtext></msub><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">male</mtext><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\gamma_{\text{PT}}(\text{female}) = \gamma_{\text{PT}}(\text{male})</annotation></semantics></math>.</p>
 <p><strong>This vignette demonstrates:</strong></p>
@@ -86,7 +99,7 @@ is:</p>
 <li>How TD recovers the true gender gap in ATE when the assumption
 holds</li>
 <li>What goes wrong when the assumption fails</li>
-<li>Why NTD’s assumption is weaker than TD’s</li>
+<li>Why NTD_Conv’s assumption is weaker than TD’s</li>
 </ol>
 <p>We’ll use a simple DGP to visualize everything. You are encouraged to
 play with the code to see how results change under different
@@ -527,17 +540,17 @@ anchor).</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="connection-to-ntd">Connection to NTD<a class="anchor" aria-label="anchor" href="#connection-to-ntd"></a>
+<h2 id="connection-to-ntd_conv">Connection to NTD_Conv<a class="anchor" aria-label="anchor" href="#connection-to-ntd_conv"></a>
 </h2>
-<p>NTD’s identifying assumption is <strong>weaker</strong> than TD’s.
-NTD requires only that the <em>normalized</em> PT violations are equal
-across gender:</p>
+<p>NTD_Conv’s identifying assumption is <strong>weaker</strong> than
+TD’s. NTD_Conv requires only that the <em>normalized</em> PT violations
+are equal across gender:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><msub><mi>γ</mi><mtext mathvariant="normal">PT</mtext></msub><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">female</mtext><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">female</mtext><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>=</mo><mfrac><mrow><msub><mi>γ</mi><mtext mathvariant="normal">PT</mtext></msub><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">male</mtext><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">male</mtext><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{\gamma_{\text{PT}}(\text{female})}{\text{APO}(\text{female})} = \frac{\gamma_{\text{PT}}(\text{male})}{\text{APO}(\text{male})}</annotation></semantics></math></p>
 <p>This allows the levels violations to differ across gender — as long
 as the differences are proportional to each gender’s earnings level. In
 the broken DGP above, if men’s larger slope bonus were exactly
-proportional to their higher earnings, NTD would still be valid while TD
-would fail.</p>
+proportional to their higher earnings, NTD_Conv would still be valid
+while TD would fail.</p>
 <p>In short:</p>
 <table class="table">
 <thead><tr class="header">
@@ -554,14 +567,14 @@ would fail.</p>
 <td>PT violations in levels are equal across gender</td>
 </tr>
 <tr class="odd">
-<td>NTD</td>
+<td>NTD_Conv</td>
 <td>PT violations normalized by APO are equal across gender</td>
 </tr>
 </tbody>
 </table>
-<p>NTD is the most permissive of the three. See the
+<p>NTD_Conv is the most permissive of the three. See the
 <code>NTD-identification</code> vignette for a detailed walkthrough of
-NTD and the multiplicative bias that arises from normalization.</p>
+NTD_Conv and the multiplicative bias that arises from normalization.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
