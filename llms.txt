@@ -1,14 +1,11 @@
 # childpen
 
-**childpen: Child Penalties Estimators & Simulation Tools**
-
-> This package accompanies my job market paper:  
-> **Leventer, Dor (2025).** *Identification of Child Penalties.*  
-> [arXiv:2602.07486](https://arxiv.org/abs/2602.07486)
+> This package accompanies my job market paper: **Leventer, Dor
+> (2025).** *Identification of Child Penalties.*
 
 - 🧪 DID / TD / NTD estimators (single & multiple treatment groups)
-- 🧰 Simulation tools  
-- 💻 **GitHub:** <https://github.com/dorleventer/childpen>  
+- 📄 **Paper:** [arXiv:2602.07486](https://arxiv.org/abs/2602.07486)
+- 💻 **GitHub:** <https://github.com/dorleventer/childpen>
 - 🌐 **Website:** <https://dorleventer.github.io/childpen>
 
 ------------------------------------------------------------------------
@@ -31,25 +28,19 @@
 
 **Explainers**
 
-**Data simulation** —
-[vignette](https://dorleventer.github.io/childpen/articles/simulation.html)
+**Estimation (DID, TD, NTD)** —
+[vignette](https://dorleventer.github.io/childpen/articles/estimation.html)
 
-**Intuition for NTD bias** —
+**NTD identification** —
 [vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
 
-**DID estimation** —
-[vignette](https://dorleventer.github.io/childpen/articles/DID-estimation.html)
-
-**TD bias** —
+**TD identification** —
 [vignette](https://dorleventer.github.io/childpen/articles/TD-identification.html)
-
-**TD / NTD estimation** —
-[vignette](https://dorleventer.github.io/childpen/articles/TD-NTD-estimation.html)
 
 **Validation tests** —
 [vignette](https://dorleventer.github.io/childpen/articles/validation_tests.html)
 
-**Aggregate estimates** —
+**Aggregate estimands** —
 [vignette](https://dorleventer.github.io/childpen/articles/aggregate-estimands.html)
 
 ------------------------------------------------------------------------
