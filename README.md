@@ -11,15 +11,12 @@
 MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 <!-- badges: end -->
 
-**childpen: Child Penalties Estimators & Simulation Tools**
-
-> This package accompanies my job market paper:  
-> **Leventer, Dor (2025).** *Identification of Child Penalties.*  
-> [arXiv:2602.07486](https://arxiv.org/abs/2602.07486)
+> This package accompanies my job market paper: **Leventer, Dor
+> (2025).** *Identification of Child Penalties.*
 
 - 🧪 DID / TD / NTD estimators (single & multiple treatment groups)
-- 🧰 Simulation tools  
-- 💻 **GitHub:** <https://github.com/dorleventer/childpen>  
+- 📄 **Paper:** [arXiv:2602.07486](https://arxiv.org/abs/2602.07486)
+- 💻 **GitHub:** <https://github.com/dorleventer/childpen>
 - 🌐 **Website:** <https://dorleventer.github.io/childpen>
 
 ------------------------------------------------------------------------
@@ -36,19 +33,15 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 **Explainers**
 
-- [x] **Data simulation** —
-  [vignette](https://dorleventer.github.io/childpen/articles/simulation.html)
-- [x] **Intuition for NTD bias** —
+- [x] **Estimation (DID, TD, NTD)** —
+  [vignette](https://dorleventer.github.io/childpen/articles/estimation.html)
+- [x] **NTD identification** —
   [vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
-- [x] **DID estimation** —
-  [vignette](https://dorleventer.github.io/childpen/articles/DID-estimation.html)
-- [x] **TD bias** —
+- [x] **TD identification** —
   [vignette](https://dorleventer.github.io/childpen/articles/TD-identification.html)
-- [x] **TD / NTD estimation** —
-  [vignette](https://dorleventer.github.io/childpen/articles/TD-NTD-estimation.html)
 - [x] **Validation tests** —
   [vignette](https://dorleventer.github.io/childpen/articles/validation_tests.html)
-- [x] **Aggregate estimates** —
+- [x] **Aggregate estimands** —
   [vignette](https://dorleventer.github.io/childpen/articles/aggregate-estimands.html)
 
 ------------------------------------------------------------------------
