@@ -15,7 +15,7 @@
 #'     implicit weight on each group is \eqn{p_d \cdot \text{APO}_d}, giving
 #'     higher-earning groups more influence.}
 #'   \item{\strong{gender_ineq} (\eqn{\Delta\rho_{\text{Agg}}})}{
-#'     Weighted average of \code{NTD_Alt} (estimand == "theta") across
+#'     Weighted average of \code{NTD_New} (estimand == "theta") across
 #'     treatment groups — the aggregate gender-inequality estimand.}
 #' }
 #'
@@ -86,7 +86,7 @@
 #' }
 aggregate_estimands <- function(results,
                                 weights = NULL,
-                                methods = c("DID_Female", "DID_Male", "TD", "NTD", "NTD_Alt"),
+                                methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New"),
                                 include_pre = FALSE) {
 
   # ---- Input checks -------------------------------------------------------
@@ -249,18 +249,18 @@ aggregate_estimands <- function(results,
   }
 
   # ---- 3. gender_ineq (Delta_rho_Agg) -------------------------------------
-  # Weighted average of NTD_Alt theta estimates across d.
+  # Weighted average of NTD_New theta estimates across d.
 
-  ntd_alt_rows <- DT[method == "NTD_Alt" & estimand == "theta"]
+  ntd_new_rows <- DT[method == "NTD_New" & estimand == "theta"]
 
   agg3_list <- list()
-  if (nrow(ntd_alt_rows) > 0L) {
-    cells3 <- unique(ntd_alt_rows[, .(event_time)])
+  if (nrow(ntd_new_rows) > 0L) {
+    cells3 <- unique(ntd_new_rows[, .(event_time)])
 
     for (i in seq_len(nrow(cells3))) {
       et  <- cells3$event_time[i]
 
-      sub <- ntd_alt_rows[event_time == et]
+      sub <- ntd_new_rows[event_time == et]
       w   <- .norm_weights(sub$d, weights)
 
       est_agg <- sum(w * sub$est)
@@ -269,7 +269,7 @@ aggregate_estimands <- function(results,
       agg3_list[[i]] <- data.table(
         event_time = et,
         estimand   = "theta",
-        method     = "NTD_Alt",
+        method     = "NTD_New",
         agg_type   = "gender_ineq",
         est        = est_agg,
         se         = se_agg,

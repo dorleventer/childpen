@@ -28,9 +28,9 @@
 #' From these, the cross-gender contrasts are formed:
 #' \itemize{
 #'   \item \strong{TD} \eqn{= \mathrm{ATE}(F) - \mathrm{ATE}(M)}
-#'   \item \strong{NTD} \eqn{= \theta(F) - \theta(M)}
-#'   \item \strong{NTD Alt} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}}
-#'   \item \strong{TD Null} and \strong{NTD Null} variants are defined analogously
+#'   \item \strong{NTD_Conv} \eqn{= \theta(F) - \theta(M)}
+#'   \item \strong{NTD_New} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}}
+#'   \item \strong{TD Null} and \strong{NTD_Conv_Null} variants are defined analogously
 #'         under a null-effect-for-fathers bias-correction.
 #' }
 #'
@@ -42,7 +42,7 @@
 #' \itemize{
 #'   \item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}
 #'   \item \code{method} — one of \code{"DID_Female"}, \code{"DID_Male"}, \code{"TD"},
-#'         \code{"NTD"}, \code{"NTD_Alt"}, \code{"TD_Null"}, \code{"NTD_Null"}
+#'         \code{"NTD_Conv"}, \code{"NTD_New"}, \code{"TD_Null"}, \code{"NTD_Conv_Null"}
 #'   \item \code{est} — estimate
 #'   \item \code{se} — cluster-robust standard error
 #'   \item \code{n_female_treat}, \code{n_female_control},
@@ -113,16 +113,16 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
   DT[, if_td := if_ate_f - if_ate_m]
   td <- ate_f - ate_m
 
-  # NTD: Theta(f) - Theta(m)
-  DT[, if_ntd := if_theta_f - if_theta_m]
-  ntd <- theta_f - theta_m
+  # NTD_Conv: Theta(f) - Theta(m)
+  DT[, if_ntd_conv := if_theta_f - if_theta_m]
+  ntd_conv <- theta_f - theta_m
 
-  # NTD_alt: Y(f)/Y(m) - APO(f)/APO(m)
+  # NTD_New: Y(f)/Y(m) - APO(f)/APO(m)
   DT[, if_ratio_y := (1/means$y_a_m_d) * if_y_a_f_d - (means$y_a_f_d/means$y_a_m_d^2) * if_y_a_m_d]
   DT[, if_ratio_apo := (1/apo_m) * if_apo_f - (apo_f/apo_m^2) * if_apo_m]
-  DT[, if_ntd_alt := if_ratio_y - if_ratio_apo]
+  DT[, if_ntd_new := if_ratio_y - if_ratio_apo]
 
-  ntd_alt <- (means$y_a_f_d / means$y_a_m_d) - (apo_f / apo_m)
+  ntd_new <- (means$y_a_f_d / means$y_a_m_d) - (apo_f / apo_m)
 
   # TD Null estimands
   DT[, if_td_null_apo := if_apo_f + if_ate_m]
@@ -134,28 +134,28 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
   DT[, if_td_null_theta := (1/td_null_apo) * if_td_null_ate - (td_null_ate/td_null_apo^2) * if_td_null_apo]
   td_null_theta <- td_null_ate / td_null_apo
 
-  # NTD Null estimands
-  ntd_null_apo <- (apo_f * means$y_a_m_d) / apo_m
-  DT[, if_ntd_null_apo := (means$y_a_m_d/apo_m) * if_apo_f +
+  # NTD_Conv_Null estimands
+  ntd_conv_null_apo <- (apo_f * means$y_a_m_d) / apo_m
+  DT[, if_ntd_conv_null_apo := (means$y_a_m_d/apo_m) * if_apo_f +
        (apo_f/apo_m) * if_y_a_m_d -
-       (ntd_null_apo/apo_m) * if_apo_m]
+       (ntd_conv_null_apo/apo_m) * if_apo_m]
 
-  DT[, if_ntd_null_ate := if_y_a_f_d - if_ntd_null_apo]
-  ntd_null_ate <- means$y_a_f_d - ntd_null_apo
+  DT[, if_ntd_conv_null_ate := if_y_a_f_d - if_ntd_conv_null_apo]
+  ntd_conv_null_ate <- means$y_a_f_d - ntd_conv_null_apo
 
-  DT[, if_ntd_null_theta := (1/ntd_null_apo) * if_ntd_null_ate - (ntd_null_ate/ntd_null_apo^2) * if_ntd_null_apo]
-  ntd_null_theta <- ntd_null_ate / ntd_null_apo
+  DT[, if_ntd_conv_null_theta := (1/ntd_conv_null_apo) * if_ntd_conv_null_ate - (ntd_conv_null_ate/ntd_conv_null_apo^2) * if_ntd_conv_null_apo]
+  ntd_conv_null_theta <- ntd_conv_null_ate / ntd_conv_null_apo
 
   # Compute all SEs upfront
   ses <- c(
     se_cluster(DT, "if_apo_f"), se_cluster(DT, "if_apo_m"),
     se_cluster(DT, "if_ate_f"), se_cluster(DT, "if_ate_m"),
     se_cluster(DT, "if_theta_f"), se_cluster(DT, "if_theta_m"),
-    se_cluster(DT, "if_td"), se_cluster(DT, "if_ntd"), se_cluster(DT, "if_ntd_alt"),
+    se_cluster(DT, "if_td"), se_cluster(DT, "if_ntd_conv"), se_cluster(DT, "if_ntd_new"),
     se_cluster(DT, "if_td_null_apo"), se_cluster(DT, "if_td_null_ate"),
     se_cluster(DT, "if_td_null_theta"),
-    se_cluster(DT, "if_ntd_null_apo"), se_cluster(DT, "if_ntd_null_ate"),
-    se_cluster(DT, "if_ntd_null_theta")
+    se_cluster(DT, "if_ntd_conv_null_apo"), se_cluster(DT, "if_ntd_conv_null_ate"),
+    se_cluster(DT, "if_ntd_conv_null_theta")
   )
 
   # Compute sample sizes
@@ -166,9 +166,9 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
 
   # Create result data.frame (fast!)
   estimates <- c(apo_f, apo_m, ate_f, ate_m, theta_f, theta_m,
-                 td, ntd, ntd_alt,
+                 td, ntd_conv, ntd_new,
                  td_null_apo, td_null_ate, td_null_theta,
-                 ntd_null_apo, ntd_null_ate, ntd_null_theta)
+                 ntd_conv_null_apo, ntd_conv_null_ate, ntd_conv_null_theta)
 
   result <- data.frame(
     estimand = c("APO", "APO", "ATE", "ATE", "theta", "theta",
@@ -176,9 +176,9 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
                  "APO", "ATE", "theta",
                  "APO", "ATE", "theta"),
     method = c("DID_Female", "DID_Male", "DID_Female", "DID_Male", "DID_Female", "DID_Male",
-               "TD", "NTD", "NTD_Alt",
+               "TD", "NTD_Conv", "NTD_New",
                "TD_Null", "TD_Null", "TD_Null",
-               "NTD_Null", "NTD_Null", "NTD_Null"),
+               "NTD_Conv_Null", "NTD_Conv_Null", "NTD_Conv_Null"),
     est = estimates,
     se = ses,
     n_female_treat = n_female_d,

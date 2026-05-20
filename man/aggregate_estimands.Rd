@@ -7,7 +7,7 @@
 aggregate_estimands(
   results,
   weights = NULL,
-  methods = c("DID_Female", "DID_Male", "TD", "NTD", "NTD_Alt"),
+  methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New"),
   include_pre = FALSE
 )
 }
@@ -62,7 +62,7 @@ Ratio of the weighted-average ATE to the weighted-average APO.  The
 implicit weight on each group is \eqn{p_d \cdot \text{APO}_d}, giving
 higher-earning groups more influence.}
 \item{\strong{gender_ineq} (\eqn{\Delta\rho_{\text{Agg}}})}{
-Weighted average of \code{NTD_Alt} (estimand == "theta") across
+Weighted average of \code{NTD_New} (estimand == "theta") across
 treatment groups — the aggregate gender-inequality estimand.}
 }
 

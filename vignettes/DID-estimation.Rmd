@@ -23,7 +23,7 @@ theme_set(theme_bw(base_size = 12))
 
 ## Overview
 
-The aim of this vignette is show how to estimate difference in differences (DID) using closest-not-yet-treated control groups using `childpen`.
+The aim of this vignette is show how to estimate difference in differences (DID) using closest-not-yet-treated control groups using `childpen`. For notation used throughout these vignettes, see the [simulation vignette](simulation.html).
 
 ## Simulate data
 
@@ -55,7 +55,9 @@ Finally, in the child penalty application, many studies consider a normalized ta
 \]
 All $\delta$s are descriptive estimands. Descriptive, in the sense that the do not include potential outcomes, only observable data. Estimands, in the sense that they include population expectations.
 
-The equivalent estimators simply replace population estimands with sample means. Since all estimators are combinations of simple averages, it is easy to construct influence functions with which variances can be estimated. For more details, see the estimation appendix in the paper. 
+These are *descriptive* estimands: they use only observable population means, with no causal interpretation. The control group $d' = a + 1$ is the cohort whose first birth occurs one year after the target age $a$.
+
+The equivalent estimators simply replace population estimands with sample means. Since all estimators are combinations of simple averages, it is easy to construct influence functions with which variances can be estimated. For more details, see the [estimation appendix](https://arxiv.org/abs/2602.07486) (Appendix G). 
 
 ## Multiple treatment group analysis
 

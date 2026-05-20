@@ -160,9 +160,9 @@ test_that("aggregate_estimands methods argument filters output correctly", {
   res <- make_multi_result()
   agg <- aggregate_estimands(res, methods = "DID_Female")
   # Only DID_Female-related agg types should appear (avg_of_ratios, ratio_of_avgs)
-  expect_true(all(agg$method %in% c("DID_Female", "NTD_Alt")))
-  # NTD, NTD_Alt (as its own method row via gender_ineq) should not appear unless
-  # NTD_Alt is passed; only the DID_Female slice of avg_of_ratios and ratio_of_avgs remains
+  expect_true(all(agg$method %in% c("DID_Female", "NTD_New")))
+  # NTD_Conv, NTD_New (as its own method row via gender_ineq) should not appear unless
+  # NTD_New is passed; only the DID_Female slice of avg_of_ratios and ratio_of_avgs remains
   agg_ntd <- agg[agg$agg_type %in% c("avg_of_ratios", "ratio_of_avgs"), ]
   expect_true(all(agg_ntd$method == "DID_Female"))
 })

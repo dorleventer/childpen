@@ -62,8 +62,8 @@ test_that("single_treatment_group_analysis estimand and method values are correc
 
   expect_true(all(res$estimand %in% c("APO", "ATE", "theta")))
   expect_true(all(res$method   %in%
-                    c("DID_Female", "DID_Male", "TD", "NTD", "NTD_Alt",
-                      "TD_Null", "NTD_Null")))
+                    c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New",
+                      "TD_Null", "NTD_Conv_Null")))
 })
 
 test_that("single_treatment_group_analysis produces positive standard errors", {

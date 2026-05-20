@@ -42,7 +42,7 @@ A \code{data.frame} with one row per estimand/method combination:
 \itemize{
 \item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}
 \item \code{method} — one of \code{"DID_Female"}, \code{"DID_Male"}, \code{"TD"},
-\code{"NTD"}, \code{"NTD_Alt"}, \code{"TD_Null"}, \code{"NTD_Null"}
+\code{"NTD_Conv"}, \code{"NTD_New"}, \code{"TD_Null"}, \code{"NTD_Conv_Null"}
 \item \code{est} — estimate
 \item \code{se} — cluster-robust standard error
 \item \code{n_female_treat}, \code{n_female_control},
@@ -64,9 +64,9 @@ The core components are:
 From these, the cross-gender contrasts are formed:
 \itemize{
 \item \strong{TD} \eqn{= \mathrm{ATE}(F) - \mathrm{ATE}(M)}
-\item \strong{NTD} \eqn{= \theta(F) - \theta(M)}
-\item \strong{NTD Alt} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}}
-\item \strong{TD Null} and \strong{NTD Null} variants are defined analogously
+\item \strong{NTD_Conv} \eqn{= \theta(F) - \theta(M)}
+\item \strong{NTD_New} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}}
+\item \strong{TD Null} and \strong{NTD_Conv_Null} variants are defined analogously
 under a null-effect-for-fathers bias-correction.
 }
 
