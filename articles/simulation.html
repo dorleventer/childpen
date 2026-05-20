@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="simulation">
 </head>
@@ -79,27 +79,20 @@ the DGP.</p>
 <span></span>
 <span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">100000</span></span>
 <span><span class="va">sim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="va">N</span><span class="op">)</span></span>
-<span><span class="va">sim_data</span> <span class="op">|&gt;</span> <span class="fu">tibble</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2,100,000 × 6</span></span></span>
-<span><span class="co">#&gt;       id female   age     D   Y_inf       Y</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>     1      1    20    37  <span style="text-decoration: underline;">12</span>181.  <span style="text-decoration: underline;">12</span>181.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>     1      1    21    37  <span style="text-decoration: underline;">15</span>585.  <span style="text-decoration: underline;">15</span>585.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>     1      1    22    37 <span style="text-decoration: underline;">129</span>489. <span style="text-decoration: underline;">129</span>489.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>     1      1    23    37  <span style="text-decoration: underline;">74</span>298.  <span style="text-decoration: underline;">74</span>298.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>     1      1    24    37 <span style="text-decoration: underline;">113</span>396. <span style="text-decoration: underline;">113</span>396.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     1      1    25    37 <span style="text-decoration: underline;">101</span>516. <span style="text-decoration: underline;">101</span>516.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     1      1    26    37 <span style="text-decoration: underline;">100</span>317. <span style="text-decoration: underline;">100</span>317.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     1      1    27    37 <span style="text-decoration: underline;">428</span>608. <span style="text-decoration: underline;">428</span>608.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     1      1    28    37 <span style="text-decoration: underline;">526</span>744. <span style="text-decoration: underline;">526</span>744.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     1      1    29    37 <span style="text-decoration: underline;">210</span>384. <span style="text-decoration: underline;">210</span>384.</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2,099,990 more rows</span></span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   id female age  D  Y_inf      Y</span></span>
+<span><span class="co">#&gt; 1  1      1  20 25  17173  17173</span></span>
+<span><span class="co">#&gt; 2  1      1  21 25  14355  14355</span></span>
+<span><span class="co">#&gt; 3  1      1  22 25  14666  14666</span></span>
+<span><span class="co">#&gt; 4  1      1  23 25  63052  63052</span></span>
+<span><span class="co">#&gt; 5  1      1  24 25 137095 137095</span></span>
+<span><span class="co">#&gt; 6  1      1  25 25 110479 112114</span></span></code></pre></div>
 <p>The <code>id</code> column is the individual id. <code>female</code>
 is binary indicator, = 1 indicates females and = 0 indicates males.
 <code>age</code> indicates the age at which the earnings are observed.
 <code>D</code> is the treatment variable — age at first childbirth.
 <code>Y_inf</code> represents
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>∞</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">Y_{i,a}(\infty)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_{i,a}(\infty)</annotation></semantics></math>,
 that is the potential earnings under never having a child.
 <code>Y</code> represents observed earnings, equal to potential earnings
 under having a child at
@@ -143,22 +136,22 @@ treatment groups include 25-40.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">age</span> <span class="op">==</span> <span class="va">D</span>, <span class="va">female</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">count</span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     D    n</span></span>
-<span><span class="co">#&gt; 1  25 3111</span></span>
-<span><span class="co">#&gt; 2  26 3055</span></span>
-<span><span class="co">#&gt; 3  27 3142</span></span>
-<span><span class="co">#&gt; 4  28 3040</span></span>
-<span><span class="co">#&gt; 5  29 3158</span></span>
-<span><span class="co">#&gt; 6  30 3194</span></span>
-<span><span class="co">#&gt; 7  31 3102</span></span>
-<span><span class="co">#&gt; 8  32 3082</span></span>
-<span><span class="co">#&gt; 9  33 3205</span></span>
-<span><span class="co">#&gt; 10 34 3171</span></span>
-<span><span class="co">#&gt; 11 35 3050</span></span>
-<span><span class="co">#&gt; 12 36 3124</span></span>
-<span><span class="co">#&gt; 13 37 3186</span></span>
-<span><span class="co">#&gt; 14 38 3115</span></span>
-<span><span class="co">#&gt; 15 39 3213</span></span>
-<span><span class="co">#&gt; 16 40 3052</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  25 3140</span></span>
+<span><span class="co">#&gt; 2  26 3061</span></span>
+<span><span class="co">#&gt; 3  27 3138</span></span>
+<span><span class="co">#&gt; 4  28 3138</span></span>
+<span><span class="co">#&gt; 5  29 3209</span></span>
+<span><span class="co">#&gt; 6  30 3122</span></span>
+<span><span class="co">#&gt; 7  31 3138</span></span>
+<span><span class="co">#&gt; 8  32 3072</span></span>
+<span><span class="co">#&gt; 9  33 3106</span></span>
+<span><span class="co">#&gt; 10 34 3194</span></span>
+<span><span class="co">#&gt; 11 35 3149</span></span>
+<span><span class="co">#&gt; 12 36 3032</span></span>
+<span><span class="co">#&gt; 13 37 3231</span></span>
+<span><span class="co">#&gt; 14 38 3029</span></span>
+<span><span class="co">#&gt; 15 39 3148</span></span>
+<span><span class="co">#&gt; 16 40 3093</span></span></code></pre></div>
 <p>Second, treatment groups generally behave as:</p>
 <ol style="list-style-type: decimal">
 <li>Early treated (e.g., 25) - low selection (low ability / low human
@@ -175,7 +168,7 @@ capital)</li>
 <span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">facet_wrap</span><span class="op">(</span>facets <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">female</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Mean Observed Earnings (Y)"</span>, color <span class="op">=</span> <span class="st">"Treatment group"</span>, subtitle <span class="op">=</span> <span class="st">"Facets = Male (0) and Female (1)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="simulation_files/figure-html/earnings-1.png" width="720"></p>
+<p><img src="simulation_files/figure-html/earnings-1.png" class="r-plt" alt="" width="720"></p>
 <p>For men, zero treatment effect by construct. For women:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_data</span> <span class="op">|&gt;</span> </span>
@@ -188,7 +181,7 @@ capital)</li>
 <span>  <span class="fu">geom_point</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">Y</span>, color <span class="op">=</span> <span class="st">"Observed"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>y <span class="op">=</span> <span class="va">Y</span>, color <span class="op">=</span> <span class="st">"Observed"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">facet_wrap</span><span class="op">(</span>facets <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">D</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Mean Earnings (Y / Y_inf)"</span>, color <span class="op">=</span> <span class="st">"Type of Earnings"</span>, subtitle <span class="op">=</span> <span class="st">"Facets = Treatment groups"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="simulation_files/figure-html/counterfactual_earnings-1.png" width="720"></p>
+<p><img src="simulation_files/figure-html/counterfactual_earnings-1.png" class="r-plt" alt="" width="720"></p>
 <p>By construction, counterfactual gender inequality kicks in from age
 28.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -201,7 +194,7 @@ capital)</li>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">age</span>, y <span class="op">=</span> <span class="va">rho</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">D</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span>  <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Gender Ratio of Mean Counterfactual Earnings"</span>, color <span class="op">=</span> <span class="st">"Treatment group"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="simulation_files/figure-html/counterfactual_inequality-1.png" width="720"></p>
+<p><img src="simulation_files/figure-html/counterfactual_inequality-1.png" class="r-plt" alt="" width="720"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -215,7 +208,7 @@ capital)</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

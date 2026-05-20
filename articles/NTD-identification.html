@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="NTD-identification">
 </head>
@@ -170,7 +170,7 @@ within gender:</p>
 <span>    color <span class="op">=</span> <span class="st">"Gender"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/verify_pt_levels-1.png" width="768"></p>
+<p><img src="NTD-identification_files/figure-html/verify_pt_levels-1.png" class="r-plt" alt="" width="768"></p>
 <p>The parallel trends violations in levels are <strong>not
 equal</strong> across gender. Men’s violations are much larger because
 they have higher earnings. This violates both difference-in-differences
@@ -210,7 +210,7 @@ assumes equal violations in levels across genders.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">scale_y_continuous</span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html" class="external-link">percent_format</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/verify_normalized_pt-1.png" width="768"></p>
+<p><img src="NTD-identification_files/figure-html/verify_normalized_pt-1.png" class="r-plt" alt="" width="768"></p>
 <p><strong>Taekaway:</strong> The normalized parallel trends violations
 are identical for men and women at every age. This is exactly what the
 NTD identification assumption requires.</p>
@@ -267,7 +267,7 @@ counterfactuals:</p>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Earnings"</span>, color <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig1_setup-1.png" width="768"></p>
+<p><img src="NTD-identification_files/figure-html/fig1_setup-1.png" class="r-plt" alt="" width="768"></p>
 <ul>
 <li>The solid blue line shows what we observe for the early cohort after
 treatment at age 25</li>
@@ -332,7 +332,7 @@ for the early cohort:</p>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Earnings"</span>, color <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig2_did-1.png" width="768"></p>
+<p><img src="NTD-identification_files/figure-html/fig2_did-1.png" class="r-plt" alt="" width="768"></p>
 <p>The green line (DID imputed counterfactual) doesn’t match the light
 blue line (true counterfactual). This difference is bias due to parallel
 trend violations. It happens because the late cohort has a steeper slope
@@ -415,7 +415,7 @@ bias.</p>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig3_decomposition-1.png" width="768"></p>
+<p><img src="NTD-identification_files/figure-html/fig3_decomposition-1.png" class="r-plt" alt="" width="768"></p>
 <p>This is not suprising: when counterfactual trends are not equal, DID
 does not identify the APO, and hence doesnt identify the ATE.</p>
 </div>
@@ -436,7 +436,7 @@ normalize?</strong></p>
 <p>We will now analyze
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mtext mathvariant="normal">TRUE ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>+</mo><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">\frac{\text{TRUE ATE}}{\text{DID APO}}+\frac{\text{PT Bias}}{\text{DID APO}}</annotation></semantics></math>.
 Since this is a sum, will go one by one. Start with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">-\frac{\text{PT Bias}}{\text{DID APO}}</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mrow><annotation encoding="application/x-tex">-\frac{\text{PT Bias}}{\text{DID APO}}</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pt_ratio_df</span> <span class="op">&lt;-</span> <span class="va">summary_age</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">transmute</span><span class="op">(</span></span>
@@ -466,7 +466,7 @@ Since this is a sum, will go one by one. Start with
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig4_pt_ratio-1.png" width="768"></p>
+<p><img src="NTD-identification_files/figure-html/fig4_pt_ratio-1.png" class="r-plt" alt="" width="768"></p>
 <p><strong>Takeaway:</strong> The bottom row (PT / DID APO) is
 <strong>identical for men and women</strong> at every age. Hence, under
 NTD, differencing across gender cancels out this bias parameter.</p>
@@ -512,7 +512,7 @@ NTD, differencing across gender cancels out this bias parameter.</p>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig5_full_ratio-1.png" width="768"></p>
+<p><img src="NTD-identification_files/figure-html/fig5_full_ratio-1.png" class="r-plt" alt="" width="768"></p>
 <p>The bottom row shows:</p>
 <ul>
 <li>Light teal (PT / DID APO): Same across gender
@@ -539,7 +539,7 @@ gap in
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>,
 and using the definition of DID APO = True APO + PT Bias, we can
 re-write the above as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mfrac><mtext mathvariant="normal">True ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mo>−</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">True APO - True APO - PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>θ</mi><mo>−</mo><mi>θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"><mfrac><mtext mathvariant="normal">True ATE</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mi>θ</mi><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mi>θ</mi><mo>−</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">True APO</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mi>θ</mi><mo>+</mo><mi>θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">True APO - True APO - PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mo>=</mo><mi>θ</mi><mo>−</mo><mi>θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mtext mathvariant="normal">PT Bias</mtext><mtext mathvariant="normal">DID APO</mtext></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned}
 \frac{\text{True ATE}}{\text{DID APO}} &amp;= \theta \frac{\text{True APO}}{\text{DID APO}} \\
 &amp;= \theta - \theta + \theta \frac{\text{True APO}}{\text{DID APO}} \\
@@ -626,7 +626,7 @@ scaled by the same factor.</p>
 <span>    x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="NTD-identification_files/figure-html/fig6_multiplicative-1.png" width="768"></p>
+<p><img src="NTD-identification_files/figure-html/fig6_multiplicative-1.png" class="r-plt" alt="" width="768"></p>
 <p><strong>Bottom row interpretation:</strong></p>
 <ul>
 <li>
@@ -660,7 +660,7 @@ under NTD).</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
