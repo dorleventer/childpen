@@ -15,7 +15,7 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 > This package accompanies my job market paper:  
 > **Leventer, Dor (2025).** *Identification of Child Penalties.*  
-> [Preprint (coming soon)](#)
+> [arXiv:2602.07486](https://arxiv.org/abs/2602.07486)
 
 - 🧪 DID / TD / NTD estimators (single & multiple treatment groups)
 - 🧰 Simulation tools  

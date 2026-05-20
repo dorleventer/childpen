@@ -28,8 +28,8 @@ home:
     identification approaches from Leventer (2025),
     *Identification of Child Penalties*.
   links:
-    - text: "Read the paper (preprint)"
-      href: "#"          # update with real link once public
+    - text: "Read the paper (arXiv)"
+      href: "https://arxiv.org/abs/2602.07486"
 
 articles:
   - title: "Guides"
