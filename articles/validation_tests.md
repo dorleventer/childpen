@@ -1,7 +1,7 @@
 # validation_tests
 
-> **Notation.** For symbol definitions, see the [simulation
-> vignette](https://dorleventer.github.io/childpen/articles/simulation.md).
+> **Notation.** For symbol definitions, see the [notation
+> vignette](https://dorleventer.github.io/childpen/articles/notation.md).
 
 ## Overview
 
@@ -38,8 +38,8 @@ data |> tibble()
 
 ## The correct validation tests
 
-See the DID vignette
-([link](https://dorleventer.github.io/childpen/articles/DID-estimation.html))
+See the [estimation
+vignette](https://dorleventer.github.io/childpen/articles/estimation.md)
 for an explainer on the $`2\times2`$ comparisons in `childpen`. Recall
 that $`d`$ is the treatment group, $`a`$ is the target age, and
 $`d^\prime=a+1`$ is the closest not-yet-treated control group. Recall

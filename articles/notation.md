@@ -1,0 +1,16 @@
+# Notation
+
+Symbols used throughout the package vignettes (see [Leventer 2025,
+§2–3](https://arxiv.org/abs/2602.07486) for formal definitions):
+
+| Symbol | Definition |
+|----|----|
+| $`G \in \{f,m\}`$ | Gender (female, male) |
+| $`D`$ | Age at first childbirth (treatment timing) |
+| $`Y_{i,a}(d)`$ | Potential earnings of individual $`i`$ at age $`a`$ if first birth occurs at age $`d`$ |
+| $`Y_{i,a}(\infty)`$ | Potential earnings under never having a child |
+| $`\text{APO}(g,d,a) = \mathbb{E}[Y_a(\infty) \mid G=g, D=d]`$ | Average counterfactual earnings |
+| $`\text{ATE}(g,d,a) = \mathbb{E}[Y_a(d) - Y_a(\infty) \mid G=g, D=d]`$ | Average treatment effect of parenthood |
+| $`\theta(g,d,a) = \text{ATE}/\text{APO}`$ | Normalised effect (proportional earnings change) |
+| $`\rho(d,a) = \text{APO}(f,d,a) / \text{APO}(m,d,a)`$ | Gender earnings ratio (counterfactual) |
+| $`\Delta\rho(d,a)`$ | Effect of parenthood on the gender earnings ratio |

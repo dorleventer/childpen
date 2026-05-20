@@ -1,0 +1,278 @@
+# Estimation
+
+> **Notation.** For symbol definitions, see the [notation
+> vignette](https://dorleventer.github.io/childpen/articles/notation.md).
+
+## Overview
+
+This vignette shows how to estimate DID, TD, and NTD using `childpen`.
+All estimators are computed jointly by
+[`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md).
+The function returns one row per treatment group $`\times`$ event time
+$`\times`$ estimand $`\times`$ method combination.
+
+## Simulate data and run estimation
+
+``` r
+
+library(childpen)
+
+set.seed(42)
+N <- 2000
+data <- simulate_data(n_individuals = N)
+head(data)
+#>   id female age  D  Y_inf      Y
+#> 1  1      1  20 25  32193  32193
+#> 2  1      1  21 25  46159  46159
+#> 3  1      1  22 25  79432  79432
+#> 4  1      1  23 25  75703  75703
+#> 5  1      1  24 25 291366 291366
+#> 6  1      1  25 25 139286  94345
+```
+
+``` r
+
+res = multiple_treatment_group_analysis(data = data,
+                                  treatment_groups = 25:30,
+                                  periods_post = 5,
+                                  periods_pre = NULL,
+                                  max_age = 40,
+                                  min_age = 20,
+                                  pre = 1,
+                                  verbose = FALSE
+                                  )
+```
+
+## Simulation truth
+
+The simulation provides potential outcomes so we can benchmark every
+estimand against its true value.
+
+``` r
+
+PO_tidy <- data |>
+  mutate(event_time = age - D) |>
+  rename(d = D) |>
+  group_by(female, d, event_time) |>
+  summarize(APO_obs = mean(Y), APO = mean(Y_inf)) |>
+  mutate(ATE = APO_obs - APO,
+         theta = ATE / APO) |>
+  filter(event_time %in% 0:5, d %in% 25:30)
+```
+
+## DID
+
+DID estimates gender-specific effects using closest-not-yet-treated
+control groups. For treatment group $`d`$ and target age $`a`$, the
+control group is $`d^\prime = a + 1`$. The DID counterfactual is
+
+``` math
+\delta_{\mathrm{APO}}(g,d,d^\prime,a)=\mathbb{E}[Y_{d-1}\mid G=g, D=d]+\mathbb{E}[Y_a-Y_{d-1}\mid G=g, D=d^\prime]
+```
+
+and the DID ATE and normalised effect are
+
+``` math
+\delta_{\mathrm{ATE}}(g,d,d^\prime,a)=\mathbb{E}[Y_a\mid G=g, D=d]-\delta_{\mathrm{APO}}(g,d,d^\prime,a), \qquad \delta_{\theta}=\delta_{\mathrm{ATE}}/\delta_{\mathrm{APO}}.
+```
+
+``` r
+
+obs_tidy = data |>
+  mutate(event_time = age - D) |>
+  rename(d = D) |>
+  group_by(female, d, event_time) |>
+  summarize(est = mean(Y)) |>
+  mutate(estimand = "APO", method = "Observed") |>
+  filter(event_time %in% -3:5, d %in% 25:30)
+
+PO_long = PO_tidy |>
+  select(-APO_obs) |>
+  pivot_longer(
+    !c(female, d, event_time), names_to = "estimand", values_to = "est"
+  ) |>
+  mutate(method = "Truth")
+
+plot_data = res |>
+  filter(method %in% c("DID_Female", "DID_Male")) |>
+  mutate(female = ifelse(method == "DID_Female", 1, 0)) |>
+  select(d, event_time, estimand, female, est, ci_l, ci_h) |>
+  mutate(method = "DID") |>
+  dplyr::bind_rows(obs_tidy, PO_long)
+```
+
+### Females
+
+``` r
+
+plot_data |>
+  filter(female == 1) |>
+  ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = method, fill = method)) +
+  geom_ribbon(color = NA, alpha = .2) +
+  geom_point() + geom_line() +
+  facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") +
+  labs(x = "Event Time", y = "Estimate +/- 95% CI", color = "Method", fill = "Method") +
+  theme(legend.position = "bottom")
+```
+
+![](estimation_files/figure-html/did_female-1.png)
+
+### Males
+
+``` r
+
+plot_data |>
+  filter(female == 0) |>
+  ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = method, fill = method)) +
+  geom_ribbon(color = NA, alpha = .2) +
+  geom_point() + geom_line() +
+  facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") +
+  labs(x = "Event Time", y = "Estimate +/- 95% CI", color = "Method", fill = "Method") +
+  theme(legend.position = "bottom")
+```
+
+![](estimation_files/figure-html/did_male-1.png)
+
+## TD
+
+TD estimates the gender gap in treatment effects in levels:
+
+``` math
+\mathrm{TD}(d, d^\prime, a) = \delta_{\mathrm{ATE}}(f, d, d^\prime, a) - \delta_{\mathrm{ATE}}(m, d, d^\prime, a).
+```
+
+``` r
+
+truth_td <- PO_tidy |>
+  select(female, d, event_time, ATE) |>
+  pivot_wider(names_from = female, values_from = ATE, names_prefix = "ATE_f") |>
+  rename(ATE_female = ATE_f1, ATE_male = ATE_f0) |>
+  mutate(est = ATE_female - ATE_male,
+         method = "TD", estimand = "ATE",
+         ci_l = NA_real_, ci_h = NA_real_,
+         truth = TRUE)
+```
+
+``` r
+
+plot_td <- res |>
+  filter(method == "TD") |>
+  mutate(truth = FALSE) |>
+  select(d, event_time, estimand, method, est, ci_l, ci_h, truth) |>
+  bind_rows(truth_td |> select(d, event_time, estimand, method, est, ci_l, ci_h, truth)) |>
+  mutate(label = ifelse(truth, "Truth", "TD"))
+
+plot_td |>
+  ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h,
+             color = label, fill = label)) +
+  geom_ribbon(color = NA, alpha = 0.2) +
+  geom_point() + geom_line() +
+  facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") +
+  labs(x = "Event Time", y = "Estimate +/- 95% CI",
+       color = "Method", fill = "Method",
+       title = "TD: ATE(female) - ATE(male)") +
+  theme(legend.position = "bottom")
+```
+
+![](estimation_files/figure-html/td_plot-1.png)
+
+## NTD
+
+NTD produces two estimands: `NTD_Conv` (conventional) and `NTD_New`.
+
+**NTD_Conv** is the gap in normalised effects — the conventional child
+penalty:
+
+``` math
+\mathrm{NTD\_Conv}(d, d^\prime, a) = \delta_{\theta}(f, d, d^\prime, a) - \delta_{\theta}(m, d, d^\prime, a).
+```
+
+**NTD_New** measures the effect of parenthood on the gender earnings
+ratio $`\rho`$:
+
+``` math
+\mathrm{NTD\_New}(d, d^\prime, a) = \frac{\mathbb{E}[Y_a \mid f, D=d]}{\mathbb{E}[Y_a \mid m, D=d]} - \frac{\delta_{\mathrm{APO}}(f, d, d^\prime, a)}{\delta_{\mathrm{APO}}(m, d, d^\prime, a)} = \Delta\rho.
+```
+
+``` r
+
+truth_ntd_conv <- PO_tidy |>
+  select(female, d, event_time, theta) |>
+  pivot_wider(names_from = female, values_from = theta, names_prefix = "th_f") |>
+  rename(th_female = th_f1, th_male = th_f0) |>
+  mutate(est = th_female - th_male,
+         method = "NTD_Conv", estimand = "theta",
+         ci_l = NA_real_, ci_h = NA_real_,
+         truth = TRUE)
+
+truth_ntd_new <- PO_tidy |>
+  select(female, d, event_time, APO_obs, APO) |>
+  pivot_wider(names_from = female,
+              values_from = c(APO_obs, APO),
+              names_sep = "_f") |>
+  rename(Y_female = APO_obs_f1, Y_male = APO_obs_f0,
+         APO_female = APO_f1, APO_male = APO_f0) |>
+  mutate(est = (Y_female / Y_male) - (APO_female / APO_male),
+         method = "NTD_New", estimand = "theta",
+         ci_l = NA_real_, ci_h = NA_real_,
+         truth = TRUE)
+
+truth_all <- bind_rows(truth_ntd_conv, truth_ntd_new) |>
+  select(d, event_time, estimand, method, est, ci_l, ci_h, truth)
+```
+
+### NTD_Conv
+
+``` r
+
+plot_ntd_conv <- res |>
+  filter(method == "NTD_Conv") |>
+  mutate(truth = FALSE) |>
+  select(d, event_time, estimand, method, est, ci_l, ci_h, truth) |>
+  bind_rows(truth_all |> filter(method == "NTD_Conv")) |>
+  mutate(label = ifelse(truth, "Truth", "NTD_Conv"))
+
+plot_ntd_conv |>
+  ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h,
+             color = label, fill = label)) +
+  geom_ribbon(color = NA, alpha = 0.2) +
+  geom_point() + geom_line() +
+  facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") +
+  labs(x = "Event Time", y = "Estimate +/- 95% CI",
+       color = "Method", fill = "Method",
+       title = "NTD_Conv: theta(female) - theta(male)") +
+  theme(legend.position = "bottom")
+```
+
+![](estimation_files/figure-html/ntd_conv_plot-1.png)
+
+### NTD_New
+
+``` r
+
+plot_ntd_new <- res |>
+  filter(method == "NTD_New") |>
+  mutate(truth = FALSE) |>
+  select(d, event_time, estimand, method, est, ci_l, ci_h, truth) |>
+  bind_rows(truth_all |> filter(method == "NTD_New")) |>
+  mutate(label = ifelse(truth, "Truth", "NTD_New"))
+
+plot_ntd_new |>
+  ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h,
+             color = label, fill = label)) +
+  geom_ribbon(color = NA, alpha = 0.2) +
+  geom_point() + geom_line() +
+  facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") +
+  labs(x = "Event Time", y = "Estimate +/- 95% CI",
+       color = "Method", fill = "Method",
+       title = expression(paste("NTD_New: ", Delta, rho, " (effect on gender earnings ratio)"))) +
+  theme(legend.position = "bottom")
+```
+
+![](estimation_files/figure-html/ntd_new_plot-1.png)
+
+## Validation tests
+
+For a discussion on how to perform validation tests, and what type of
+tests are correct for this type of estimation, see the [validation tests
+vignette](https://dorleventer.github.io/childpen/articles/validation_tests.md).

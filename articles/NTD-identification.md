@@ -1,8 +1,7 @@
 # NTD-identification
 
-> **Notation.** For symbol definitions used throughout these vignettes,
-> see the [simulation
-> vignette](https://dorleventer.github.io/childpen/articles/simulation.md).
+> **Notation.** For symbol definitions, see the [notation
+> vignette](https://dorleventer.github.io/childpen/articles/notation.md).
 > For the formal identification results, see [Leventer
 > (2025)](https://arxiv.org/abs/2602.07486).
 
@@ -17,9 +16,8 @@ The aim of this vignette is to create intuition on the normalized triple
 differences (NTD) identification framework discussed in the paper.
 Specifically, it analyzes the `NTD_Conv` (conventional) estimand — the
 gender gap in normalised effects, $`\theta(f) - \theta(m)`$. For the
-alternative `NTD_New` estimand ($`\Delta\rho`$), see the [TD-NTD
-estimation
-vignette](https://dorleventer.github.io/childpen/articles/TD-NTD-estimation.md).
+alternative `NTD_New` estimand ($`\Delta\rho`$), see the [estimation
+vignette](https://dorleventer.github.io/childpen/articles/estimation.md).
 NTD is the underlying identification framework for normalized event
 studies, a common empirical strategy in the child penalty literature.
 

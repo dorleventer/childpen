@@ -1,7 +1,7 @@
 # TD-identification
 
-> **Notation.** For symbol definitions, see the [simulation
-> vignette](https://dorleventer.github.io/childpen/articles/simulation.md).
+> **Notation.** For symbol definitions, see the [notation
+> vignette](https://dorleventer.github.io/childpen/articles/notation.md).
 
 > **Note.** This vignette uses a stylised DGP to illustrate the TD
 > identification assumption. Treatment effects are chosen for clarity,

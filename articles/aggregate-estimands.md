@@ -1,7 +1,7 @@
 # aggregate-estimands
 
-> **Notation.** For symbol definitions, see the [simulation
-> vignette](https://dorleventer.github.io/childpen/articles/simulation.md).
+> **Notation.** For symbol definitions, see the [notation
+> vignette](https://dorleventer.github.io/childpen/articles/notation.md).
 
 ## Overview
 
