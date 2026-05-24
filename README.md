@@ -37,8 +37,6 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
   [vignette](https://dorleventer.github.io/childpen/articles/estimation.html)
 - [x] **NTD identification** —
   [vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
-- [x] **TD identification** —
-  [vignette](https://dorleventer.github.io/childpen/articles/TD-identification.html)
 - [x] **Validation tests** —
   [vignette](https://dorleventer.github.io/childpen/articles/validation_tests.html)
 - [x] **Aggregate estimands** —

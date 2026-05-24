@@ -44,7 +44,6 @@ knitr::opts_chunk$set(
 
 - [x] **Estimation (DID, TD, NTD)** — [vignette](https://dorleventer.github.io/childpen/articles/estimation.html)
 - [x] **NTD identification** — [vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
-- [x] **TD identification** — [vignette](https://dorleventer.github.io/childpen/articles/TD-identification.html)
 - [x] **Validation tests** — [vignette](https://dorleventer.github.io/childpen/articles/validation_tests.html)
 - [x] **Aggregate estimands** — [vignette](https://dorleventer.github.io/childpen/articles/aggregate-estimands.html)
 
