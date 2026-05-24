@@ -35,7 +35,7 @@ The package has a built in simulation function to draw data resembling child pen
 ```{r draw_data}
 library(childpen)
 
-data <- simulate_data(n_individuals = 5000, treatment_groups = 25:26)
+data <- simulate_data(n_individuals = 5000, treatment_groups = 25:30)
 data |> tibble()
 ```
 
