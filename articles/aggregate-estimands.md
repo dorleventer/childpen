@@ -60,27 +60,30 @@ res <- multiple_treatment_group_analysis(
 
 Calling
 [`aggregate_estimands()`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md)
-with default arguments applies uniform weights across whichever
-treatment groups contribute an estimate to each event-time cell.
+with default arguments applies sample-proportion weights
+(`weights = "sample"`), where each treatment group is weighted by its
+share of the sample, as in Leventer (2025). Standard errors account for
+the estimation of these weights via the influence-function formula in
+the paper’s Appendix G. Pass `weights = NULL` for uniform weights.
 
 ``` r
 
 agg <- aggregate_estimands(res)
 head(agg)
 #>   event_time estimand     method      agg_type       est        se n_groups
-#> 1          0    theta DID_Female avg_of_ratios -0.248251 0.0093688        4
-#> 2          1    theta DID_Female avg_of_ratios -0.285051 0.0088667        4
-#> 3          2    theta DID_Female avg_of_ratios -0.275046 0.0094078        4
-#> 4          0    theta   DID_Male avg_of_ratios -0.049269 0.0126563        4
-#> 5          1    theta   DID_Male avg_of_ratios -0.047194 0.0122294        4
-#> 6          2    theta   DID_Male avg_of_ratios -0.052637 0.0121010        4
+#> 1          0    theta DID_Female avg_of_ratios -0.246280 0.0110061        4
+#> 2          1    theta DID_Female avg_of_ratios -0.283778 0.0100062        4
+#> 3          2    theta DID_Female avg_of_ratios -0.274356 0.0098125        4
+#> 4          0    theta   DID_Male avg_of_ratios -0.049832 0.0150746        4
+#> 5          1    theta   DID_Male avg_of_ratios -0.046805 0.0137026        4
+#> 6          2    theta   DID_Male avg_of_ratios -0.052369 0.0128336        4
 #>        ci_l      ci_h
-#> 1 -0.266614 -0.229888
-#> 2 -0.302429 -0.267672
-#> 3 -0.293485 -0.256606
-#> 4 -0.074075 -0.024462
-#> 5 -0.071164 -0.023224
-#> 6 -0.076355 -0.028919
+#> 1 -0.267851 -0.224708
+#> 2 -0.303390 -0.264166
+#> 3 -0.293589 -0.255124
+#> 4 -0.079378 -0.020285
+#> 5 -0.073662 -0.019947
+#> 6 -0.077523 -0.027215
 ```
 
 The output has one row per `event_time × estimand × method × agg_type`
@@ -160,9 +163,9 @@ must decide which weighting regime is more policy-relevant.
 
 ## Custom weights
 
-By default all treatment groups receive equal weight. Researchers often
-want to weight groups by their empirical share in a target population.
-Below we contrast two stylized distributions:
+By default treatment groups are weighted by their sample proportions.
+Researchers may instead want to weight groups by their empirical share
+in a target population. Below we contrast two stylized distributions:
 
 - **Right-skewed** (mimicking the US): most first births concentrate at
   younger ages.

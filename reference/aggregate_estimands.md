@@ -10,7 +10,7 @@ event time:
 ``` r
 aggregate_estimands(
   results,
-  weights = NULL,
+  weights = "sample",
   methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New"),
   include_pre = FALSE
 )
@@ -23,15 +23,27 @@ aggregate_estimands(
   A `data.frame` as returned by
   [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md),
   with at minimum the columns `d`, `event_time`, `estimand`, `method`,
-  `est`, and `se`.
+  `est`, and `se`. If `results` carries influence-function data
+  (attached automatically by
+  [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md)),
+  standard errors account for shared control groups across treatment
+  groups.
 
 - weights:
 
-  Named numeric vector of treatment-group weights (names must match the
-  values of the `d` column coerced to character). Values are normalised
-  to sum to 1 within each event_time / method cell, so you only need to
-  supply relative weights. `NULL` (default) uses uniform weights over
-  the treatment groups that have an estimate for that cell.
+  How to weight treatment groups. One of:
+
+  - `"sample"` (default): use sample-proportion weights as in Leventer
+    (2025). Within-gender weights \\w\_{g,d} = n\_{g,d}/\sum
+    n\_{g,\tilde d}\\ are used for `DID_Female` and `DID_Male`;
+    cross-gender weights \\w_d = n_d / \sum n\_{\tilde d}\\ for `TD`,
+    `NTD_Conv`, and `NTD_New`. Standard errors account for estimation of
+    the weights.
+
+  - `NULL`: uniform weights (equal weight per group).
+
+  - A named numeric vector: custom fixed weights (names = treatment
+    groups as characters). Values are renormalised to sum to 1.
 
 - methods:
 
@@ -48,22 +60,22 @@ aggregate_estimands(
 A `data.frame` with one row per `event_time` by `estimand` by `method`
 by `agg_type` combination, containing:
 
-- `event_time` –event time
+- `event_time` – event time
 
-- `estimand` –`"APO"`, `"ATE"`, `"theta"`, or `"Delta_rho"`
+- `estimand` – `"APO"`, `"ATE"`, `"theta"`, or `"Delta_rho"`
 
-- `method` –method name
+- `method` – method name
 
-- `agg_type` –one of `"avg_of_ratios"`, `"ratio_of_avgs"`,
+- `agg_type` – one of `"avg_of_ratios"`, `"ratio_of_avgs"`,
   `"gender_ineq"`
 
-- `est` –aggregate estimate
+- `est` – aggregate estimate
 
-- `se` –standard error (see Details)
+- `se` – standard error (see Details)
 
-- `ci_l`, `ci_h` –95 \\
+- `ci_l`, `ci_h` – 95 \\
 
-- `n_groups` –number of treatment groups contributing
+- `n_groups` – number of treatment groups contributing
 
 ## Details
 
@@ -85,27 +97,36 @@ by `agg_type` combination, containing:
   Weighted average of `NTD_New` (estimand == "Delta_rho") across
   treatment groups – the aggregate gender-inequality estimand.
 
-**Standard errors.** Because the raw influence functions are not stored
-in the `results` object, SEs are computed treating the group-specific
-estimates as mutually independent.
+**Standard errors.** When the `results` object carries
+influence-function (IF) data from
+[`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md),
+aggregate SEs account for dependence across treatment groups caused by
+shared control individuals.
 
-For `avg_of_ratios`: \$\$\mathrm{SE}(\hat\theta\_{\text{Agg},1}) =
-\sqrt{\sum_d w_d^2 \\ \hat\sigma_d^2}\$\$
+With `weights = "sample"`, the IF additionally accounts for estimation
+of the weights, following the formula in Leventer (2025, Appendix G):
+\$\$\psi\_{A(e)} = \sum_d \left\[ w_d\\\psi\_{B_d} + \frac{B_d -
+A(e)}{M}\\\psi\_{p_d} \right\]\$\$ where \\M = \sum_d p_d\\ and
+\\\psi\_{p_d}\\ is the IF of the group proportion.
+
+With fixed weights (`NULL` or a named vector), the second term drops out
+and the IF reduces to \\\sum_d w_d\\\psi\_{B_d}\\.
 
 For `ratio_of_avgs`, the delta method is applied to the ratio
-\\\bar\mu\_{\text{ATE}} / \bar\mu\_{\text{APO}}\\: \$\$\mathrm{SE}
-\approx \frac{1}{\bar\mu\_{\text{APO}}}
-\sqrt{\mathrm{Var}(\bar\mu\_{\text{ATE}}) + \hat\theta\_{\text{Agg},2}^2
-\\ \mathrm{Var}(\bar\mu\_{\text{APO}})}\$\$ where variances are again
-computed via the independent-groups formula.
+\\\bar\mu\_{\text{ATE}} / \bar\mu\_{\text{APO}}\\ using the aggregate
+IFs for the numerator and denominator.
+
+If IF data is not available (e.g., when the user supplies a manually
+constructed results table), SEs are computed under an independence
+approximation with a warning.
 
 **Handling missing cells.** Not every treatment group produces an
 estimate for every event time (due to `max_age` / `min_age` bounds). The
 function operates on whichever groups are present for each cell and
-reports how many via `n_groups`. If `weights` is supplied, only the
-entries whose names appear in the observed treatment groups are used;
-the remaining weights are dropped and the retained weights are
-renormalised.
+reports how many via `n_groups`. If `weights` is supplied as a named
+vector, only the entries whose names appear in the observed treatment
+groups are used; the remaining weights are dropped and the retained
+weights are renormalised.
 
 ## Examples
 
@@ -121,18 +142,18 @@ res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25,
 agg <- aggregate_estimands(res)
 head(agg)
 #>   event_time estimand     method      agg_type         est         se n_groups
-#> 1          0    theta DID_Female avg_of_ratios -0.29641345 0.02464314        2
-#> 2          1    theta DID_Female avg_of_ratios -0.27796036 0.02445072        2
-#> 3          2    theta DID_Female avg_of_ratios -0.26871862 0.02007260        2
-#> 4          0    theta   DID_Male avg_of_ratios -0.02914986 0.02914927        2
-#> 5          1    theta   DID_Male avg_of_ratios -0.02099655 0.03156206        2
-#> 6          2    theta   DID_Male avg_of_ratios -0.06282078 0.03441832        2
-#>          ci_l         ci_h
-#> 1 -0.34471399 -0.248112901
-#> 2 -0.32588377 -0.230036949
-#> 3 -0.30806091 -0.229376319
-#> 4 -0.08628243  0.027982719
-#> 5 -0.08285819  0.040865084
-#> 6 -0.13028069  0.004639127
+#> 1          0    theta DID_Female avg_of_ratios -0.29648428 0.02688094        2
+#> 2          1    theta DID_Female avg_of_ratios -0.27864063 0.02450991        2
+#> 3          2    theta DID_Female avg_of_ratios -0.26867246 0.02001048        2
+#> 4          0    theta   DID_Male avg_of_ratios -0.02789507 0.03252366        2
+#> 5          1    theta   DID_Male avg_of_ratios -0.02730183 0.03285187        2
+#> 6          2    theta   DID_Male avg_of_ratios -0.07414387 0.03154374        2
+#>          ci_l        ci_h
+#> 1 -0.34917093 -0.24379764
+#> 2 -0.32668006 -0.23060119
+#> 3 -0.30789301 -0.22945192
+#> 4 -0.09164144  0.03585129
+#> 5 -0.09169150  0.03708783
+#> 6 -0.13596961 -0.01231814
 # }
 ```

@@ -44,7 +44,7 @@ time:</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">aggregate_estimands</span><span class="op">(</span></span>
 <span>  <span class="va">results</span>,</span>
-<span>  weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  weights <span class="op">=</span> <span class="st">"sample"</span>,</span>
 <span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DID_Female"</span>, <span class="st">"DID_Male"</span>, <span class="st">"TD"</span>, <span class="st">"NTD_Conv"</span>, <span class="st">"NTD_New"</span><span class="op">)</span>,</span>
 <span>  include_pre <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -58,15 +58,23 @@ time:</p>
 <dd><p>A <code>data.frame</code> as returned by
 <code><a href="multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code>, with at minimum the columns
 <code>d</code>, <code>event_time</code>, <code>estimand</code>, <code>method</code>, <code>est</code>,
-and <code>se</code>.</p></dd>
+and <code>se</code>.  If <code>results</code> carries influence-function data (attached
+automatically by <code><a href="multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code>), standard
+errors account for shared control groups across treatment groups.</p></dd>
 
 
 <dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
-<dd><p>Named numeric vector of treatment-group weights (names must
-match the values of the <code>d</code> column coerced to character).  Values
-are normalised to sum to 1 within each event_time / method cell, so you
-only need to supply relative weights.  <code>NULL</code> (default) uses uniform
-weights over the treatment groups that have an estimate for that cell.</p></dd>
+<dd><p>How to weight treatment groups.  One of:</p><ul><li><p><code>"sample"</code> (default): use sample-proportion weights as in
+Leventer (2025).  Within-gender weights
+\(w_{g,d} = n_{g,d}/\sum n_{g,\tilde d}\) are used for
+<code>DID_Female</code> and <code>DID_Male</code>; cross-gender weights
+\(w_d = n_d / \sum n_{\tilde d}\) for <code>TD</code>, <code>NTD_Conv</code>,
+and <code>NTD_New</code>.  Standard errors account for estimation of the
+weights.</p></li>
+<li><p><code>NULL</code>: uniform weights (equal weight per group).</p></li>
+<li><p>A named numeric vector: custom fixed weights (names = treatment
+groups as characters).  Values are renormalised to sum to 1.</p></li>
+</ul></dd>
 
 
 <dt id="arg-methods">methods<a class="anchor" aria-label="anchor" href="#arg-methods"></a></dt>
@@ -83,15 +91,15 @@ event times (<code>event_time &lt; 0</code>).  Default <code>FALSE</code>.</p></
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>data.frame</code> with one row per
 <code>event_time</code> by <code>estimand</code> by <code>method</code> by <code>agg_type</code>
-combination, containing:</p><ul><li><p><code>event_time</code> –event time</p></li>
-<li><p><code>estimand</code> –<code>"APO"</code>, <code>"ATE"</code>, <code>"theta"</code>, or <code>"Delta_rho"</code></p></li>
-<li><p><code>method</code> –method name</p></li>
-<li><p><code>agg_type</code> –one of <code>"avg_of_ratios"</code>,
+combination, containing:</p><ul><li><p><code>event_time</code> – event time</p></li>
+<li><p><code>estimand</code> – <code>"APO"</code>, <code>"ATE"</code>, <code>"theta"</code>, or <code>"Delta_rho"</code></p></li>
+<li><p><code>method</code> – method name</p></li>
+<li><p><code>agg_type</code> – one of <code>"avg_of_ratios"</code>,
 <code>"ratio_of_avgs"</code>, <code>"gender_ineq"</code></p></li>
-<li><p><code>est</code> –aggregate estimate</p></li>
-<li><p><code>se</code> –standard error (see Details)</p></li>
-<li><p><code>ci_l</code>, <code>ci_h</code> –95 \<!-- % Wald confidence interval --></p></li>
-<li><p><code>n_groups</code> –number of treatment groups contributing</p></li>
+<li><p><code>est</code> – aggregate estimate</p></li>
+<li><p><code>se</code> – standard error (see Details)</p></li>
+<li><p><code>ci_l</code>, <code>ci_h</code> – 95 \<!-- % Wald confidence interval --></p></li>
+<li><p><code>n_groups</code> – number of treatment groups contributing</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -112,24 +120,31 @@ higher-earning groups more influence.</p></dd>
 treatment groups – the aggregate gender-inequality estimand.</p></dd>
 
 
-</dl><p><strong>Standard errors.</strong>  Because the raw influence functions are not
-stored in the <code>results</code> object, SEs are computed treating the
-group-specific estimates as mutually independent.</p>
-<p>For <code>avg_of_ratios</code>:
-$$\mathrm{SE}(\hat\theta_{\text{Agg},1}) = \sqrt{\sum_d w_d^2 \, \hat\sigma_d^2}$$</p>
+</dl><p><strong>Standard errors.</strong>  When the <code>results</code> object carries
+influence-function (IF) data from <code><a href="multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code>,
+aggregate SEs account for dependence across treatment groups caused by shared
+control individuals.</p>
+<p>With <code>weights = "sample"</code>, the IF additionally accounts for estimation
+of the weights, following the formula in Leventer (2025, Appendix G):
+$$\psi_{A(e)} = \sum_d \left[ w_d\,\psi_{B_d}
+  + \frac{B_d - A(e)}{M}\,\psi_{p_d} \right]$$
+where \(M = \sum_d p_d\) and \(\psi_{p_d}\) is the IF of the group
+proportion.</p>
+<p>With fixed weights (<code>NULL</code> or a named vector), the second term drops
+out and the IF reduces to \(\sum_d w_d\,\psi_{B_d}\).</p>
 <p>For <code>ratio_of_avgs</code>, the delta method is applied to the ratio
-\(\bar\mu_{\text{ATE}} / \bar\mu_{\text{APO}}\):
-$$\mathrm{SE} \approx \frac{1}{\bar\mu_{\text{APO}}}
-  \sqrt{\mathrm{Var}(\bar\mu_{\text{ATE}}) +
-        \hat\theta_{\text{Agg},2}^2 \, \mathrm{Var}(\bar\mu_{\text{APO}})}$$
-where variances are again computed via the independent-groups formula.</p>
+\(\bar\mu_{\text{ATE}} / \bar\mu_{\text{APO}}\) using the aggregate IFs
+for the numerator and denominator.</p>
+<p>If IF data is not available (e.g., when the user supplies a manually
+constructed results table), SEs are computed under an independence
+approximation with a warning.</p>
 <p><strong>Handling missing cells.</strong>  Not every treatment group produces an
 estimate for every event time (due to <code>max_age</code> / <code>min_age</code>
 bounds).  The function operates on whichever groups are present for each
 cell and reports how many via <code>n_groups</code>.  If <code>weights</code> is
-supplied, only the entries whose names appear in the observed treatment
-groups are used; the remaining weights are dropped and the retained weights
-are renormalised.</p>
+supplied as a named vector, only the entries whose names appear in the
+observed treatment groups are used; the remaining weights are dropped and
+the retained weights are renormalised.</p>
     </div>
 
     <div class="section level2">
@@ -145,19 +160,19 @@ are renormalised.</p>
 <span class="r-in"><span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu">aggregate_estimands</span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">agg</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   event_time estimand     method      agg_type         est         se n_groups</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          0    theta DID_Female avg_of_ratios -0.29641345 0.02464314        2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          1    theta DID_Female avg_of_ratios -0.27796036 0.02445072        2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          2    theta DID_Female avg_of_ratios -0.26871862 0.02007260        2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          0    theta   DID_Male avg_of_ratios -0.02914986 0.02914927        2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1    theta   DID_Male avg_of_ratios -0.02099655 0.03156206        2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          2    theta   DID_Male avg_of_ratios -0.06282078 0.03441832        2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          ci_l         ci_h</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 -0.34471399 -0.248112901</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 -0.32588377 -0.230036949</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 -0.30806091 -0.229376319</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 -0.08628243  0.027982719</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 -0.08285819  0.040865084</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 -0.13028069  0.004639127</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          0    theta DID_Female avg_of_ratios -0.29648428 0.02688094        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          1    theta DID_Female avg_of_ratios -0.27864063 0.02450991        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          2    theta DID_Female avg_of_ratios -0.26867246 0.02001048        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          0    theta   DID_Male avg_of_ratios -0.02789507 0.03252366        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1    theta   DID_Male avg_of_ratios -0.02730183 0.03285187        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          2    theta   DID_Male avg_of_ratios -0.07414387 0.03154374        2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          ci_l        ci_h</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 -0.34917093 -0.24379764</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 -0.32668006 -0.23060119</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 -0.30789301 -0.22945192</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 -0.09164144  0.03585129</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 -0.09169150  0.03708783</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 -0.13596961 -0.01231814</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
