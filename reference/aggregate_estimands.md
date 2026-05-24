@@ -29,7 +29,7 @@ aggregate_estimands(
 
   Named numeric vector of treatment-group weights (names must match the
   values of the `d` column coerced to character). Values are normalised
-  to sum to 1 within each event_time × method cell, so you only need to
+  to sum to 1 within each event_time / method cell, so you only need to
   supply relative weights. `NULL` (default) uses uniform weights over
   the treatment groups that have an estimate for that cell.
 
@@ -45,25 +45,25 @@ aggregate_estimands(
 
 ## Value
 
-A `data.frame` with one row per `event_time` × `estimand` × `method` ×
-`agg_type` combination, containing:
+A `data.frame` with one row per `event_time` by `estimand` by `method`
+by `agg_type` combination, containing:
 
-- `event_time` — event time
+- `event_time` –event time
 
-- `estimand` — `"APO"`, `"ATE"`, `"theta"`, or `"Delta_rho"`
+- `estimand` –`"APO"`, `"ATE"`, `"theta"`, or `"Delta_rho"`
 
-- `method` — method name
+- `method` –method name
 
-- `agg_type` — one of `"avg_of_ratios"`, `"ratio_of_avgs"`,
+- `agg_type` –one of `"avg_of_ratios"`, `"ratio_of_avgs"`,
   `"gender_ineq"`
 
-- `est` — aggregate estimate
+- `est` –aggregate estimate
 
-- `se` — standard error (see Details)
+- `se` –standard error (see Details)
 
-- `ci_l`, `ci_h` — 95 \\
+- `ci_l`, `ci_h` –95 \\
 
-- `n_groups` — number of treatment groups contributing
+- `n_groups` –number of treatment groups contributing
 
 ## Details
 
@@ -83,7 +83,7 @@ A `data.frame` with one row per `event_time` × `estimand` × `method` ×
 - **gender_ineq** (\\\Delta\rho\_{\text{Agg}}\\):
 
   Weighted average of `NTD_New` (estimand == "Delta_rho") across
-  treatment groups — the aggregate gender-inequality estimand.
+  treatment groups – the aggregate gender-inequality estimand.
 
 **Standard errors.** Because the raw influence functions are not stored
 in the `results` object, SEs are computed treating the group-specific
@@ -113,53 +113,26 @@ renormalised.
 # \donttest{
 set.seed(1)
 sim <- simulate_data(n_individuals = 500)
-res <- multiple_treatment_group_analysis(sim, treatment_groups = 26:28,
+res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25,
                                          periods_post = 2, verbose = FALSE)
-#>   Error for d=26, event_time=2: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=27, event_time=1: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=27, event_time=2: Empty subgroup: age=29, female=1, D=30
-#>   Error for d=28, event_time=0: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=28, event_time=1: Empty subgroup: age=29, female=1, D=30
-#>   Error for d=28, event_time=2: Empty subgroup: age=30, female=1, D=31
-#>   Error for d=26, event_time=-5, dp=29: Empty subgroup: age=21, female=1, D=29
-#>   Error for d=26, event_time=-4, dp=29: Empty subgroup: age=22, female=1, D=29
-#>   Error for d=26, event_time=-3, dp=29: Empty subgroup: age=23, female=1, D=29
-#>   Error for d=26, event_time=-2, dp=29: Empty subgroup: age=24, female=1, D=29
-#>   Error for d=27, event_time=-5, dp=29: Empty subgroup: age=22, female=1, D=29
-#>   Error for d=27, event_time=-5, dp=30: Empty subgroup: age=22, female=1, D=30
-#>   Error for d=27, event_time=-4, dp=29: Empty subgroup: age=23, female=1, D=29
-#>   Error for d=27, event_time=-4, dp=30: Empty subgroup: age=23, female=1, D=30
-#>   Error for d=27, event_time=-3, dp=29: Empty subgroup: age=24, female=1, D=29
-#>   Error for d=27, event_time=-3, dp=30: Empty subgroup: age=24, female=1, D=30
-#>   Error for d=27, event_time=-2, dp=29: Empty subgroup: age=25, female=1, D=29
-#>   Error for d=27, event_time=-2, dp=30: Empty subgroup: age=25, female=1, D=30
-#>   Error for d=28, event_time=-5, dp=29: Empty subgroup: age=23, female=1, D=29
-#>   Error for d=28, event_time=-5, dp=30: Empty subgroup: age=23, female=1, D=30
-#>   Error for d=28, event_time=-5, dp=31: Empty subgroup: age=23, female=1, D=31
-#>   Error for d=28, event_time=-4, dp=29: Empty subgroup: age=24, female=1, D=29
-#>   Error for d=28, event_time=-4, dp=30: Empty subgroup: age=24, female=1, D=30
-#>   Error for d=28, event_time=-4, dp=31: Empty subgroup: age=24, female=1, D=31
-#>   Error for d=28, event_time=-3, dp=29: Empty subgroup: age=25, female=1, D=29
-#>   Error for d=28, event_time=-3, dp=30: Empty subgroup: age=25, female=1, D=30
-#>   Error for d=28, event_time=-3, dp=31: Empty subgroup: age=25, female=1, D=31
-#>   Error for d=28, event_time=-2, dp=29: Empty subgroup: age=26, female=1, D=29
-#>   Error for d=28, event_time=-2, dp=30: Empty subgroup: age=26, female=1, D=30
-#>   Error for d=28, event_time=-2, dp=31: Empty subgroup: age=26, female=1, D=31
+#>   Error for d=24, event_time=-5, dp=25: Empty subgroup: age=19, female=1, D=24
+#>   Error for d=24, event_time=-5, dp=26: Empty subgroup: age=19, female=1, D=24
+#>   Error for d=24, event_time=-5, dp=27: Empty subgroup: age=19, female=1, D=24
 agg <- aggregate_estimands(res)
 head(agg)
 #>   event_time estimand     method      agg_type         est         se n_groups
-#> 1          0    theta DID_Female avg_of_ratios -0.25869330 0.06697605        2
-#> 2          1    theta DID_Female avg_of_ratios -0.25018121 0.07762588        1
-#> 3          0    theta   DID_Male avg_of_ratios  0.02050512 0.09655764        2
-#> 4          1    theta   DID_Male avg_of_ratios  0.18435456 0.16059788        1
-#> 5          0    theta   NTD_Conv avg_of_ratios -0.27919842 0.11751243        2
-#> 6          1    theta   NTD_Conv avg_of_ratios -0.43453578 0.17837449        1
-#>         ci_l        ci_h
-#> 1 -0.3899664 -0.12742024
-#> 2 -0.4023279 -0.09803448
-#> 3 -0.1687479  0.20975810
-#> 4 -0.1304173  0.49912641
-#> 5 -0.5095228 -0.04887407
-#> 6 -0.7841498 -0.08492179
+#> 1          0    theta DID_Female avg_of_ratios -0.29641345 0.02464314        2
+#> 2          1    theta DID_Female avg_of_ratios -0.27796036 0.02445072        2
+#> 3          2    theta DID_Female avg_of_ratios -0.26871862 0.02007260        2
+#> 4          0    theta   DID_Male avg_of_ratios -0.02914986 0.02914927        2
+#> 5          1    theta   DID_Male avg_of_ratios -0.02099655 0.03156206        2
+#> 6          2    theta   DID_Male avg_of_ratios -0.06282078 0.03441832        2
+#>          ci_l         ci_h
+#> 1 -0.34471399 -0.248112901
+#> 2 -0.32588377 -0.230036949
+#> 3 -0.30806091 -0.229376319
+#> 4 -0.08628243  0.027982719
+#> 5 -0.08285819  0.040865084
+#> 6 -0.13028069  0.004639127
 # }
 ```

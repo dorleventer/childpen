@@ -9,16 +9,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/dorleventer/childpen/blob/main/DESCRIPTION)
+[`inst/CITATION`](https://github.com/dorleventer/childpen/blob/main/inst/CITATION)
 
-Leventer D (2026). *childpen: Identification and Estimation of Child
-Penalties*. R package version 0.2.2,
-<https://github.com/dorleventer/childpen>.
+Leventer, D. (2025). Identification of Child Penalties.
+arXiv:2602.07486. https://arxiv.org/abs/2602.07486
 
-    @Manual{,
-      title = {childpen: Identification and Estimation of Child Penalties},
+    @Article{,
+      title = {Identification of Child Penalties},
       author = {Dor Leventer},
-      year = {2026},
-      note = {R package version 0.2.2},
-      url = {https://github.com/dorleventer/childpen},
+      year = {2025},
+      journal = {arXiv preprint},
+      doi = {10.48550/arXiv.2602.07486},
+      url = {https://arxiv.org/abs/2602.07486},
     }

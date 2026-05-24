@@ -114,21 +114,21 @@ Requires helper functions `compute_mean_if()` and `se_cluster()`.
 # \donttest{
 set.seed(1)
 sim <- simulate_data(n_individuals = 500)
-res <- single_treatment_group_analysis(sim, d = 27, dp = 28, a = 28, pre = 1)
+res <- single_treatment_group_analysis(sim, d = 25, dp = 26, a = 26, pre = 1)
 head(res)
 #>   estimand     method           est           se n_female_treat
-#> 1      APO DID_Female  9.740796e+04 1.177499e+04             45
-#> 2      APO   DID_Male  1.005088e+05 1.143599e+04             45
-#> 3      ATE DID_Female -1.297154e+04 1.221918e+04             45
-#> 4      ATE   DID_Male  3.688769e+03 1.213416e+04             45
-#> 5    theta DID_Female -1.331671e-01 1.160218e-01             45
-#> 6    theta   DID_Male  3.670096e-02 1.228974e-01             45
+#> 1      APO DID_Female  4.741629e+04 2.684547e+03             58
+#> 2      APO   DID_Male  6.658594e+04 3.135801e+03             58
+#> 3      ATE DID_Female -1.229815e+03 2.447360e+03             58
+#> 4      ATE   DID_Male  5.422312e+02 2.761787e+03             58
+#> 5    theta DID_Female -2.593655e-02 5.039948e-02             58
+#> 6    theta   DID_Male  8.143329e-03 4.176981e-02             58
 #>   n_female_control n_male_treat n_male_control
-#> 1               61           62             49
-#> 2               61           62             49
-#> 3               61           62             49
-#> 4               61           62             49
-#> 5               61           62             49
-#> 6               61           62             49
+#> 1               36           59             55
+#> 2               36           59             55
+#> 3               36           59             55
+#> 4               36           59             55
+#> 5               36           59             55
+#> 6               36           59             55
 # }
 ```

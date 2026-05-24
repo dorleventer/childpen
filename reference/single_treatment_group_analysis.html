@@ -119,22 +119,22 @@ standard errors are computed by summing the IFs at the <code>id</code> level via
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">single_treatment_group_analysis</span><span class="op">(</span><span class="va">sim</span>, d <span class="op">=</span> <span class="fl">27</span>, dp <span class="op">=</span> <span class="fl">28</span>, a <span class="op">=</span> <span class="fl">28</span>, pre <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">single_treatment_group_analysis</span><span class="op">(</span><span class="va">sim</span>, d <span class="op">=</span> <span class="fl">25</span>, dp <span class="op">=</span> <span class="fl">26</span>, a <span class="op">=</span> <span class="fl">26</span>, pre <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   estimand     method           est           se n_female_treat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      APO DID_Female  9.740796e+04 1.177499e+04             45</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      APO   DID_Male  1.005088e+05 1.143599e+04             45</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      ATE DID_Female -1.297154e+04 1.221918e+04             45</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      ATE   DID_Male  3.688769e+03 1.213416e+04             45</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5    theta DID_Female -1.331671e-01 1.160218e-01             45</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6    theta   DID_Male  3.670096e-02 1.228974e-01             45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      APO DID_Female  4.741629e+04 2.684547e+03             58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      APO   DID_Male  6.658594e+04 3.135801e+03             58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      ATE DID_Female -1.229815e+03 2.447360e+03             58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      ATE   DID_Male  5.422312e+02 2.761787e+03             58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5    theta DID_Female -2.593655e-02 5.039948e-02             58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6    theta   DID_Male  8.143329e-03 4.176981e-02             58</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   n_female_control n_male_treat n_male_control</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1               61           62             49</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2               61           62             49</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3               61           62             49</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4               61           62             49</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5               61           62             49</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6               61           62             49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               36           59             55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2               36           59             55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3               36           59             55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4               36           59             55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5               36           59             55</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6               36           59             55</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

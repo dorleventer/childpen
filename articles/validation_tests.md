@@ -17,22 +17,22 @@ child penalty studies.
 
 library(childpen)
 
-data <- simulate_data(n_individuals = 5000, treatment_groups = 25:30)
+data <- simulate_data(n_individuals = 5000, treatment_groups = 24:28)
 data |> tibble()
-#> # A tibble: 105,000 × 6
-#>       id female   age     D  Y_inf      Y
-#>    <int>  <int> <int> <int>  <dbl>  <dbl>
-#>  1     1      1    20    25 14436. 14436.
-#>  2     1      1    21    25 23194. 23194.
-#>  3     1      1    22    25 26795. 26795.
-#>  4     1      1    23    25 39010. 39010.
-#>  5     1      1    24    25 63958. 63958.
-#>  6     1      1    25    25 53927. 45565.
-#>  7     1      1    26    25 52773. 45646.
-#>  8     1      1    27    25 25708. 22750.
-#>  9     1      1    28    25 98700. 89318.
-#> 10     1      1    29    25 58150. 53786.
-#> # ℹ 104,990 more rows
+#> # A tibble: 40,000 × 5
+#>       id female   age     D      Y
+#>    <int>  <int> <int> <int>  <dbl>
+#>  1     1      1    20    24 36267.
+#>  2     1      1    21    24 46761.
+#>  3     1      1    22    24 40172.
+#>  4     1      1    23    24 61655.
+#>  5     1      1    24    24 39286.
+#>  6     1      1    25    24 52229.
+#>  7     1      1    26    24 39057.
+#>  8     1      1    27    24 59584.
+#>  9     2      1    20    28 50250.
+#> 10     2      1    21    28 52739.
+#> # ℹ 39,990 more rows
 ```
 
 ## The correct validation tests
@@ -46,16 +46,16 @@ that the control group is $`d' = a + 1`$, the cohort whose first birth
 is one year after the target age.
 
 Assume that when presenting results, post-treatment, you report
-estimates for event times $`e=0,...,3`$. Then, for each treatment group
-$`d`$ you use 4 different control groups in post-treatment estimation.
+estimates for event times $`e=0,...,2`$. Then, for each treatment group
+$`d`$ you use 3 different control groups in post-treatment estimation.
 As the identification assumptions (e.g., parallel trends for DID) must
 hold for each point-estimate separately, this implies that it must hold
 within each treatment-control pair.
 
 The above argument means that the validation tests should be done
 separately by treatment-control combinations. Returning to the above
-example, if you want to show results for $`e=0,...,3`$ then you need to
-conduct pre-trend analysis for 4 different control groups. This is done
+example, if you want to show results for $`e=0,...,2`$ then you need to
+conduct pre-trend analysis for 3 different control groups. This is done
 automatically in the `childpen` package, as we show below.
 
 For completeness, the validation tests are:
@@ -73,22 +73,22 @@ We will now do the main heavy lifting. We run the main estimation
 function,
 [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md).
 Set `periods_pre` to the number of pre-treatment periods for which you
-want to conduct validation tests. As an example, we will examine three
+want to conduct validation tests. As an example, we will examine two
 periods pre-treatment. Since we set the number of periods in the
-post-treatment to 3 using `periods_post`, this will report validation
-tests separately for 4 control groups, as discussed above.
+post-treatment to 2 using `periods_post`, this will report validation
+tests separately for 3 control groups, as discussed above.
 
 ``` r
 
 res = multiple_treatment_group_analysis(data = data,
-                                  treatment_groups = 25:26, # which treatment groups to run in the analysis
-                                  periods_post = 3, # estimate results for post periods 0:3
-                                  periods_pre = 3, # estimate pre-trend diagnostics, set to NULL to omit from estimation
+                                  treatment_groups = 24:25, # which treatment groups to run in the analysis
+                                  periods_post = 2, # estimate results for post periods 0:2
+                                  periods_pre = 2, # estimate pre-trend diagnostics, set to NULL to omit from estimation
                                   max_age = 40, # dont estimate results if age is above 40
                                   min_age = 20, # dont estimate results if age is below 20
-                                  pre = 1, # use 1 period before treatment, can make further away if anticipation is conern
+                                  pre = 1, # use 1 period before treatment, can make further away if anticipation is concern
                                   verbose = FALSE # set to TRUE to output progress (i like to time loops) set to FALSE to omit messages
-                                  ) 
+                                  )
 ```
 
 ## Examining results of validation tests
@@ -98,25 +98,25 @@ As a first pass, lets see the results.
 ``` r
 
 res |> tibble()
-#> # A tibble: 480 × 16
+#> # A tibble: 270 × 16
 #>        d    dp     a event_time estimand  method            est      se     ci_l
 #>    <int> <dbl> <int>      <int> <chr>     <chr>           <dbl>   <dbl>    <dbl>
-#>  1    25    26    25          0 APO       DID_Female    7.46e+4 3.58e+3  6.76e+4
-#>  2    25    26    25          0 APO       DID_Male      7.29e+4 3.44e+3  6.62e+4
-#>  3    25    26    25          0 ATE       DID_Female   -2.30e+4 3.63e+3 -3.01e+4
-#>  4    25    26    25          0 ATE       DID_Male     -1.21e+3 3.63e+3 -8.32e+3
-#>  5    25    26    25          0 theta     DID_Female   -3.08e-1 3.72e-2 -3.81e-1
-#>  6    25    26    25          0 theta     DID_Male     -1.66e-2 4.93e-2 -1.13e-1
-#>  7    25    26    25          0 ATE       TD           -2.18e+4 5.14e+3 -3.19e+4
-#>  8    25    26    25          0 theta     NTD_Conv     -2.92e-1 6.18e-2 -4.13e-1
-#>  9    25    26    25          0 Delta_rho NTD_New      -3.04e-1 6.84e-2 -4.38e-1
-#> 10    25    26    25          0 APO       TD_Null       7.34e+4 5.10e+3  6.34e+4
-#> # ℹ 470 more rows
+#>  1    24    25    24          0 APO       DID_Female    5.42e+4 7.95e+2  5.27e+4
+#>  2    24    25    24          0 APO       DID_Male      6.23e+4 8.82e+2  6.06e+4
+#>  3    24    25    24          0 ATE       DID_Female   -1.30e+4 7.02e+2 -1.43e+4
+#>  4    24    25    24          0 ATE       DID_Male     -3.71e+3 8.27e+2 -5.34e+3
+#>  5    24    25    24          0 theta     DID_Female   -2.39e-1 1.03e-2 -2.59e-1
+#>  6    24    25    24          0 theta     DID_Male     -5.96e-2 1.27e-2 -8.45e-2
+#>  7    24    25    24          0 ATE       TD           -9.25e+3 1.08e+3 -1.14e+4
+#>  8    24    25    24          0 theta     NTD_Conv     -1.79e-1 1.64e-2 -2.12e-1
+#>  9    24    25    24          0 Delta_rho NTD_New      -1.66e-1 1.59e-2 -1.97e-1
+#> 10    24    25    24          0 APO       TD_Null       5.05e+4 1.15e+3  4.83e+4
+#> # ℹ 260 more rows
 #> # ℹ 7 more variables: ci_h <dbl>, t <dbl>, p <dbl>, n_female_treat <int>,
 #> #   n_female_control <int>, n_male_treat <int>, n_male_control <int>
 ```
 
-Focusing on $`d=25`$, lets examine pre-trends. We will start with DID of
+Focusing on $`d=24`$, lets examine pre-trends. We will start with DID of
 females. Generally, valid pre-trend validation tests would behave such
 that the confidence intervals include 0, and there is no obvious trend
 in the pre-period, and there is no systematic difference between control
@@ -126,7 +126,7 @@ pre-treatment event times.
 
 Note that in the plot below I define `control_offset` as the difference
 between the control group $`d^\prime`$ and the treatment group $`d`$.
-E.g., for $`d=25`$ and $`d^\prime=26`$, i.e., the closest
+E.g., for $`d=24`$ and $`d^\prime=25`$, i.e., the closest
 not-yet-treated control group at event time $`e=0`$, I set control
 offset to 1.
 
@@ -135,16 +135,16 @@ individual level.
 
 ``` r
 
-res |> 
-  filter(d == 25,
-         a < d, 
+res |>
+  filter(d == 24,
+         a < d,
          estimand == "ATE",
-         method == "DID_Female") |> 
-  mutate(control_offset = dp - d, 
-         control_offset = factor(control_offset)) |> 
+         method == "DID_Female") |>
+  mutate(control_offset = dp - d,
+         control_offset = factor(control_offset)) |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset, fill = control_offset)) +
-  geom_ribbon(alpha = .15, color = NA) + geom_point() + geom_line() + 
-  scale_x_continuous(breaks = -4:-2) + 
+  geom_ribbon(alpha = .15, color = NA) + geom_point() + geom_line() +
+  scale_x_continuous(breaks = -3:-2) +
   facet_grid(cols = vars(control_offset))
 ```
 
@@ -155,16 +155,16 @@ on same plot.
 
 ``` r
 
-res |> 
-  filter(d == 25,
-         a < d, 
+res |>
+  filter(d == 24,
+         a < d,
          estimand == "ATE",
-         method == "DID_Female") |> 
+         method == "DID_Female") |>
   mutate(control_offset = dp - d, 
          control_offset = factor(control_offset)) |> 
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset, fill = control_offset)) +
   geom_ribbon(alpha = .15, color = NA) + geom_point() + geom_line() + 
-  scale_x_continuous(breaks = -4:-2)
+  scale_x_continuous(breaks = -3:-2)
 ```
 
 ![](validation_tests_files/figure-html/unnamed-chunk-2-1.png)
@@ -181,7 +181,7 @@ res |>
          control_offset = factor(control_offset)) |> 
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset, fill = control_offset)) +
   geom_ribbon(alpha = .15, color = NA) + geom_point() + geom_line() + 
-  scale_x_continuous(breaks = -4:-2) + 
+  scale_x_continuous(breaks = -3:-2) + 
   facet_grid(cols = vars(d))
 ```
 
@@ -199,7 +199,7 @@ res |>
          control_offset = factor(control_offset)) |> 
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset, fill = control_offset)) +
   geom_ribbon(alpha = .15, color = NA) + geom_point() + geom_line() + 
-  scale_x_continuous(breaks = -4:-2) + 
+  scale_x_continuous(breaks = -3:-2) + 
   facet_grid(cols = vars(d), rows = vars(method), scales = "free")
 ```
 

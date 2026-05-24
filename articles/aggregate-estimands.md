@@ -35,35 +35,22 @@ Three aggregate estimands are available:
   penalty. Formally,
   $`\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)`$.
 
-## Simulate data
+## Simulate and estimate
+
+We simulate 2 000 individuals spanning treatment groups 24–30 (the extra
+groups serve as clean controls for the youngest treated cohorts), then
+analyse groups 24–27 with two post-treatment periods.
 
 ``` r
 
 library(childpen)
 
-set.seed(42)
-data <- simulate_data(n_individuals = 2000, treatment_groups = 25:32)
-head(data)
-#>   id female age  D  Y_inf      Y
-#> 1  1      1  20 25  32193  32193
-#> 2  1      1  21 25  46159  46159
-#> 3  1      1  22 25  79432  79432
-#> 4  1      1  23 25  75703  75703
-#> 5  1      1  24 25 291366 291366
-#> 6  1      1  25 25 139286  94345
-```
-
-## Run estimation
-
-We estimate all methods for treatment groups 25–28 with three
-post-treatment periods.
-
-``` r
+data <- simulate_data(n_individuals = 2000, treatment_groups = 24:30)
 
 res <- multiple_treatment_group_analysis(
   data             = data,
-  treatment_groups = 25:28,
-  periods_post     = 3,
+  treatment_groups = 24:27,
+  periods_post     = 2,
   periods_pre      = NULL,
   verbose          = FALSE
 )
@@ -80,20 +67,20 @@ treatment groups contribute an estimate to each event-time cell.
 
 agg <- aggregate_estimands(res)
 head(agg)
-#>   event_time estimand     method      agg_type       est       se n_groups
-#> 1          0    theta DID_Female avg_of_ratios -0.281741 0.035683        4
-#> 2          1    theta DID_Female avg_of_ratios -0.304234 0.032906        4
-#> 3          2    theta DID_Female avg_of_ratios -0.293613 0.032100        4
-#> 4          3    theta DID_Female avg_of_ratios -0.322766 0.030963        4
-#> 5          0    theta   DID_Male avg_of_ratios  0.014189 0.051801        4
-#> 6          1    theta   DID_Male avg_of_ratios -0.057632 0.043137        4
+#>   event_time estimand     method      agg_type       est        se n_groups
+#> 1          0    theta DID_Female avg_of_ratios -0.248251 0.0093688        4
+#> 2          1    theta DID_Female avg_of_ratios -0.285051 0.0088667        4
+#> 3          2    theta DID_Female avg_of_ratios -0.275046 0.0094078        4
+#> 4          0    theta   DID_Male avg_of_ratios -0.049269 0.0126563        4
+#> 5          1    theta   DID_Male avg_of_ratios -0.047194 0.0122294        4
+#> 6          2    theta   DID_Male avg_of_ratios -0.052637 0.0121010        4
 #>        ci_l      ci_h
-#> 1 -0.351680 -0.211803
-#> 2 -0.368730 -0.239737
-#> 3 -0.356529 -0.230698
-#> 4 -0.383453 -0.262078
-#> 5 -0.087341  0.115719
-#> 6 -0.142181  0.026917
+#> 1 -0.266614 -0.229888
+#> 2 -0.302429 -0.267672
+#> 3 -0.293485 -0.256606
+#> 4 -0.074075 -0.024462
+#> 5 -0.071164 -0.023224
+#> 6 -0.076355 -0.028919
 ```
 
 The output has one row per `event_time × estimand × method × agg_type`
@@ -184,7 +171,7 @@ Below we contrast two stylized distributions:
 
 ``` r
 
-groups <- as.character(25:28)
+groups <- as.character(24:27)
 
 # Right-skewed: more weight on younger groups
 w_us <- setNames(c(0.40, 0.30, 0.20, 0.10), groups)

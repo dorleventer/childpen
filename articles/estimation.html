@@ -66,16 +66,38 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>This vignette shows how to estimate DID, TD, and NTD using
-<code>childpen</code>. All estimators are computed jointly by
-<code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code>. The function returns
-one row per treatment group
+<p><code>childpen</code> provides five estimators for the child penalty
+in earnings: <strong>DID_Female</strong>, <strong>DID_Male</strong>,
+<strong>TD</strong>, <strong>NTD_Conv</strong>, and
+<strong>NTD_New</strong>. All five are computed jointly by a single call
+to <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code>, which returns one
+row per treatment group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>
 event time
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>
 estimand
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>
 method combination.</p>
+<p>The estimators differ in what they target:</p>
+<ul>
+<li>
+<strong>DID_Female / DID_Male</strong> — gender-specific average
+treatment effects, using the closest not-yet-treated group as a
+control.</li>
+<li>
+<strong>TD</strong> — the gender <em>gap</em> in treatment effects
+(levels), i.e. ATE(female) − ATE(male).</li>
+<li>
+<strong>NTD_Conv</strong> — the conventional child penalty: the
+gender gap in <em>normalised</em> effects,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mi>f</mi></msub><mo>−</mo><msub><mi>θ</mi><mi>m</mi></msub></mrow><annotation encoding="application/x-tex">\theta_f - \theta_m</annotation></semantics></math>.</li>
+<li>
+<strong>NTD_New</strong> — the effect of parenthood on the gender
+earnings <em>ratio</em>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>,
+denoted
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi></mrow><annotation encoding="application/x-tex">\Delta\rho</annotation></semantics></math>.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="simulate-data-and-run-estimation">Simulate data and run estimation<a class="anchor" aria-label="anchor" href="#simulate-data-and-run-estimation"></a>
@@ -83,137 +105,83 @@ method combination.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dorleventer/childpen" class="external-link">childpen</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">2000</span>, treatment_groups <span class="op">=</span> <span class="fl">26</span><span class="op">:</span><span class="fl">32</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">2000</span>, treatment_groups <span class="op">=</span> <span class="fl">24</span><span class="op">:</span><span class="fl">28</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   id female age  D  Y_inf      Y</span></span>
-<span><span class="co">#&gt; 1  1      1  20 26  10516  10516</span></span>
-<span><span class="co">#&gt; 2  1      1  21 26  32197  32197</span></span>
-<span><span class="co">#&gt; 3  1      1  22 26  44198  44198</span></span>
-<span><span class="co">#&gt; 4  1      1  23 26 115356 115356</span></span>
-<span><span class="co">#&gt; 5  1      1  24 26  44976  44976</span></span>
-<span><span class="co">#&gt; 6  1      1  25 26  83416  83416</span></span></code></pre></div>
+<span><span class="co">#&gt;   id female age  D     Y</span></span>
+<span><span class="co">#&gt; 1  1      1  20 24 40644</span></span>
+<span><span class="co">#&gt; 2  1      1  21 24 36525</span></span>
+<span><span class="co">#&gt; 3  1      1  22 24 39328</span></span>
+<span><span class="co">#&gt; 4  1      1  23 24 34391</span></span>
+<span><span class="co">#&gt; 5  1      1  24 24 46404</span></span>
+<span><span class="co">#&gt; 6  1      1  25 24 46885</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res</span> <span class="op">=</span> <span class="fu"><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">data</span>,</span>
-<span>                                  treatment_groups <span class="op">=</span> <span class="fl">26</span><span class="op">:</span><span class="fl">28</span>,</span>
-<span>                                  periods_post <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>                                  periods_pre <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>                                  max_age <span class="op">=</span> <span class="fl">40</span>,</span>
-<span>                                  min_age <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>                                  pre <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>                                  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>                                  <span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="simulation-truth">Simulation truth<a class="anchor" aria-label="anchor" href="#simulation-truth"></a>
-</h2>
-<p>The simulation provides potential outcomes so we can benchmark every
-estimand against its true value.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">PO_tidy</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>event_time <span class="op">=</span> <span class="va">age</span> <span class="op">-</span> <span class="va">D</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">rename</span><span class="op">(</span>d <span class="op">=</span> <span class="va">D</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">female</span>, <span class="va">d</span>, <span class="va">event_time</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">summarize</span><span class="op">(</span>APO_obs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span>, APO <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Y_inf</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>ATE <span class="op">=</span> <span class="va">APO_obs</span> <span class="op">-</span> <span class="va">APO</span>,</span>
-<span>         theta <span class="op">=</span> <span class="va">ATE</span> <span class="op">/</span> <span class="va">APO</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">0</span><span class="op">:</span><span class="fl">3</span>, <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">26</span><span class="op">:</span><span class="fl">28</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis</a></span><span class="op">(</span></span>
+<span>  data            <span class="op">=</span> <span class="va">data</span>,</span>
+<span>  treatment_groups <span class="op">=</span> <span class="fl">24</span><span class="op">:</span><span class="fl">25</span>,</span>
+<span>  periods_post    <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  periods_pre     <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose         <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The data contain individuals with first birth ages ranging from 24 to
+28. We analyse the two earliest groups (d = 24 and d = 25) over two
+post-birth periods. Groups with d ∈ {26, 27, 28} serve as
+not-yet-treated controls: for d = 24 at event time 2 (age 26) the
+control is d′ = 27; for d = 25 at event time 2 (age 27) the control is
+d′ = 28.</p>
 </div>
 <div class="section level2">
 <h2 id="did">DID<a class="anchor" aria-label="anchor" href="#did"></a>
 </h2>
-<p>DID estimates gender-specific effects using closest-not-yet-treated
-control groups. For treatment group
+<p>DID estimates gender-specific effects using the closest
+not-yet-treated control group. For treatment group
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
 and target age
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>,
 the control group is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mi>′</mi></msup><mo>=</mo><mi>a</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d^\prime = a + 1</annotation></semantics></math>.
-The DID counterfactual is</p>
+The DID counterfactual potential outcome is</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mrow><mi>d</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo><mo>+</mo><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>−</mo><msub><mi>Y</mi><mrow><mi>d</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><msup><mi>d</mi><mi>′</mi></msup><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\delta_{\mathrm{APO}}(g,d,d^\prime,a)=\mathbb{E}[Y_{d-1}\mid G=g, D=d]+\mathbb{E}[Y_a-Y_{d-1}\mid G=g, D=d^\prime]</annotation></semantics></math></p>
 <p>and the DID ATE and normalised effect are</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo><mo>−</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>δ</mi><mi>θ</mi></msub><mo>=</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mi>/</mi><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">\delta_{\mathrm{ATE}}(g,d,d^\prime,a)=\mathbb{E}[Y_a\mid G=g, D=d]-\delta_{\mathrm{APO}}(g,d,d^\prime,a), \qquad \delta_{\theta}=\delta_{\mathrm{ATE}}/\delta_{\mathrm{APO}}.</annotation></semantics></math></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">obs_tidy</span> <span class="op">=</span> <span class="va">data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>event_time <span class="op">=</span> <span class="va">age</span> <span class="op">-</span> <span class="va">D</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">rename</span><span class="op">(</span>d <span class="op">=</span> <span class="va">D</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">female</span>, <span class="va">d</span>, <span class="va">event_time</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">summarize</span><span class="op">(</span>est <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>estimand <span class="op">=</span> <span class="st">"APO"</span>, method <span class="op">=</span> <span class="st">"Observed"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="op">-</span><span class="fl">3</span><span class="op">:</span><span class="fl">3</span>, <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">26</span><span class="op">:</span><span class="fl">28</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">PO_long</span> <span class="op">=</span> <span class="va">PO_tidy</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">APO_obs</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">pivot_longer</span><span class="op">(</span></span>
-<span>    <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">female</span>, <span class="va">d</span>, <span class="va">event_time</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"estimand"</span>, values_to <span class="op">=</span> <span class="st">"est"</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>method <span class="op">=</span> <span class="st">"Truth"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">plot_data</span> <span class="op">=</span> <span class="va">res</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DID_Female"</span>, <span class="st">"DID_Male"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>female <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"DID_Female"</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">female</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>method <span class="op">=</span> <span class="st">"DID"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">obs_tidy</span>, <span class="va">PO_long</span><span class="op">)</span></span></code></pre></div>
-<div class="section level3">
-<h3 id="females">Females<a class="anchor" aria-label="anchor" href="#females"></a>
-</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plot_data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">female</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>, color <span class="op">=</span> <span class="va">method</span>, fill <span class="op">=</span> <span class="va">method</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span> <span class="op">+</span></span>
+<p><strong>When to use DID_Female / DID_Male:</strong> use these when
+you want gender-specific effect trajectories — for example, to plot the
+event-study path for women and men separately before computing any gap
+measure.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DID_Female"</span>, <span class="st">"DID_Male"</span><span class="op">)</span>,</span>
+<span>         <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">24</span><span class="op">:</span><span class="fl">25</span>,</span>
+<span>         <span class="va">event_time</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">0</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>,</span>
+<span>             color <span class="op">=</span> <span class="va">method</span>, fill <span class="op">=</span> <span class="va">method</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">facet_grid</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">estimand</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>, color <span class="op">=</span> <span class="st">"Method"</span>, fill <span class="op">=</span> <span class="st">"Method"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>,</span>
+<span>       color <span class="op">=</span> <span class="st">"Estimator"</span>, fill <span class="op">=</span> <span class="st">"Estimator"</span>,</span>
+<span>       title <span class="op">=</span> <span class="st">"DID estimates by gender and treatment group"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="estimation_files/figure-html/did_female-1.png" class="r-plt" alt="" width="768"></p>
-</div>
-<div class="section level3">
-<h3 id="males">Males<a class="anchor" aria-label="anchor" href="#males"></a>
-</h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plot_data</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">female</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>, color <span class="op">=</span> <span class="va">method</span>, fill <span class="op">=</span> <span class="va">method</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">facet_grid</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">estimand</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>, color <span class="op">=</span> <span class="st">"Method"</span>, fill <span class="op">=</span> <span class="st">"Method"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="estimation_files/figure-html/did_male-1.png" class="r-plt" alt="" width="768"></p>
-</div>
+<p><img src="estimation_files/figure-html/did_plot-1.png" class="r-plt" alt="" width="768"></p>
 </div>
 <div class="section level2">
 <h2 id="td">TD<a class="anchor" aria-label="anchor" href="#td"></a>
 </h2>
 <p>TD estimates the gender gap in treatment effects in levels:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">T</mi><mi mathvariant="normal">D</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">\mathrm{TD}(d, d^\prime, a) = \delta_{\mathrm{ATE}}(f, d, d^\prime, a) - \delta_{\mathrm{ATE}}(m, d, d^\prime, a).</annotation></semantics></math></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">truth_td</span> <span class="op">&lt;-</span> <span class="va">PO_tidy</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">female</span>, <span class="va">d</span>, <span class="va">event_time</span>, <span class="va">ATE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">female</span>, values_from <span class="op">=</span> <span class="va">ATE</span>, names_prefix <span class="op">=</span> <span class="st">"ATE_f"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">rename</span><span class="op">(</span>ATE_female <span class="op">=</span> <span class="va">ATE_f1</span>, ATE_male <span class="op">=</span> <span class="va">ATE_f0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>est <span class="op">=</span> <span class="va">ATE_female</span> <span class="op">-</span> <span class="va">ATE_male</span>,</span>
-<span>         method <span class="op">=</span> <span class="st">"TD"</span>, estimand <span class="op">=</span> <span class="st">"ATE"</span>,</span>
-<span>         ci_l <span class="op">=</span> <span class="cn">NA_real_</span>, ci_h <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
-<span>         truth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plot_td</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"TD"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>truth <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">method</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span>, <span class="va">truth</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_td</span> <span class="op">|&gt;</span> <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">method</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span>, <span class="va">truth</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">truth</span>, <span class="st">"Truth"</span>, <span class="st">"TD"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">plot_td</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>,</span>
-<span>             color <span class="op">=</span> <span class="va">label</span>, fill <span class="op">=</span> <span class="va">label</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<p><strong>When to use TD:</strong> use TD when your research question
+is about the <em>absolute</em> earnings gap attributable to parenthood —
+for example, how many currency units more does parenthood reduce female
+earnings than male earnings.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"TD"</span>,</span>
+<span>         <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">24</span><span class="op">:</span><span class="fl">25</span>,</span>
+<span>         <span class="va">event_time</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">0</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>, fill <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">facet_grid</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">estimand</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>,</span>
-<span>       color <span class="op">=</span> <span class="st">"Method"</span>, fill <span class="op">=</span> <span class="st">"Method"</span>,</span>
 <span>       title <span class="op">=</span> <span class="st">"TD: ATE(female) - ATE(male)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="estimation_files/figure-html/td_plot-1.png" class="r-plt" alt="" width="768"></p>
@@ -221,8 +189,8 @@ The DID counterfactual is</p>
 <div class="section level2">
 <h2 id="ntd">NTD<a class="anchor" aria-label="anchor" href="#ntd"></a>
 </h2>
-<p>NTD produces two estimands: <code>NTD_Conv</code> (conventional) and
-<code>NTD_New</code>.</p>
+<p>NTD produces two estimands that measure the gender gap in
+<em>normalised</em> terms.</p>
 <p><strong>NTD_Conv</strong> is the gap in normalised effects — the
 conventional child penalty:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">_</mi><mi mathvariant="normal">C</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">n</mi><mi mathvariant="normal">v</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">\mathrm{NTD\_Conv}(d, d^\prime, a) = \delta_{\theta}(f, d, d^\prime, a) - \delta_{\theta}(m, d, d^\prime, a).</annotation></semantics></math></p>
@@ -230,73 +198,44 @@ conventional child penalty:</p>
 gender earnings ratio
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ρ</mi><annotation encoding="application/x-tex">\rho</annotation></semantics></math>:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">D</mi><mi mathvariant="normal">_</mi><mi mathvariant="normal">N</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">w</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>∣</mo><mi>f</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow><mrow><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>∣</mo><mi>m</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow></mfrac><mo>−</mo><mfrac><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mi>′</mi></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>=</mo><mi mathvariant="normal">Δ</mi><mi>ρ</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">\mathrm{NTD\_New}(d, d^\prime, a) = \frac{\mathbb{E}[Y_a \mid f, D=d]}{\mathbb{E}[Y_a \mid m, D=d]} - \frac{\delta_{\mathrm{APO}}(f, d, d^\prime, a)}{\delta_{\mathrm{APO}}(m, d, d^\prime, a)} = \Delta\rho.</annotation></semantics></math></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">truth_ntd_conv</span> <span class="op">&lt;-</span> <span class="va">PO_tidy</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">female</span>, <span class="va">d</span>, <span class="va">event_time</span>, <span class="va">theta</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">female</span>, values_from <span class="op">=</span> <span class="va">theta</span>, names_prefix <span class="op">=</span> <span class="st">"th_f"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">rename</span><span class="op">(</span>th_female <span class="op">=</span> <span class="va">th_f1</span>, th_male <span class="op">=</span> <span class="va">th_f0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>est <span class="op">=</span> <span class="va">th_female</span> <span class="op">-</span> <span class="va">th_male</span>,</span>
-<span>         method <span class="op">=</span> <span class="st">"NTD_Conv"</span>, estimand <span class="op">=</span> <span class="st">"theta"</span>,</span>
-<span>         ci_l <span class="op">=</span> <span class="cn">NA_real_</span>, ci_h <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
-<span>         truth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">truth_ntd_new</span> <span class="op">&lt;-</span> <span class="va">PO_tidy</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">female</span>, <span class="va">d</span>, <span class="va">event_time</span>, <span class="va">APO_obs</span>, <span class="va">APO</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">pivot_wider</span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">female</span>,</span>
-<span>              values_from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">APO_obs</span>, <span class="va">APO</span><span class="op">)</span>,</span>
-<span>              names_sep <span class="op">=</span> <span class="st">"_f"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">rename</span><span class="op">(</span>Y_female <span class="op">=</span> <span class="va">APO_obs_f1</span>, Y_male <span class="op">=</span> <span class="va">APO_obs_f0</span>,</span>
-<span>         APO_female <span class="op">=</span> <span class="va">APO_f1</span>, APO_male <span class="op">=</span> <span class="va">APO_f0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>est <span class="op">=</span> <span class="op">(</span><span class="va">Y_female</span> <span class="op">/</span> <span class="va">Y_male</span><span class="op">)</span> <span class="op">-</span> <span class="op">(</span><span class="va">APO_female</span> <span class="op">/</span> <span class="va">APO_male</span><span class="op">)</span>,</span>
-<span>         method <span class="op">=</span> <span class="st">"NTD_New"</span>, estimand <span class="op">=</span> <span class="st">"Delta_rho"</span>,</span>
-<span>         ci_l <span class="op">=</span> <span class="cn">NA_real_</span>, ci_h <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
-<span>         truth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">truth_all</span> <span class="op">&lt;-</span> <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_ntd_conv</span>, <span class="va">truth_ntd_new</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">method</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span>, <span class="va">truth</span><span class="op">)</span></span></code></pre></div>
+<p><strong>When to use NTD_Conv vs NTD_New:</strong> NTD_Conv normalises
+each gender’s ATE by its own pre-birth earnings level, so it is
+comparable across groups with different baseline earnings. NTD_New
+instead asks how much the <em>ratio</em> of female-to-male earnings
+changes because of parenthood, making it directly interpretable as a
+change in the gender earnings ratio.</p>
 <div class="section level3">
 <h3 id="ntd_conv">NTD_Conv<a class="anchor" aria-label="anchor" href="#ntd_conv"></a>
 </h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plot_ntd_conv</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Conv"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>truth <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">method</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span>, <span class="va">truth</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_all</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Conv"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">truth</span>, <span class="st">"Truth"</span>, <span class="st">"NTD_Conv"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">plot_ntd_conv</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>,</span>
-<span>             color <span class="op">=</span> <span class="va">label</span>, fill <span class="op">=</span> <span class="va">label</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Conv"</span>,</span>
+<span>         <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">24</span><span class="op">:</span><span class="fl">25</span>,</span>
+<span>         <span class="va">event_time</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">0</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>, fill <span class="op">=</span> <span class="st">"darkorange"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"darkorange"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"darkorange"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">facet_grid</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">estimand</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>,</span>
-<span>       color <span class="op">=</span> <span class="st">"Method"</span>, fill <span class="op">=</span> <span class="st">"Method"</span>,</span>
-<span>       title <span class="op">=</span> <span class="st">"NTD_Conv: theta(female) - theta(male)"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>       title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"NTD_Conv: "</span>, <span class="va">theta</span><span class="op">[</span><span class="va">f</span><span class="op">]</span>, <span class="st">" - "</span>, <span class="va">theta</span><span class="op">[</span><span class="va">m</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="estimation_files/figure-html/ntd_conv_plot-1.png" class="r-plt" alt="" width="768"></p>
 </div>
 <div class="section level3">
 <h3 id="ntd_new">NTD_New<a class="anchor" aria-label="anchor" href="#ntd_new"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plot_ntd_new</span> <span class="op">&lt;-</span> <span class="va">res</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_New"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>truth <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">method</span>, <span class="va">est</span>, <span class="va">ci_l</span>, <span class="va">ci_h</span>, <span class="va">truth</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">bind_rows</span><span class="op">(</span><span class="va">truth_all</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_New"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">truth</span>, <span class="st">"Truth"</span>, <span class="st">"NTD_New"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">plot_ntd_new</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>,</span>
-<span>             color <span class="op">=</span> <span class="va">label</span>, fill <span class="op">=</span> <span class="va">label</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_New"</span>,</span>
+<span>         <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">24</span><span class="op">:</span><span class="fl">25</span>,</span>
+<span>         <span class="va">event_time</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">0</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_ribbon</span><span class="op">(</span>color <span class="op">=</span> <span class="cn">NA</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>, fill <span class="op">=</span> <span class="st">"darkgreen"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_point</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"darkgreen"</span><span class="op">)</span> <span class="op">+</span> <span class="fu">geom_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"darkgreen"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">facet_grid</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>, rows <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">estimand</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event Time"</span>, y <span class="op">=</span> <span class="st">"Estimate +/- 95% CI"</span>,</span>
-<span>       color <span class="op">=</span> <span class="st">"Method"</span>, fill <span class="op">=</span> <span class="st">"Method"</span>,</span>
-<span>       title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"NTD_New: "</span>, <span class="va">Delta</span>, <span class="va">rho</span>, <span class="st">" (effect on gender earnings ratio)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>       title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"NTD_New: "</span>, <span class="va">Delta</span>, <span class="va">rho</span>,</span>
+<span>                                <span class="st">" (effect on gender earnings ratio)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="estimation_files/figure-html/ntd_new_plot-1.png" class="r-plt" alt="" width="768"></p>
 </div>
@@ -304,8 +243,8 @@ gender earnings ratio
 <div class="section level2">
 <h2 id="validation-tests">Validation tests<a class="anchor" aria-label="anchor" href="#validation-tests"></a>
 </h2>
-<p>For a discussion on how to perform validation tests, and what type of
-tests are correct for this type of estimation, see the <a href="validation_tests.html">validation tests vignette</a>.</p>
+<p>For a discussion of pre-trends tests and other validation checks
+appropriate for this estimator family, see the <a href="validation_tests.html">validation tests vignette</a>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
