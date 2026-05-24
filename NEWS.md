@@ -1,11 +1,15 @@
 # childpen 0.2.2
 
-* Fixed CRAN check: restricted `data.table` threads to 1 in vignettes and
-  tests to comply with CRAN's 2-core policy.
-* Added `treatment_groups` parameter to `simulate_data()` (default `25:28`)
-  to control which treatment groups are generated.
-* Reduced vignette runtime by using fewer treatment groups and post-treatment
-  periods in examples.
+* Rewrote `simulate_data()` with a self-contained DGP: lifecycle earnings,
+  gender gap, selection on treatment timing, and gendered treatment effects.
+  No internal data dependencies.
+* Removed internal datasets (`male_profiles`, `female_params`,
+  `variance_params`) and related documentation.
+* Rewrote vignettes to focus on estimator usage and interpretation rather
+  than truth/counterfactual comparisons.
+* Fixed CRAN check: restricted `data.table` threads to 1 in all vignettes
+  and tests to comply with CRAN's 2-core policy.
+* Added `inst/CITATION` for the underlying paper.
 
 # childpen 0.2.1
 
