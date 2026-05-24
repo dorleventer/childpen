@@ -52,6 +52,7 @@ multiple_treatment_group_analysis <- function(data,
   n_total <- n_post + n_pre
 
   results_list <- list()
+  if_list <- list()
   idx <- 1
   completed <- 0
 
@@ -87,6 +88,15 @@ multiple_treatment_group_analysis <- function(data,
         res$d <- d
         res$dp <- dp
         res$a <- a
+
+        # Collect id-level IF scores for aggregate SE computation
+        ifs <- attr(res, "if_scores")
+        if (!is.null(ifs)) {
+          ifs$d <- d
+          ifs$dp <- dp
+          ifs$a <- a
+          if_list[[idx]] <- ifs
+        }
 
         results_list[[idx]] <- res
         idx <- idx + 1
@@ -132,6 +142,15 @@ multiple_treatment_group_analysis <- function(data,
             res$d <- d
             res$dp <- dp
             res$a <- a
+
+            # Collect id-level IF scores for aggregate SE computation
+            ifs <- attr(res, "if_scores")
+            if (!is.null(ifs)) {
+              ifs$d <- d
+              ifs$dp <- dp
+              ifs$a <- a
+              if_list[[idx]] <- ifs
+            }
 
             results_list[[idx]] <- res
             idx <- idx + 1
@@ -182,6 +201,19 @@ multiple_treatment_group_analysis <- function(data,
                  "n_female_treat","n_female_control","n_male_treat","n_male_control")
   keep <- intersect(col_order, names(result_df))
   result_df <- result_df[, c(keep, setdiff(names(result_df), keep)), drop = FALSE]
+
+  # Attach id-level IF scores for aggregate SE computation
+  if (length(if_list) > 0L) {
+    if_data <- data.table::rbindlist(if_list, use.names = TRUE)
+    if_data[, event_time := a - d]
+    attr(result_df, "if_data") <- if_data
+    attr(result_df, "n_obs") <- nrow(DT)
+    attr(result_df, "n_ids") <- DT[, data.table::uniqueN(id)]
+
+    # Individual-level (id, female, D) lookup for sample-proportion weights
+    id_info <- unique(DT[, .(id, female, D)])
+    attr(result_df, "id_info") <- id_info
+  }
 
   return(result_df)
 

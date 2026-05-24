@@ -159,6 +159,23 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
   n_male_d <- DT[female == 0 & D == d, uniqueN(id)]
   n_male_dp <- DT[female == 0 & D == dp, uniqueN(id)]
 
+  # ---- Extract id-level IF scores for aggregation ---------------------------
+  # These are the cluster-summed influence functions per individual. Needed by
+
+  # aggregate_estimands() to compute SEs that account for shared control groups
+  # across treatment groups.
+  if_scores <- DT[, .(
+    if_apo_f    = sum(if_apo_f),
+    if_apo_m    = sum(if_apo_m),
+    if_ate_f    = sum(if_ate_f),
+    if_ate_m    = sum(if_ate_m),
+    if_theta_f  = sum(if_theta_f),
+    if_theta_m  = sum(if_theta_m),
+    if_td       = sum(if_td),
+    if_ntd_conv = sum(if_ntd_conv),
+    if_ntd_new  = sum(if_ntd_new)
+  ), by = id]
+
   # Create result data.frame (fast!)
   estimates <- c(apo_f, apo_m, ate_f, ate_m, theta_f, theta_m,
                  td, ntd_conv, ntd_new,
@@ -182,5 +199,6 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
     n_male_control = n_male_dp
   )
 
+  attr(result, "if_scores") <- if_scores
   return(result)
 }

@@ -6,7 +6,7 @@
 \usage{
 aggregate_estimands(
   results,
-  weights = NULL,
+  weights = "sample",
   methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New"),
   include_pre = FALSE
 )
@@ -15,13 +15,23 @@ aggregate_estimands(
 \item{results}{A \code{data.frame} as returned by
 \code{multiple_treatment_group_analysis()}, with at minimum the columns
 \code{d}, \code{event_time}, \code{estimand}, \code{method}, \code{est},
-and \code{se}.}
+and \code{se}.  If \code{results} carries influence-function data (attached
+automatically by \code{multiple_treatment_group_analysis()}), standard
+errors account for shared control groups across treatment groups.}
 
-\item{weights}{Named numeric vector of treatment-group weights (names must
-match the values of the \code{d} column coerced to character).  Values
-are normalised to sum to 1 within each event_time / method cell, so you
-only need to supply relative weights.  \code{NULL} (default) uses uniform
-weights over the treatment groups that have an estimate for that cell.}
+\item{weights}{How to weight treatment groups.  One of:
+\itemize{
+\item \code{"sample"} (default): use sample-proportion weights as in
+Leventer (2025).  Within-gender weights
+\eqn{w_{g,d} = n_{g,d}/\sum n_{g,\tilde d}} are used for
+\code{DID_Female} and \code{DID_Male}; cross-gender weights
+\eqn{w_d = n_d / \sum n_{\tilde d}} for \code{TD}, \code{NTD_Conv},
+and \code{NTD_New}.  Standard errors account for estimation of the
+weights.
+\item \code{NULL}: uniform weights (equal weight per group).
+\item A named numeric vector: custom fixed weights (names = treatment
+groups as characters).  Values are renormalised to sum to 1.
+}}
 
 \item{methods}{Character vector of methods to aggregate.  Defaults to all
 five main methods.}
@@ -34,15 +44,15 @@ A \code{data.frame} with one row per
 \code{event_time} by \code{estimand} by \code{method} by \code{agg_type}
 combination, containing:
 \itemize{
-\item \code{event_time} --event time
-\item \code{estimand} --\code{"APO"}, \code{"ATE"}, \code{"theta"}, or \code{"Delta_rho"}
-\item \code{method} --method name
-\item \code{agg_type} --one of \code{"avg_of_ratios"},
+\item \code{event_time} -- event time
+\item \code{estimand} -- \code{"APO"}, \code{"ATE"}, \code{"theta"}, or \code{"Delta_rho"}
+\item \code{method} -- method name
+\item \code{agg_type} -- one of \code{"avg_of_ratios"},
 \code{"ratio_of_avgs"}, \code{"gender_ineq"}
-\item \code{est} --aggregate estimate
-\item \code{se} --standard error (see Details)
-\item \code{ci_l}, \code{ci_h} --95 \\% Wald confidence interval
-\item \code{n_groups} --number of treatment groups contributing
+\item \code{est} -- aggregate estimate
+\item \code{se} -- standard error (see Details)
+\item \code{ci_l}, \code{ci_h} -- 95 \\% Wald confidence interval
+\item \code{n_groups} -- number of treatment groups contributing
 }
 }
 \description{
@@ -66,27 +76,36 @@ Weighted average of \code{NTD_New} (estimand == "Delta_rho") across
 treatment groups -- the aggregate gender-inequality estimand.}
 }
 
-\strong{Standard errors.}  Because the raw influence functions are not
-stored in the \code{results} object, SEs are computed treating the
-group-specific estimates as mutually independent.
+\strong{Standard errors.}  When the \code{results} object carries
+influence-function (IF) data from \code{multiple_treatment_group_analysis()},
+aggregate SEs account for dependence across treatment groups caused by shared
+control individuals.
 
-For \code{avg_of_ratios}:
-\deqn{\mathrm{SE}(\hat\theta_{\text{Agg},1}) = \sqrt{\sum_d w_d^2 \, \hat\sigma_d^2}}
+With \code{weights = "sample"}, the IF additionally accounts for estimation
+of the weights, following the formula in Leventer (2025, Appendix G):
+\deqn{\psi_{A(e)} = \sum_d \left[ w_d\,\psi_{B_d}
+  + \frac{B_d - A(e)}{M}\,\psi_{p_d} \right]}
+where \eqn{M = \sum_d p_d} and \eqn{\psi_{p_d}} is the IF of the group
+proportion.
+
+With fixed weights (\code{NULL} or a named vector), the second term drops
+out and the IF reduces to \eqn{\sum_d w_d\,\psi_{B_d}}.
 
 For \code{ratio_of_avgs}, the delta method is applied to the ratio
-\eqn{\bar\mu_{\text{ATE}} / \bar\mu_{\text{APO}}}:
-\deqn{\mathrm{SE} \approx \frac{1}{\bar\mu_{\text{APO}}}
-  \sqrt{\mathrm{Var}(\bar\mu_{\text{ATE}}) +
-        \hat\theta_{\text{Agg},2}^2 \, \mathrm{Var}(\bar\mu_{\text{APO}})}}
-where variances are again computed via the independent-groups formula.
+\eqn{\bar\mu_{\text{ATE}} / \bar\mu_{\text{APO}}} using the aggregate IFs
+for the numerator and denominator.
+
+If IF data is not available (e.g., when the user supplies a manually
+constructed results table), SEs are computed under an independence
+approximation with a warning.
 
 \strong{Handling missing cells.}  Not every treatment group produces an
 estimate for every event time (due to \code{max_age} / \code{min_age}
 bounds).  The function operates on whichever groups are present for each
 cell and reports how many via \code{n_groups}.  If \code{weights} is
-supplied, only the entries whose names appear in the observed treatment
-groups are used; the remaining weights are dropped and the retained weights
-are renormalised.
+supplied as a named vector, only the entries whose names appear in the
+observed treatment groups are used; the remaining weights are dropped and
+the retained weights are renormalised.
 }
 \examples{
 \donttest{

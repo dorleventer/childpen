@@ -54,7 +54,7 @@ res <- multiple_treatment_group_analysis(
 
 ## Basic aggregation
 
-Calling `aggregate_estimands()` with default arguments applies uniform weights across whichever treatment groups contribute an estimate to each event-time cell.
+Calling `aggregate_estimands()` with default arguments applies sample-proportion weights (`weights = "sample"`), where each treatment group is weighted by its share of the sample, as in Leventer (2025). Standard errors account for the estimation of these weights via the influence-function formula in the paper's Appendix G. Pass `weights = NULL` for uniform weights.
 
 ```{r basic_agg}
 agg <- aggregate_estimands(res)
@@ -119,7 +119,7 @@ If the two lines are similar, earnings are approximately homogeneous across grou
 
 ## Custom weights
 
-By default all treatment groups receive equal weight. Researchers often want to weight groups by their empirical share in a target population. Below we contrast two stylized distributions:
+By default treatment groups are weighted by their sample proportions. Researchers may instead want to weight groups by their empirical share in a target population. Below we contrast two stylized distributions:
 
 - **Right-skewed** (mimicking the US): most first births concentrate at younger ages.
 - **Left-skewed** (mimicking Southern Europe): most first births concentrate at older ages.
