@@ -115,7 +115,7 @@ estimates — the aggregate gender-inequality penalty. Formally,
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dorleventer/childpen" class="external-link">childpen</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">2000</span>, treatment_groups <span class="op">=</span> <span class="fl">25</span><span class="op">:</span><span class="fl">28</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">2000</span>, treatment_groups <span class="op">=</span> <span class="fl">25</span><span class="op">:</span><span class="fl">32</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   id female age  D  Y_inf      Y</span></span>
 <span><span class="co">#&gt; 1  1      1  20 25  32193  32193</span></span>
@@ -137,17 +137,7 @@ post-treatment periods.</p>
 <span>  periods_post     <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  periods_pre      <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose          <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=3: Empty subgroup: age=28, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=2: Empty subgroup: age=28, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=3: Empty subgroup: age=29, female=1, D=30</span></span>
-<span><span class="co">#&gt;   Error for d=27, event_time=1: Empty subgroup: age=28, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=27, event_time=2: Empty subgroup: age=29, female=1, D=30</span></span>
-<span><span class="co">#&gt;   Error for d=27, event_time=3: Empty subgroup: age=30, female=1, D=31</span></span>
-<span><span class="co">#&gt;   Error for d=28, event_time=0: Empty subgroup: age=28, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=28, event_time=1: Empty subgroup: age=29, female=1, D=30</span></span>
-<span><span class="co">#&gt;   Error for d=28, event_time=2: Empty subgroup: age=30, female=1, D=31</span></span>
-<span><span class="co">#&gt;   Error for d=28, event_time=3: Empty subgroup: age=31, female=1, D=32</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="basic-aggregation">Basic aggregation<a class="anchor" aria-label="anchor" href="#basic-aggregation"></a>
@@ -159,19 +149,19 @@ estimate to each event-time cell.</p>
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_estimands.html">aggregate_estimands</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">agg</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   event_time estimand     method      agg_type       est       se n_groups</span></span>
-<span><span class="co">#&gt; 1          0    theta DID_Female avg_of_ratios -0.260275 0.029764        3</span></span>
-<span><span class="co">#&gt; 2          1    theta DID_Female avg_of_ratios -0.329228 0.031061        2</span></span>
-<span><span class="co">#&gt; 3          2    theta DID_Female avg_of_ratios -0.365489 0.044661        1</span></span>
-<span><span class="co">#&gt; 4          0    theta   DID_Male avg_of_ratios -0.075078 0.038741        3</span></span>
-<span><span class="co">#&gt; 5          1    theta   DID_Male avg_of_ratios -0.094184 0.048049        2</span></span>
-<span><span class="co">#&gt; 6          2    theta   DID_Male avg_of_ratios -0.179676 0.063150        1</span></span>
-<span><span class="co">#&gt;       ci_l          ci_h</span></span>
-<span><span class="co">#&gt; 1 -0.31861 -0.2019365650</span></span>
-<span><span class="co">#&gt; 2 -0.39011 -0.2683495754</span></span>
-<span><span class="co">#&gt; 3 -0.45302 -0.2779531105</span></span>
-<span><span class="co">#&gt; 4 -0.15101  0.0008544259</span></span>
-<span><span class="co">#&gt; 5 -0.18836 -0.0000073171</span></span>
-<span><span class="co">#&gt; 6 -0.30345 -0.0559022794</span></span></code></pre></div>
+<span><span class="co">#&gt; 1          0    theta DID_Female avg_of_ratios -0.281741 0.035683        4</span></span>
+<span><span class="co">#&gt; 2          1    theta DID_Female avg_of_ratios -0.304234 0.032906        4</span></span>
+<span><span class="co">#&gt; 3          2    theta DID_Female avg_of_ratios -0.293613 0.032100        4</span></span>
+<span><span class="co">#&gt; 4          3    theta DID_Female avg_of_ratios -0.322766 0.030963        4</span></span>
+<span><span class="co">#&gt; 5          0    theta   DID_Male avg_of_ratios  0.014189 0.051801        4</span></span>
+<span><span class="co">#&gt; 6          1    theta   DID_Male avg_of_ratios -0.057632 0.043137        4</span></span>
+<span><span class="co">#&gt;        ci_l      ci_h</span></span>
+<span><span class="co">#&gt; 1 -0.351680 -0.211803</span></span>
+<span><span class="co">#&gt; 2 -0.368730 -0.239737</span></span>
+<span><span class="co">#&gt; 3 -0.356529 -0.230698</span></span>
+<span><span class="co">#&gt; 4 -0.383453 -0.262078</span></span>
+<span><span class="co">#&gt; 5 -0.087341  0.115719</span></span>
+<span><span class="co">#&gt; 6 -0.142181  0.026917</span></span></code></pre></div>
 <p>The output has one row per
 <code>event_time × estimand × method × agg_type</code> combination. The
 <code>n_groups</code> column records how many treatment groups

@@ -42,7 +42,7 @@ Three aggregate estimands are available:
 library(childpen)
 
 set.seed(42)
-data <- simulate_data(n_individuals = 2000, treatment_groups = 25:28)
+data <- simulate_data(n_individuals = 2000, treatment_groups = 25:32)
 head(data)
 #>   id female age  D  Y_inf      Y
 #> 1  1      1  20 25  32193  32193
@@ -67,16 +67,6 @@ res <- multiple_treatment_group_analysis(
   periods_pre      = NULL,
   verbose          = FALSE
 )
-#>   Error for d=25, event_time=3: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=26, event_time=2: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=26, event_time=3: Empty subgroup: age=29, female=1, D=30
-#>   Error for d=27, event_time=1: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=27, event_time=2: Empty subgroup: age=29, female=1, D=30
-#>   Error for d=27, event_time=3: Empty subgroup: age=30, female=1, D=31
-#>   Error for d=28, event_time=0: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=28, event_time=1: Empty subgroup: age=29, female=1, D=30
-#>   Error for d=28, event_time=2: Empty subgroup: age=30, female=1, D=31
-#>   Error for d=28, event_time=3: Empty subgroup: age=31, female=1, D=32
 ```
 
 ## Basic aggregation
@@ -91,19 +81,19 @@ treatment groups contribute an estimate to each event-time cell.
 agg <- aggregate_estimands(res)
 head(agg)
 #>   event_time estimand     method      agg_type       est       se n_groups
-#> 1          0    theta DID_Female avg_of_ratios -0.260275 0.029764        3
-#> 2          1    theta DID_Female avg_of_ratios -0.329228 0.031061        2
-#> 3          2    theta DID_Female avg_of_ratios -0.365489 0.044661        1
-#> 4          0    theta   DID_Male avg_of_ratios -0.075078 0.038741        3
-#> 5          1    theta   DID_Male avg_of_ratios -0.094184 0.048049        2
-#> 6          2    theta   DID_Male avg_of_ratios -0.179676 0.063150        1
-#>       ci_l          ci_h
-#> 1 -0.31861 -0.2019365650
-#> 2 -0.39011 -0.2683495754
-#> 3 -0.45302 -0.2779531105
-#> 4 -0.15101  0.0008544259
-#> 5 -0.18836 -0.0000073171
-#> 6 -0.30345 -0.0559022794
+#> 1          0    theta DID_Female avg_of_ratios -0.281741 0.035683        4
+#> 2          1    theta DID_Female avg_of_ratios -0.304234 0.032906        4
+#> 3          2    theta DID_Female avg_of_ratios -0.293613 0.032100        4
+#> 4          3    theta DID_Female avg_of_ratios -0.322766 0.030963        4
+#> 5          0    theta   DID_Male avg_of_ratios  0.014189 0.051801        4
+#> 6          1    theta   DID_Male avg_of_ratios -0.057632 0.043137        4
+#>        ci_l      ci_h
+#> 1 -0.351680 -0.211803
+#> 2 -0.368730 -0.239737
+#> 3 -0.356529 -0.230698
+#> 4 -0.383453 -0.262078
+#> 5 -0.087341  0.115719
+#> 6 -0.142181  0.026917
 ```
 
 The output has one row per `event_time × estimand × method × agg_type`

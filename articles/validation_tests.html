@@ -78,21 +78,21 @@ resembling child penalty studies.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dorleventer/childpen" class="external-link">childpen</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">5000</span>, treatment_groups <span class="op">=</span> <span class="fl">25</span><span class="op">:</span><span class="fl">26</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">5000</span>, treatment_groups <span class="op">=</span> <span class="fl">25</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span></span>
 <span><span class="va">data</span> <span class="op">|&gt;</span> <span class="fu">tibble</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 105,000 × 6</span></span></span>
-<span><span class="co">#&gt;       id female   age     D   Y_inf       Y</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>     1      1    20    25  <span style="text-decoration: underline;">18</span>881.  <span style="text-decoration: underline;">18</span>881.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>     1      1    21    25  <span style="text-decoration: underline;">20</span>391.  <span style="text-decoration: underline;">20</span>391.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>     1      1    22    25  <span style="text-decoration: underline;">12</span>439.  <span style="text-decoration: underline;">12</span>439.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>     1      1    23    25  <span style="text-decoration: underline;">52</span>948.  <span style="text-decoration: underline;">52</span>948.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>     1      1    24    25 <span style="text-decoration: underline;">157</span>316. <span style="text-decoration: underline;">157</span>316.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     1      1    25    25  <span style="text-decoration: underline;">49</span>891.  <span style="text-decoration: underline;">51</span>434.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     1      1    26    25  <span style="text-decoration: underline;">79</span>663.  <span style="text-decoration: underline;">83</span>720.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     1      1    27    25 <span style="text-decoration: underline;">170</span>407. <span style="text-decoration: underline;">182</span>494.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     1      1    28    25 <span style="text-decoration: underline;">266</span>446. <span style="text-decoration: underline;">290</span>674.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     1      1    29    25  <span style="text-decoration: underline;">89</span>351.  <span style="text-decoration: underline;">99</span>262.</span></span>
+<span><span class="co">#&gt;       id female   age     D  Y_inf      Y</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>     1      1    20    25 <span style="text-decoration: underline;">14</span>436. <span style="text-decoration: underline;">14</span>436.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>     1      1    21    25 <span style="text-decoration: underline;">23</span>194. <span style="text-decoration: underline;">23</span>194.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>     1      1    22    25 <span style="text-decoration: underline;">26</span>795. <span style="text-decoration: underline;">26</span>795.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>     1      1    23    25 <span style="text-decoration: underline;">39</span>010. <span style="text-decoration: underline;">39</span>010.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>     1      1    24    25 <span style="text-decoration: underline;">63</span>958. <span style="text-decoration: underline;">63</span>958.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     1      1    25    25 <span style="text-decoration: underline;">53</span>927. <span style="text-decoration: underline;">45</span>565.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     1      1    26    25 <span style="text-decoration: underline;">52</span>773. <span style="text-decoration: underline;">45</span>646.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     1      1    27    25 <span style="text-decoration: underline;">25</span>708. <span style="text-decoration: underline;">22</span>750.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     1      1    28    25 <span style="text-decoration: underline;">98</span>700. <span style="text-decoration: underline;">89</span>318.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>     1      1    29    25 <span style="text-decoration: underline;">58</span>150. <span style="text-decoration: underline;">53</span>786.</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 104,990 more rows</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -157,35 +157,7 @@ above.</p>
 <span>                                  min_age <span class="op">=</span> <span class="fl">20</span>, <span class="co"># dont estimate results if age is below 20</span></span>
 <span>                                  pre <span class="op">=</span> <span class="fl">1</span>, <span class="co"># use 1 period before treatment, can make further away if anticipation is conern</span></span>
 <span>                                  verbose <span class="op">=</span> <span class="cn">FALSE</span> <span class="co"># set to TRUE to output progress (i like to time loops) set to FALSE to omit messages</span></span>
-<span>                                  <span class="op">)</span> </span>
-<span><span class="co">#&gt;   Error for d=25, event_time=1: Empty subgroup: age=26, female=1, D=27</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=2: Empty subgroup: age=27, female=1, D=28</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=3: Empty subgroup: age=28, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=0: Empty subgroup: age=26, female=1, D=27</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=1: Empty subgroup: age=27, female=1, D=28</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=2: Empty subgroup: age=28, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=3: Empty subgroup: age=29, female=1, D=30</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=-4, dp=27: Empty subgroup: age=21, female=1, D=27</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=-4, dp=28: Empty subgroup: age=21, female=1, D=28</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=-4, dp=29: Empty subgroup: age=21, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=-3, dp=27: Empty subgroup: age=22, female=1, D=27</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=-3, dp=28: Empty subgroup: age=22, female=1, D=28</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=-3, dp=29: Empty subgroup: age=22, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=-2, dp=27: Empty subgroup: age=23, female=1, D=27</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=-2, dp=28: Empty subgroup: age=23, female=1, D=28</span></span>
-<span><span class="co">#&gt;   Error for d=25, event_time=-2, dp=29: Empty subgroup: age=23, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-4, dp=27: Empty subgroup: age=22, female=1, D=27</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-4, dp=28: Empty subgroup: age=22, female=1, D=28</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-4, dp=29: Empty subgroup: age=22, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-4, dp=30: Empty subgroup: age=22, female=1, D=30</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-3, dp=27: Empty subgroup: age=23, female=1, D=27</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-3, dp=28: Empty subgroup: age=23, female=1, D=28</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-3, dp=29: Empty subgroup: age=23, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-3, dp=30: Empty subgroup: age=23, female=1, D=30</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-2, dp=27: Empty subgroup: age=24, female=1, D=27</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-2, dp=28: Empty subgroup: age=24, female=1, D=28</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-2, dp=29: Empty subgroup: age=24, female=1, D=29</span></span>
-<span><span class="co">#&gt;   Error for d=26, event_time=-2, dp=30: Empty subgroup: age=24, female=1, D=30</span></span></code></pre></div>
+<span>                                  <span class="op">)</span> </span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="examining-results-of-validation-tests">Examining results of validation tests<a class="anchor" aria-label="anchor" href="#examining-results-of-validation-tests"></a>
@@ -193,20 +165,20 @@ above.</p>
 <p>As a first pass, lets see the results.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu">tibble</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 60 × 16</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 480 × 16</span></span></span>
 <span><span class="co">#&gt;        d    dp     a event_time estimand  method            est      se     ci_l</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>    25    26    25          0 APO       DID_Female    7.46<span style="color: #949494;">e</span>+4 2.29<span style="color: #949494;">e</span>+3  7.01<span style="color: #949494;">e</span>+4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>    25    26    25          0 APO       DID_Male      6.78<span style="color: #949494;">e</span>+4 2.04<span style="color: #949494;">e</span>+3  6.38<span style="color: #949494;">e</span>+4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>    25    26    25          0 ATE       DID_Female   -<span style="color: #BB0000;">2.20</span><span style="color: #949494;">e</span>+4 2.30<span style="color: #949494;">e</span>+3 -<span style="color: #BB0000;">2.65</span><span style="color: #949494;">e</span>+4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>    25    26    25          0 ATE       DID_Male      3.75<span style="color: #949494;">e</span>+3 2.34<span style="color: #949494;">e</span>+3 -<span style="color: #BB0000;">8.41</span><span style="color: #949494;">e</span>+2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>    25    26    25          0 theta     DID_Female   -<span style="color: #BB0000;">2.95</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 2.44<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">3.43</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>    25    26    25          0 theta     DID_Male      5.52<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> 3.56<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">1.45</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>    25    26    25          0 ATE       TD           -<span style="color: #BB0000;">2.58</span><span style="color: #949494;">e</span>+4 3.28<span style="color: #949494;">e</span>+3 -<span style="color: #BB0000;">3.22</span><span style="color: #949494;">e</span>+4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>    25    26    25          0 theta     NTD_Conv     -<span style="color: #BB0000;">3.50</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 4.32<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">4.35</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>    25    26    25          0 Delta_rho NTD_New      -<span style="color: #BB0000;">3.65</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 4.70<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">4.58</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    25    26    25          0 APO       TD_Null       7.84<span style="color: #949494;">e</span>+4 3.27<span style="color: #949494;">e</span>+3  7.19<span style="color: #949494;">e</span>+4</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 50 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>    25    26    25          0 APO       DID_Female    7.46<span style="color: #949494;">e</span>+4 3.58<span style="color: #949494;">e</span>+3  6.76<span style="color: #949494;">e</span>+4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>    25    26    25          0 APO       DID_Male      7.29<span style="color: #949494;">e</span>+4 3.44<span style="color: #949494;">e</span>+3  6.62<span style="color: #949494;">e</span>+4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>    25    26    25          0 ATE       DID_Female   -<span style="color: #BB0000;">2.30</span><span style="color: #949494;">e</span>+4 3.63<span style="color: #949494;">e</span>+3 -<span style="color: #BB0000;">3.01</span><span style="color: #949494;">e</span>+4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>    25    26    25          0 ATE       DID_Male     -<span style="color: #BB0000;">1.21</span><span style="color: #949494;">e</span>+3 3.63<span style="color: #949494;">e</span>+3 -<span style="color: #BB0000;">8.32</span><span style="color: #949494;">e</span>+3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>    25    26    25          0 theta     DID_Female   -<span style="color: #BB0000;">3.08</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 3.72<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">3.81</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>    25    26    25          0 theta     DID_Male     -<span style="color: #BB0000;">1.66</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> 4.93<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">1.13</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>    25    26    25          0 ATE       TD           -<span style="color: #BB0000;">2.18</span><span style="color: #949494;">e</span>+4 5.14<span style="color: #949494;">e</span>+3 -<span style="color: #BB0000;">3.19</span><span style="color: #949494;">e</span>+4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>    25    26    25          0 theta     NTD_Conv     -<span style="color: #BB0000;">2.92</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 6.18<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">4.13</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>    25    26    25          0 Delta_rho NTD_New      -<span style="color: #BB0000;">3.04</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> 6.84<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">4.38</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    25    26    25          0 APO       TD_Null       7.34<span style="color: #949494;">e</span>+4 5.10<span style="color: #949494;">e</span>+3  6.34<span style="color: #949494;">e</span>+4</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 470 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: ci_h &lt;dbl&gt;, t &lt;dbl&gt;, p &lt;dbl&gt;, n_female_treat &lt;int&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   n_female_control &lt;int&gt;, n_male_treat &lt;int&gt;, n_male_control &lt;int&gt;</span></span></span></code></pre></div>
 <p>Focusing on

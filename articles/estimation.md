@@ -18,15 +18,15 @@ $`\times`$ estimand $`\times`$ method combination.
 library(childpen)
 
 set.seed(42)
-data <- simulate_data(n_individuals = 2000, treatment_groups = 26:28)
+data <- simulate_data(n_individuals = 2000, treatment_groups = 26:32)
 head(data)
-#>   id female age  D Y_inf     Y
-#> 1  1      1  20 26 10350 10350
-#> 2  1      1  21 26 32560 32560
-#> 3  1      1  22 26 19763 19763
-#> 4  1      1  23 26 75854 75854
-#> 5  1      1  24 26 20019 20019
-#> 6  1      1  25 26 59721 59721
+#>   id female age  D  Y_inf      Y
+#> 1  1      1  20 26  10516  10516
+#> 2  1      1  21 26  32197  32197
+#> 3  1      1  22 26  44198  44198
+#> 4  1      1  23 26 115356 115356
+#> 5  1      1  24 26  44976  44976
+#> 6  1      1  25 26  83416  83416
 ```
 
 ``` r
@@ -40,15 +40,6 @@ res = multiple_treatment_group_analysis(data = data,
                                   pre = 1,
                                   verbose = FALSE
                                   )
-#>   Error for d=26, event_time=2: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=26, event_time=3: Empty subgroup: age=29, female=1, D=30
-#>   Error for d=27, event_time=1: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=27, event_time=2: Empty subgroup: age=29, female=1, D=30
-#>   Error for d=27, event_time=3: Empty subgroup: age=30, female=1, D=31
-#>   Error for d=28, event_time=0: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=28, event_time=1: Empty subgroup: age=29, female=1, D=30
-#>   Error for d=28, event_time=2: Empty subgroup: age=30, female=1, D=31
-#>   Error for d=28, event_time=3: Empty subgroup: age=31, female=1, D=32
 ```
 
 ## Simulation truth

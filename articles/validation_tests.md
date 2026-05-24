@@ -17,21 +17,21 @@ child penalty studies.
 
 library(childpen)
 
-data <- simulate_data(n_individuals = 5000, treatment_groups = 25:26)
+data <- simulate_data(n_individuals = 5000, treatment_groups = 25:30)
 data |> tibble()
 #> # A tibble: 105,000 × 6
-#>       id female   age     D   Y_inf       Y
-#>    <int>  <int> <int> <int>   <dbl>   <dbl>
-#>  1     1      1    20    25  18881.  18881.
-#>  2     1      1    21    25  20391.  20391.
-#>  3     1      1    22    25  12439.  12439.
-#>  4     1      1    23    25  52948.  52948.
-#>  5     1      1    24    25 157316. 157316.
-#>  6     1      1    25    25  49891.  51434.
-#>  7     1      1    26    25  79663.  83720.
-#>  8     1      1    27    25 170407. 182494.
-#>  9     1      1    28    25 266446. 290674.
-#> 10     1      1    29    25  89351.  99262.
+#>       id female   age     D  Y_inf      Y
+#>    <int>  <int> <int> <int>  <dbl>  <dbl>
+#>  1     1      1    20    25 14436. 14436.
+#>  2     1      1    21    25 23194. 23194.
+#>  3     1      1    22    25 26795. 26795.
+#>  4     1      1    23    25 39010. 39010.
+#>  5     1      1    24    25 63958. 63958.
+#>  6     1      1    25    25 53927. 45565.
+#>  7     1      1    26    25 52773. 45646.
+#>  8     1      1    27    25 25708. 22750.
+#>  9     1      1    28    25 98700. 89318.
+#> 10     1      1    29    25 58150. 53786.
 #> # ℹ 104,990 more rows
 ```
 
@@ -89,34 +89,6 @@ res = multiple_treatment_group_analysis(data = data,
                                   pre = 1, # use 1 period before treatment, can make further away if anticipation is conern
                                   verbose = FALSE # set to TRUE to output progress (i like to time loops) set to FALSE to omit messages
                                   ) 
-#>   Error for d=25, event_time=1: Empty subgroup: age=26, female=1, D=27
-#>   Error for d=25, event_time=2: Empty subgroup: age=27, female=1, D=28
-#>   Error for d=25, event_time=3: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=26, event_time=0: Empty subgroup: age=26, female=1, D=27
-#>   Error for d=26, event_time=1: Empty subgroup: age=27, female=1, D=28
-#>   Error for d=26, event_time=2: Empty subgroup: age=28, female=1, D=29
-#>   Error for d=26, event_time=3: Empty subgroup: age=29, female=1, D=30
-#>   Error for d=25, event_time=-4, dp=27: Empty subgroup: age=21, female=1, D=27
-#>   Error for d=25, event_time=-4, dp=28: Empty subgroup: age=21, female=1, D=28
-#>   Error for d=25, event_time=-4, dp=29: Empty subgroup: age=21, female=1, D=29
-#>   Error for d=25, event_time=-3, dp=27: Empty subgroup: age=22, female=1, D=27
-#>   Error for d=25, event_time=-3, dp=28: Empty subgroup: age=22, female=1, D=28
-#>   Error for d=25, event_time=-3, dp=29: Empty subgroup: age=22, female=1, D=29
-#>   Error for d=25, event_time=-2, dp=27: Empty subgroup: age=23, female=1, D=27
-#>   Error for d=25, event_time=-2, dp=28: Empty subgroup: age=23, female=1, D=28
-#>   Error for d=25, event_time=-2, dp=29: Empty subgroup: age=23, female=1, D=29
-#>   Error for d=26, event_time=-4, dp=27: Empty subgroup: age=22, female=1, D=27
-#>   Error for d=26, event_time=-4, dp=28: Empty subgroup: age=22, female=1, D=28
-#>   Error for d=26, event_time=-4, dp=29: Empty subgroup: age=22, female=1, D=29
-#>   Error for d=26, event_time=-4, dp=30: Empty subgroup: age=22, female=1, D=30
-#>   Error for d=26, event_time=-3, dp=27: Empty subgroup: age=23, female=1, D=27
-#>   Error for d=26, event_time=-3, dp=28: Empty subgroup: age=23, female=1, D=28
-#>   Error for d=26, event_time=-3, dp=29: Empty subgroup: age=23, female=1, D=29
-#>   Error for d=26, event_time=-3, dp=30: Empty subgroup: age=23, female=1, D=30
-#>   Error for d=26, event_time=-2, dp=27: Empty subgroup: age=24, female=1, D=27
-#>   Error for d=26, event_time=-2, dp=28: Empty subgroup: age=24, female=1, D=28
-#>   Error for d=26, event_time=-2, dp=29: Empty subgroup: age=24, female=1, D=29
-#>   Error for d=26, event_time=-2, dp=30: Empty subgroup: age=24, female=1, D=30
 ```
 
 ## Examining results of validation tests
@@ -126,20 +98,20 @@ As a first pass, lets see the results.
 ``` r
 
 res |> tibble()
-#> # A tibble: 60 × 16
+#> # A tibble: 480 × 16
 #>        d    dp     a event_time estimand  method            est      se     ci_l
 #>    <int> <dbl> <int>      <int> <chr>     <chr>           <dbl>   <dbl>    <dbl>
-#>  1    25    26    25          0 APO       DID_Female    7.46e+4 2.29e+3  7.01e+4
-#>  2    25    26    25          0 APO       DID_Male      6.78e+4 2.04e+3  6.38e+4
-#>  3    25    26    25          0 ATE       DID_Female   -2.20e+4 2.30e+3 -2.65e+4
-#>  4    25    26    25          0 ATE       DID_Male      3.75e+3 2.34e+3 -8.41e+2
-#>  5    25    26    25          0 theta     DID_Female   -2.95e-1 2.44e-2 -3.43e-1
-#>  6    25    26    25          0 theta     DID_Male      5.52e-2 3.56e-2 -1.45e-2
-#>  7    25    26    25          0 ATE       TD           -2.58e+4 3.28e+3 -3.22e+4
-#>  8    25    26    25          0 theta     NTD_Conv     -3.50e-1 4.32e-2 -4.35e-1
-#>  9    25    26    25          0 Delta_rho NTD_New      -3.65e-1 4.70e-2 -4.58e-1
-#> 10    25    26    25          0 APO       TD_Null       7.84e+4 3.27e+3  7.19e+4
-#> # ℹ 50 more rows
+#>  1    25    26    25          0 APO       DID_Female    7.46e+4 3.58e+3  6.76e+4
+#>  2    25    26    25          0 APO       DID_Male      7.29e+4 3.44e+3  6.62e+4
+#>  3    25    26    25          0 ATE       DID_Female   -2.30e+4 3.63e+3 -3.01e+4
+#>  4    25    26    25          0 ATE       DID_Male     -1.21e+3 3.63e+3 -8.32e+3
+#>  5    25    26    25          0 theta     DID_Female   -3.08e-1 3.72e-2 -3.81e-1
+#>  6    25    26    25          0 theta     DID_Male     -1.66e-2 4.93e-2 -1.13e-1
+#>  7    25    26    25          0 ATE       TD           -2.18e+4 5.14e+3 -3.19e+4
+#>  8    25    26    25          0 theta     NTD_Conv     -2.92e-1 6.18e-2 -4.13e-1
+#>  9    25    26    25          0 Delta_rho NTD_New      -3.04e-1 6.84e-2 -4.38e-1
+#> 10    25    26    25          0 APO       TD_Null       7.34e+4 5.10e+3  6.34e+4
+#> # ℹ 470 more rows
 #> # ℹ 7 more variables: ci_h <dbl>, t <dbl>, p <dbl>, n_female_treat <int>,
 #> #   n_female_control <int>, n_male_treat <int>, n_male_control <int>
 ```

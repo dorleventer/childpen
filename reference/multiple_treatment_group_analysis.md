@@ -100,7 +100,7 @@ res <- multiple_treatment_group_analysis(sim, treatment_groups = 26:28, periods_
 #> Progress: 6/45 (13.3%) | Elapsed: 0.0 min | Remaining: ~0.1 min
 #> Progress: 7/45 (15.6%) | Elapsed: 0.0 min | Remaining: ~0.1 min
 #>   Error for d=26, event_time=-4, dp=29: Empty subgroup: age=22, female=1, D=29
-#> Progress: 8/45 (17.8%) | Elapsed: 0.0 min | Remaining: ~0.0 min
+#> Progress: 8/45 (17.8%) | Elapsed: 0.0 min | Remaining: ~0.1 min
 #> Progress: 9/45 (20.0%) | Elapsed: 0.0 min | Remaining: ~0.0 min
 #>   Error for d=26, event_time=-3, dp=29: Empty subgroup: age=23, female=1, D=29
 #> Progress: 10/45 (22.2%) | Elapsed: 0.0 min | Remaining: ~0.0 min
