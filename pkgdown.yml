@@ -6,9 +6,8 @@ articles:
   estimation: estimation.html
   notation: notation.html
   NTD-identification: NTD-identification.html
-  TD-identification: TD-identification.html
   validation_tests: validation_tests.html
-last_built: 2026-05-24T08:18Z
+last_built: 2026-05-24T09:03Z
 urls:
   reference: https://dorleventer.github.io/childpen/reference
   article: https://dorleventer.github.io/childpen/articles
