@@ -39,7 +39,6 @@ articles:
       - notation
       - estimation
       - NTD-identification
-      - TD-identification
       - validation_tests
       - aggregate-estimands
 
