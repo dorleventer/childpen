@@ -34,9 +34,6 @@
 **NTD identification** —
 [vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
 
-**TD identification** —
-[vignette](https://dorleventer.github.io/childpen/articles/TD-identification.html)
-
 **Validation tests** —
 [vignette](https://dorleventer.github.io/childpen/articles/validation_tests.html)
 
