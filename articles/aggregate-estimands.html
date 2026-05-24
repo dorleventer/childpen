@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,8 +102,9 @@ when earnings vary across groups.</li>
 <li>
 <strong>gender_ineq</strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>ρ</mi><mtext mathvariant="normal">Agg</mtext></msub></mrow><annotation encoding="application/x-tex">\Delta\rho_{\text{Agg}}</annotation></semantics></math>):
-weighted average of <code>NTD_New</code> theta estimates — the aggregate
-gender-inequality penalty. Formally,
+weighted average of <code>NTD_New</code>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi></mrow><annotation encoding="application/x-tex">\Delta\rho</annotation></semantics></math>
+estimates — the aggregate gender-inequality penalty. Formally,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>ρ</mi><mtext mathvariant="normal">Agg</mtext></msub><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><mo>⋅</mo><mi mathvariant="normal">Δ</mi><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)</annotation></semantics></math>.</li>
 </ul>
 </div>
@@ -114,29 +115,39 @@ gender-inequality penalty. Formally,
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dorleventer/childpen" class="external-link">childpen</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
-<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">5000</span><span class="op">)</span></span>
+<span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">2000</span>, treatment_groups <span class="op">=</span> <span class="fl">25</span><span class="op">:</span><span class="fl">28</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   id female age  D  Y_inf      Y</span></span>
-<span><span class="co">#&gt; 1  1      1  20 25  18881  18881</span></span>
-<span><span class="co">#&gt; 2  1      1  21 25  20391  20391</span></span>
-<span><span class="co">#&gt; 3  1      1  22 25  12439  12439</span></span>
-<span><span class="co">#&gt; 4  1      1  23 25  52948  52948</span></span>
-<span><span class="co">#&gt; 5  1      1  24 25 157316 157316</span></span>
-<span><span class="co">#&gt; 6  1      1  25 25  49891  51434</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  1      1  20 25  32193  32193</span></span>
+<span><span class="co">#&gt; 2  1      1  21 25  46159  46159</span></span>
+<span><span class="co">#&gt; 3  1      1  22 25  79432  79432</span></span>
+<span><span class="co">#&gt; 4  1      1  23 25  75703  75703</span></span>
+<span><span class="co">#&gt; 5  1      1  24 25 291366 291366</span></span>
+<span><span class="co">#&gt; 6  1      1  25 25 139286  94345</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="run-estimation">Run estimation<a class="anchor" aria-label="anchor" href="#run-estimation"></a>
 </h2>
-<p>We estimate all methods for treatment groups 25–34 with five
+<p>We estimate all methods for treatment groups 25–28 with three
 post-treatment periods.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis</a></span><span class="op">(</span></span>
 <span>  data             <span class="op">=</span> <span class="va">data</span>,</span>
-<span>  treatment_groups <span class="op">=</span> <span class="fl">25</span><span class="op">:</span><span class="fl">34</span>,</span>
-<span>  periods_post     <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  treatment_groups <span class="op">=</span> <span class="fl">25</span><span class="op">:</span><span class="fl">28</span>,</span>
+<span>  periods_post     <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  periods_pre      <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose          <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Error for d=25, event_time=3: Empty subgroup: age=28, female=1, D=29</span></span>
+<span><span class="co">#&gt;   Error for d=26, event_time=2: Empty subgroup: age=28, female=1, D=29</span></span>
+<span><span class="co">#&gt;   Error for d=26, event_time=3: Empty subgroup: age=29, female=1, D=30</span></span>
+<span><span class="co">#&gt;   Error for d=27, event_time=1: Empty subgroup: age=28, female=1, D=29</span></span>
+<span><span class="co">#&gt;   Error for d=27, event_time=2: Empty subgroup: age=29, female=1, D=30</span></span>
+<span><span class="co">#&gt;   Error for d=27, event_time=3: Empty subgroup: age=30, female=1, D=31</span></span>
+<span><span class="co">#&gt;   Error for d=28, event_time=0: Empty subgroup: age=28, female=1, D=29</span></span>
+<span><span class="co">#&gt;   Error for d=28, event_time=1: Empty subgroup: age=29, female=1, D=30</span></span>
+<span><span class="co">#&gt;   Error for d=28, event_time=2: Empty subgroup: age=30, female=1, D=31</span></span>
+<span><span class="co">#&gt;   Error for d=28, event_time=3: Empty subgroup: age=31, female=1, D=32</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="basic-aggregation">Basic aggregation<a class="anchor" aria-label="anchor" href="#basic-aggregation"></a>
@@ -147,20 +158,20 @@ estimate to each event-time cell.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_estimands.html">aggregate_estimands</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">agg</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   event_time estimand     method      agg_type      est       se n_groups</span></span>
-<span><span class="co">#&gt; 1          0    theta DID_Female avg_of_ratios -0.28443 0.021212       10</span></span>
-<span><span class="co">#&gt; 2          1    theta DID_Female avg_of_ratios -0.25753 0.022197       10</span></span>
-<span><span class="co">#&gt; 3          2    theta DID_Female avg_of_ratios -0.26187 0.020996       10</span></span>
-<span><span class="co">#&gt; 4          3    theta DID_Female avg_of_ratios -0.25902 0.019189       10</span></span>
-<span><span class="co">#&gt; 5          4    theta DID_Female avg_of_ratios -0.23651 0.020701       10</span></span>
-<span><span class="co">#&gt; 6          5    theta DID_Female avg_of_ratios -0.24610 0.020419       10</span></span>
-<span><span class="co">#&gt;       ci_l     ci_h</span></span>
-<span><span class="co">#&gt; 1 -0.32601 -0.24286</span></span>
-<span><span class="co">#&gt; 2 -0.30104 -0.21403</span></span>
-<span><span class="co">#&gt; 3 -0.30302 -0.22071</span></span>
-<span><span class="co">#&gt; 4 -0.29663 -0.22141</span></span>
-<span><span class="co">#&gt; 5 -0.27709 -0.19594</span></span>
-<span><span class="co">#&gt; 6 -0.28613 -0.20608</span></span></code></pre></div>
+<span><span class="co">#&gt;   event_time estimand     method      agg_type       est       se n_groups</span></span>
+<span><span class="co">#&gt; 1          0    theta DID_Female avg_of_ratios -0.260275 0.029764        3</span></span>
+<span><span class="co">#&gt; 2          1    theta DID_Female avg_of_ratios -0.329228 0.031061        2</span></span>
+<span><span class="co">#&gt; 3          2    theta DID_Female avg_of_ratios -0.365489 0.044661        1</span></span>
+<span><span class="co">#&gt; 4          0    theta   DID_Male avg_of_ratios -0.075078 0.038741        3</span></span>
+<span><span class="co">#&gt; 5          1    theta   DID_Male avg_of_ratios -0.094184 0.048049        2</span></span>
+<span><span class="co">#&gt; 6          2    theta   DID_Male avg_of_ratios -0.179676 0.063150        1</span></span>
+<span><span class="co">#&gt;       ci_l          ci_h</span></span>
+<span><span class="co">#&gt; 1 -0.31861 -0.2019365650</span></span>
+<span><span class="co">#&gt; 2 -0.39011 -0.2683495754</span></span>
+<span><span class="co">#&gt; 3 -0.45302 -0.2779531105</span></span>
+<span><span class="co">#&gt; 4 -0.15101  0.0008544259</span></span>
+<span><span class="co">#&gt; 5 -0.18836 -0.0000073171</span></span>
+<span><span class="co">#&gt; 6 -0.30345 -0.0559022794</span></span></code></pre></div>
 <p>The output has one row per
 <code>event_time × estimand × method × agg_type</code> combination. The
 <code>n_groups</code> column records how many treatment groups
@@ -246,19 +257,13 @@ concentrate at younger ages.</li>
 births concentrate at older ages.</li>
 </ul>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">25</span><span class="op">:</span><span class="fl">34</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fl">25</span><span class="op">:</span><span class="fl">28</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Right-skewed: more weight on younger groups</span></span>
-<span><span class="va">w_us</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.22</span>, <span class="fl">0.20</span>, <span class="fl">0.17</span>, <span class="fl">0.13</span>, <span class="fl">0.10</span>, <span class="fl">0.08</span>, <span class="fl">0.05</span>, <span class="fl">0.03</span>, <span class="fl">0.01</span>, <span class="fl">0.01</span><span class="op">)</span>,</span>
-<span>  <span class="va">groups</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">w_us</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.40</span>, <span class="fl">0.30</span>, <span class="fl">0.20</span>, <span class="fl">0.10</span><span class="op">)</span>, <span class="va">groups</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Left-skewed: more weight on older groups</span></span>
-<span><span class="va">w_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span>, <span class="fl">0.01</span>, <span class="fl">0.03</span>, <span class="fl">0.05</span>, <span class="fl">0.08</span>, <span class="fl">0.10</span>, <span class="fl">0.13</span>, <span class="fl">0.17</span>, <span class="fl">0.20</span>, <span class="fl">0.22</span><span class="op">)</span>,</span>
-<span>  <span class="va">groups</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">w_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span>, <span class="fl">0.40</span><span class="op">)</span>, <span class="va">groups</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">agg_us</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_estimands.html">aggregate_estimands</a></span><span class="op">(</span><span class="va">res</span>, weights <span class="op">=</span> <span class="va">w_us</span><span class="op">)</span></span>
 <span><span class="va">agg_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_estimands.html">aggregate_estimands</a></span><span class="op">(</span><span class="va">res</span>, weights <span class="op">=</span> <span class="va">w_se</span><span class="op">)</span></span>
@@ -303,14 +308,15 @@ depends on the first-birth distribution.</p>
 </h2>
 <p>The <code>gender_ineq</code> aggregate
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>ρ</mi><mtext mathvariant="normal">Agg</mtext></msub></mrow><annotation encoding="application/x-tex">\Delta\rho_{\text{Agg}}</annotation></semantics></math>)
-is the weighted average of <code>NTD_New</code> theta estimates across
-treatment groups. It measures how parenthood affects the female-to-male
-earnings ratio: negative values indicate that mothers bear a larger
-proportional penalty — the female-to-male earnings ratio is lower
-post-birth than the counterfactual ratio.</p>
+is the weighted average of <code>NTD_New</code>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi></mrow><annotation encoding="application/x-tex">\Delta\rho</annotation></semantics></math>
+estimates across treatment groups. It measures how parenthood affects
+the female-to-male earnings ratio: negative values indicate that mothers
+bear a larger proportional penalty — the female-to-male earnings ratio
+is lower post-birth than the counterfactual ratio.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"gender_ineq"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_New"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"gender_ineq"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"Delta_rho"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_New"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_ribbon</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"tomato"</span>, alpha <span class="op">=</span> <span class="fl">0.25</span>, color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"tomato"</span><span class="op">)</span> <span class="op">+</span></span>

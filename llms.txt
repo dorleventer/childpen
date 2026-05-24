@@ -6,7 +6,7 @@
 - 🧪 DID / TD / NTD estimators (single & multiple treatment groups)
 - 📄 **Paper:** [arXiv:2602.07486](https://arxiv.org/abs/2602.07486)
 - 💻 **GitHub:** <https://github.com/dorleventer/childpen>
-- 🌐 **Website:** <https://dorleventer.github.io/childpen>
+- 🌐 **Website:** <https://dorleventer.github.io/childpen/>
 
 ------------------------------------------------------------------------
 

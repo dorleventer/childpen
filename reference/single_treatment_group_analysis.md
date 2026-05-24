@@ -62,7 +62,7 @@ single_treatment_group_analysis(
 
 A `data.frame` with one row per estimand/method combination:
 
-- `estimand` — one of `"APO"`, `"ATE"`, `"theta"`
+- `estimand` — one of `"APO"`, `"ATE"`, `"theta"`, `"Delta_rho"`
 
 - `method` — one of `"DID_Female"`, `"DID_Male"`, `"TD"`, `"NTD_Conv"`,
   `"NTD_New"`, `"TD_Null"`, `"NTD_Conv_Null"`
@@ -111,15 +111,24 @@ Requires helper functions `compute_mean_if()` and `se_cluster()`.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-library(data.table)
+# \donttest{
 set.seed(1)
-DT <- CJ(id = 1:80, age = 20:26)
-DT[, female := +(id %% 2 == 0)]
-DT[, D := 24L]
-DT[, Y := rnorm(.N, 10 + 0.5*female + 0.1*(age-20))]
-# compute_mean_if() and se_cluster() must be available in the package
-res <- single_treatment_group_analysis(DT, d = 24, dp = 26, a = 25, pre = 1)
+sim <- simulate_data(n_individuals = 500)
+res <- single_treatment_group_analysis(sim, d = 27, dp = 28, a = 28, pre = 1)
 head(res)
-} # }
+#>   estimand     method           est           se n_female_treat
+#> 1      APO DID_Female  9.740796e+04 1.177499e+04             45
+#> 2      APO   DID_Male  1.005088e+05 1.143599e+04             45
+#> 3      ATE DID_Female -1.297154e+04 1.221918e+04             45
+#> 4      ATE   DID_Male  3.688769e+03 1.213416e+04             45
+#> 5    theta DID_Female -1.331671e-01 1.160218e-01             45
+#> 6    theta   DID_Male  3.670096e-02 1.228974e-01             45
+#>   n_female_control n_male_treat n_male_control
+#> 1               61           62             49
+#> 2               61           62             49
+#> 3               61           62             49
+#> 4               61           62             49
+#> 5               61           62             49
+#> 6               61           62             49
+# }
 ```

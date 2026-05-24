@@ -17,23 +17,22 @@ child penalty studies.
 
 library(childpen)
 
-N <- 20000
-data <- simulate_data(n_individuals = N)
+data <- simulate_data(n_individuals = 5000, treatment_groups = 25:26)
 data |> tibble()
-#> # A tibble: 420,000 × 6
+#> # A tibble: 105,000 × 6
 #>       id female   age     D   Y_inf       Y
 #>    <int>  <int> <int> <int>   <dbl>   <dbl>
-#>  1     1      1    20    25  31332.  31332.
-#>  2     1      1    21    25  55472.  55472.
-#>  3     1      1    22    25  48574.  48574.
-#>  4     1      1    23    25  86820.  86820.
-#>  5     1      1    24    25  42409.  42409.
-#>  6     1      1    25    25 169436. 148877.
-#>  7     1      1    26    25 180458. 162171.
-#>  8     1      1    27    25 256901. 236005.
-#>  9     1      1    28    25 266892. 250521.
-#> 10     1      1    29    25 212777. 203981.
-#> # ℹ 419,990 more rows
+#>  1     1      1    20    25  18881.  18881.
+#>  2     1      1    21    25  20391.  20391.
+#>  3     1      1    22    25  12439.  12439.
+#>  4     1      1    23    25  52948.  52948.
+#>  5     1      1    24    25 157316. 157316.
+#>  6     1      1    25    25  49891.  51434.
+#>  7     1      1    26    25  79663.  83720.
+#>  8     1      1    27    25 170407. 182494.
+#>  9     1      1    28    25 266446. 290674.
+#> 10     1      1    29    25  89351.  99262.
+#> # ℹ 104,990 more rows
 ```
 
 ## The correct validation tests
@@ -47,16 +46,16 @@ that the control group is $`d' = a + 1`$, the cohort whose first birth
 is one year after the target age.
 
 Assume that when presenting results, post-treatment, you report
-estimates for event times $`e=0,...,5`$. Then, for each treatment group
-$`d`$ you use 6 different control groups in post-treatment estimation.
+estimates for event times $`e=0,...,3`$. Then, for each treatment group
+$`d`$ you use 4 different control groups in post-treatment estimation.
 As the identification assumptions (e.g., parallel trends for DID) must
 hold for each point-estimate separately, this implies that it must hold
 within each treatment-control pair.
 
 The above argument means that the validation tests should be done
 separately by treatment-control combinations. Returning to the above
-example, if you want to show results for $`e=0,...,5`$ then you need to
-conduct pre-trend analysis for 6 different control groups. This is done
+example, if you want to show results for $`e=0,...,3`$ then you need to
+conduct pre-trend analysis for 4 different control groups. This is done
 automatically in the `childpen` package, as we show below.
 
 For completeness, the validation tests are:
@@ -76,20 +75,48 @@ function,
 Set `periods_pre` to the number of pre-treatment periods for which you
 want to conduct validation tests. As an example, we will examine three
 periods pre-treatment. Since we set the number of periods in the
-post-treatment to 5 using `periods_post`, this will report validation
-tests separately for 6 control groups, as discussed above.
+post-treatment to 3 using `periods_post`, this will report validation
+tests separately for 4 control groups, as discussed above.
 
 ``` r
 
 res = multiple_treatment_group_analysis(data = data,
                                   treatment_groups = 25:26, # which treatment groups to run in the analysis
-                                  periods_post = 5, # estimate results for post periods 0:5
+                                  periods_post = 3, # estimate results for post periods 0:3
                                   periods_pre = 3, # estimate pre-trend diagnostics, set to NULL to omit from estimation
                                   max_age = 40, # dont estimate results if age is above 40
                                   min_age = 20, # dont estimate results if age is below 20
                                   pre = 1, # use 1 period before treatment, can make further away if anticipation is conern
                                   verbose = FALSE # set to TRUE to output progress (i like to time loops) set to FALSE to omit messages
                                   ) 
+#>   Error for d=25, event_time=1: Empty subgroup: age=26, female=1, D=27
+#>   Error for d=25, event_time=2: Empty subgroup: age=27, female=1, D=28
+#>   Error for d=25, event_time=3: Empty subgroup: age=28, female=1, D=29
+#>   Error for d=26, event_time=0: Empty subgroup: age=26, female=1, D=27
+#>   Error for d=26, event_time=1: Empty subgroup: age=27, female=1, D=28
+#>   Error for d=26, event_time=2: Empty subgroup: age=28, female=1, D=29
+#>   Error for d=26, event_time=3: Empty subgroup: age=29, female=1, D=30
+#>   Error for d=25, event_time=-4, dp=27: Empty subgroup: age=21, female=1, D=27
+#>   Error for d=25, event_time=-4, dp=28: Empty subgroup: age=21, female=1, D=28
+#>   Error for d=25, event_time=-4, dp=29: Empty subgroup: age=21, female=1, D=29
+#>   Error for d=25, event_time=-3, dp=27: Empty subgroup: age=22, female=1, D=27
+#>   Error for d=25, event_time=-3, dp=28: Empty subgroup: age=22, female=1, D=28
+#>   Error for d=25, event_time=-3, dp=29: Empty subgroup: age=22, female=1, D=29
+#>   Error for d=25, event_time=-2, dp=27: Empty subgroup: age=23, female=1, D=27
+#>   Error for d=25, event_time=-2, dp=28: Empty subgroup: age=23, female=1, D=28
+#>   Error for d=25, event_time=-2, dp=29: Empty subgroup: age=23, female=1, D=29
+#>   Error for d=26, event_time=-4, dp=27: Empty subgroup: age=22, female=1, D=27
+#>   Error for d=26, event_time=-4, dp=28: Empty subgroup: age=22, female=1, D=28
+#>   Error for d=26, event_time=-4, dp=29: Empty subgroup: age=22, female=1, D=29
+#>   Error for d=26, event_time=-4, dp=30: Empty subgroup: age=22, female=1, D=30
+#>   Error for d=26, event_time=-3, dp=27: Empty subgroup: age=23, female=1, D=27
+#>   Error for d=26, event_time=-3, dp=28: Empty subgroup: age=23, female=1, D=28
+#>   Error for d=26, event_time=-3, dp=29: Empty subgroup: age=23, female=1, D=29
+#>   Error for d=26, event_time=-3, dp=30: Empty subgroup: age=23, female=1, D=30
+#>   Error for d=26, event_time=-2, dp=27: Empty subgroup: age=24, female=1, D=27
+#>   Error for d=26, event_time=-2, dp=28: Empty subgroup: age=24, female=1, D=28
+#>   Error for d=26, event_time=-2, dp=29: Empty subgroup: age=24, female=1, D=29
+#>   Error for d=26, event_time=-2, dp=30: Empty subgroup: age=24, female=1, D=30
 ```
 
 ## Examining results of validation tests
@@ -99,20 +126,20 @@ As a first pass, lets see the results.
 ``` r
 
 res |> tibble()
-#> # A tibble: 720 × 16
-#>        d    dp     a event_time estimand method             est      se     ci_l
-#>    <int> <dbl> <int>      <int> <chr>    <chr>            <dbl>   <dbl>    <dbl>
-#>  1    25    26    25          0 APO      DID_Female     7.92e+4 4.02e+3  7.13e+4
-#>  2    25    26    25          0 APO      DID_Male       7.27e+4 3.02e+3  6.68e+4
-#>  3    25    26    25          0 ATE      DID_Female    -2.85e+4 4.06e+3 -3.65e+4
-#>  4    25    26    25          0 ATE      DID_Male       4.01e+2 3.13e+3 -5.74e+3
-#>  5    25    26    25          0 theta    DID_Female    -3.61e-1 3.58e-2 -4.31e-1
-#>  6    25    26    25          0 theta    DID_Male       5.51e-3 4.33e-2 -7.93e-2
-#>  7    25    26    25          0 ATE      TD            -2.89e+4 5.13e+3 -3.90e+4
-#>  8    25    26    25          0 theta    NTD_Conv      -3.66e-1 5.62e-2 -4.76e-1
-#>  9    25    26    25          0 theta    NTD_New       -3.96e-1 7.06e-2 -5.35e-1
-#> 10    25    26    25          0 APO      TD_Null        7.96e+4 5.10e+3  6.96e+4
-#> # ℹ 710 more rows
+#> # A tibble: 60 × 16
+#>        d    dp     a event_time estimand  method            est      se     ci_l
+#>    <int> <dbl> <int>      <int> <chr>     <chr>           <dbl>   <dbl>    <dbl>
+#>  1    25    26    25          0 APO       DID_Female    7.46e+4 2.29e+3  7.01e+4
+#>  2    25    26    25          0 APO       DID_Male      6.78e+4 2.04e+3  6.38e+4
+#>  3    25    26    25          0 ATE       DID_Female   -2.20e+4 2.30e+3 -2.65e+4
+#>  4    25    26    25          0 ATE       DID_Male      3.75e+3 2.34e+3 -8.41e+2
+#>  5    25    26    25          0 theta     DID_Female   -2.95e-1 2.44e-2 -3.43e-1
+#>  6    25    26    25          0 theta     DID_Male      5.52e-2 3.56e-2 -1.45e-2
+#>  7    25    26    25          0 ATE       TD           -2.58e+4 3.28e+3 -3.22e+4
+#>  8    25    26    25          0 theta     NTD_Conv     -3.50e-1 4.32e-2 -4.35e-1
+#>  9    25    26    25          0 Delta_rho NTD_New      -3.65e-1 4.70e-2 -4.58e-1
+#> 10    25    26    25          0 APO       TD_Null       7.84e+4 3.27e+3  7.19e+4
+#> # ℹ 50 more rows
 #> # ℹ 7 more variables: ci_h <dbl>, t <dbl>, p <dbl>, n_female_treat <int>,
 #> #   n_female_control <int>, n_male_treat <int>, n_male_control <int>
 ```

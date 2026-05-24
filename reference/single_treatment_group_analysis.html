@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,7 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>data.frame</code> with one row per estimand/method combination:</p><ul><li><p><code>estimand</code> — one of <code>"APO"</code>, <code>"ATE"</code>, <code>"theta"</code></p></li>
+    <p>A <code>data.frame</code> with one row per estimand/method combination:</p><ul><li><p><code>estimand</code> — one of <code>"APO"</code>, <code>"ATE"</code>, <code>"theta"</code>, <code>"Delta_rho"</code></p></li>
 <li><p><code>method</code> — one of <code>"DID_Female"</code>, <code>"DID_Male"</code>, <code>"TD"</code>,
 <code>"NTD_Conv"</code>, <code>"NTD_New"</code>, <code>"TD_Null"</code>, <code>"NTD_Conv_Null"</code></p></li>
 <li><p><code>est</code> — estimate</p></li>
@@ -116,17 +116,26 @@ standard errors are computed by summing the IFs at the <code>id</code> level via
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">DT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/J.html" class="external-link">CJ</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">80</span>, age <span class="op">=</span> <span class="fl">20</span><span class="op">:</span><span class="fl">26</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">DT</span><span class="op">[</span>, <span class="va">female</span> <span class="op">:=</span> <span class="op">+</span><span class="op">(</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">2</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">DT</span><span class="op">[</span>, <span class="va">D</span> <span class="op">:=</span> <span class="fl">24L</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">DT</span><span class="op">[</span>, <span class="va">Y</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">.N</span>, <span class="fl">10</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span><span class="va">female</span> <span class="op">+</span> <span class="fl">0.1</span><span class="op">*</span><span class="op">(</span><span class="va">age</span><span class="op">-</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="co"># compute_mean_if() and se_cluster() must be available in the package</span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">single_treatment_group_analysis</span><span class="op">(</span><span class="va">DT</span>, d <span class="op">=</span> <span class="fl">24</span>, dp <span class="op">=</span> <span class="fl">26</span>, a <span class="op">=</span> <span class="fl">25</span>, pre <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">single_treatment_group_analysis</span><span class="op">(</span><span class="va">sim</span>, d <span class="op">=</span> <span class="fl">27</span>, dp <span class="op">=</span> <span class="fl">28</span>, a <span class="op">=</span> <span class="fl">28</span>, pre <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   estimand     method           est           se n_female_treat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      APO DID_Female  9.740796e+04 1.177499e+04             45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      APO   DID_Male  1.005088e+05 1.143599e+04             45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      ATE DID_Female -1.297154e+04 1.221918e+04             45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      ATE   DID_Male  3.688769e+03 1.213416e+04             45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5    theta DID_Female -1.331671e-01 1.160218e-01             45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6    theta   DID_Male  3.670096e-02 1.228974e-01             45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   n_female_control n_male_treat n_male_control</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               61           62             49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2               61           62             49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3               61           62             49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4               61           62             49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5               61           62             49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6               61           62             49</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

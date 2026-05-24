@@ -18,29 +18,37 @@ $`\times`$ estimand $`\times`$ method combination.
 library(childpen)
 
 set.seed(42)
-N <- 2000
-data <- simulate_data(n_individuals = N)
+data <- simulate_data(n_individuals = 2000, treatment_groups = 26:28)
 head(data)
-#>   id female age  D  Y_inf      Y
-#> 1  1      1  20 25  32193  32193
-#> 2  1      1  21 25  46159  46159
-#> 3  1      1  22 25  79432  79432
-#> 4  1      1  23 25  75703  75703
-#> 5  1      1  24 25 291366 291366
-#> 6  1      1  25 25 139286  94345
+#>   id female age  D Y_inf     Y
+#> 1  1      1  20 26 10350 10350
+#> 2  1      1  21 26 32560 32560
+#> 3  1      1  22 26 19763 19763
+#> 4  1      1  23 26 75854 75854
+#> 5  1      1  24 26 20019 20019
+#> 6  1      1  25 26 59721 59721
 ```
 
 ``` r
 
 res = multiple_treatment_group_analysis(data = data,
-                                  treatment_groups = 25:30,
-                                  periods_post = 5,
+                                  treatment_groups = 26:28,
+                                  periods_post = 3,
                                   periods_pre = NULL,
                                   max_age = 40,
                                   min_age = 20,
                                   pre = 1,
                                   verbose = FALSE
                                   )
+#>   Error for d=26, event_time=2: Empty subgroup: age=28, female=1, D=29
+#>   Error for d=26, event_time=3: Empty subgroup: age=29, female=1, D=30
+#>   Error for d=27, event_time=1: Empty subgroup: age=28, female=1, D=29
+#>   Error for d=27, event_time=2: Empty subgroup: age=29, female=1, D=30
+#>   Error for d=27, event_time=3: Empty subgroup: age=30, female=1, D=31
+#>   Error for d=28, event_time=0: Empty subgroup: age=28, female=1, D=29
+#>   Error for d=28, event_time=1: Empty subgroup: age=29, female=1, D=30
+#>   Error for d=28, event_time=2: Empty subgroup: age=30, female=1, D=31
+#>   Error for d=28, event_time=3: Empty subgroup: age=31, female=1, D=32
 ```
 
 ## Simulation truth
@@ -57,7 +65,7 @@ PO_tidy <- data |>
   summarize(APO_obs = mean(Y), APO = mean(Y_inf)) |>
   mutate(ATE = APO_obs - APO,
          theta = ATE / APO) |>
-  filter(event_time %in% 0:5, d %in% 25:30)
+  filter(event_time %in% 0:3, d %in% 26:28)
 ```
 
 ## DID
@@ -84,7 +92,7 @@ obs_tidy = data |>
   group_by(female, d, event_time) |>
   summarize(est = mean(Y)) |>
   mutate(estimand = "APO", method = "Observed") |>
-  filter(event_time %in% -3:5, d %in% 25:30)
+  filter(event_time %in% -3:3, d %in% 26:28)
 
 PO_long = PO_tidy |>
   select(-APO_obs) |>
@@ -213,7 +221,7 @@ truth_ntd_new <- PO_tidy |>
   rename(Y_female = APO_obs_f1, Y_male = APO_obs_f0,
          APO_female = APO_f1, APO_male = APO_f0) |>
   mutate(est = (Y_female / Y_male) - (APO_female / APO_male),
-         method = "NTD_New", estimand = "theta",
+         method = "NTD_New", estimand = "Delta_rho",
          ci_l = NA_real_, ci_h = NA_real_,
          truth = TRUE)
 
