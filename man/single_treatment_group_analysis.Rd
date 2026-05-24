@@ -40,7 +40,7 @@ single_treatment_group_analysis(
 \value{
 A \code{data.frame} with one row per estimand/method combination:
 \itemize{
-\item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}
+\item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}, \code{"Delta_rho"}
 \item \code{method} — one of \code{"DID_Female"}, \code{"DID_Male"}, \code{"TD"},
 \code{"NTD_Conv"}, \code{"NTD_New"}, \code{"TD_Null"}, \code{"NTD_Conv_Null"}
 \item \code{est} — estimate
@@ -78,15 +78,10 @@ standard errors are computed by summing the IFs at the \code{id} level via \code
 Requires helper functions \code{compute_mean_if()} and \code{se_cluster()}.
 }
 \examples{
-\dontrun{
-library(data.table)
+\donttest{
 set.seed(1)
-DT <- CJ(id = 1:80, age = 20:26)
-DT[, female := +(id \%\% 2 == 0)]
-DT[, D := 24L]
-DT[, Y := rnorm(.N, 10 + 0.5*female + 0.1*(age-20))]
-# compute_mean_if() and se_cluster() must be available in the package
-res <- single_treatment_group_analysis(DT, d = 24, dp = 26, a = 25, pre = 1)
+sim <- simulate_data(n_individuals = 500)
+res <- single_treatment_group_analysis(sim, d = 27, dp = 28, a = 28, pre = 1)
 head(res)
 }
 }

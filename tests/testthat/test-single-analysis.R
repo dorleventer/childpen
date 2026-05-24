@@ -60,7 +60,7 @@ test_that("single_treatment_group_analysis estimand and method values are correc
   sim <- simulate_data(n_individuals = 300, seed = 12)
   res <- single_treatment_group_analysis(sim, d = 25L, dp = 27L, a = 26L, pre = 1L)
 
-  expect_true(all(res$estimand %in% c("APO", "ATE", "theta")))
+  expect_true(all(res$estimand %in% c("APO", "ATE", "theta", "Delta_rho")))
   expect_true(all(res$method   %in%
                     c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New",
                       "TD_Null", "NTD_Conv_Null")))

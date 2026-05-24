@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 library(ggplot2); library(dplyr); library(tidyr)
+data.table::setDTthreads(1L)
 options(dplyr.summarise.inform = FALSE, scipen = 999, digits = 5)
 theme_set(theme_bw(base_size = 12))
 ```
@@ -33,15 +34,14 @@ This vignette shows how to estimate DID, TD, and NTD using `childpen`. All estim
 library(childpen)
 
 set.seed(42)
-N <- 2000
-data <- simulate_data(n_individuals = N)
+data <- simulate_data(n_individuals = 2000, treatment_groups = 26:28)
 head(data)
 ```
 
 ```{r estimation}
 res = multiple_treatment_group_analysis(data = data,
-                                  treatment_groups = 25:30,
-                                  periods_post = 5,
+                                  treatment_groups = 26:28,
+                                  periods_post = 3,
                                   periods_pre = NULL,
                                   max_age = 40,
                                   min_age = 20,
@@ -62,7 +62,7 @@ PO_tidy <- data |>
   summarize(APO_obs = mean(Y), APO = mean(Y_inf)) |>
   mutate(ATE = APO_obs - APO,
          theta = ATE / APO) |>
-  filter(event_time %in% 0:5, d %in% 25:30)
+  filter(event_time %in% 0:3, d %in% 26:28)
 ```
 
 ## DID
@@ -82,7 +82,7 @@ obs_tidy = data |>
   group_by(female, d, event_time) |>
   summarize(est = mean(Y)) |>
   mutate(estimand = "APO", method = "Observed") |>
-  filter(event_time %in% -3:5, d %in% 25:30)
+  filter(event_time %in% -3:3, d %in% 26:28)
 
 PO_long = PO_tidy |>
   select(-APO_obs) |>
@@ -192,7 +192,7 @@ truth_ntd_new <- PO_tidy |>
   rename(Y_female = APO_obs_f1, Y_male = APO_obs_f0,
          APO_female = APO_f1, APO_male = APO_f0) |>
   mutate(est = (Y_female / Y_male) - (APO_female / APO_male),
-         method = "NTD_New", estimand = "theta",
+         method = "NTD_New", estimand = "Delta_rho",
          ci_l = NA_real_, ci_h = NA_real_,
          truth = TRUE)
 

@@ -15,7 +15,7 @@
 #'     implicit weight on each group is \eqn{p_d \cdot \text{APO}_d}, giving
 #'     higher-earning groups more influence.}
 #'   \item{\strong{gender_ineq} (\eqn{\Delta\rho_{\text{Agg}}})}{
-#'     Weighted average of \code{NTD_New} (estimand == "theta") across
+#'     Weighted average of \code{NTD_New} (estimand == "Delta_rho") across
 #'     treatment groups — the aggregate gender-inequality estimand.}
 #' }
 #'
@@ -38,7 +38,7 @@
 #'   combination, containing:
 #'   \itemize{
 #'     \item \code{event_time} — event time
-#'     \item \code{estimand} — \code{"APO"}, \code{"ATE"}, or \code{"theta"}
+#'     \item \code{estimand} — \code{"APO"}, \code{"ATE"}, \code{"theta"}, or \code{"Delta_rho"}
 #'     \item \code{method} — method name
 #'     \item \code{agg_type} — one of \code{"avg_of_ratios"},
 #'       \code{"ratio_of_avgs"}, \code{"gender_ineq"}
@@ -75,14 +75,13 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # Assume `res` is the output of multiple_treatment_group_analysis()
+#' \donttest{
+#' set.seed(1)
+#' sim <- simulate_data(n_individuals = 500)
+#' res <- multiple_treatment_group_analysis(sim, treatment_groups = 26:28,
+#'                                          periods_post = 2, verbose = FALSE)
 #' agg <- aggregate_estimands(res)
 #' head(agg)
-#'
-#' # Custom weights: more weight on later first-births
-#' w <- c("24" = 0.1, "25" = 0.2, "26" = 0.3, "27" = 0.25, "28" = 0.15)
-#' agg_w <- aggregate_estimands(res, weights = w)
 #' }
 aggregate_estimands <- function(results,
                                 weights = NULL,
@@ -249,9 +248,9 @@ aggregate_estimands <- function(results,
   }
 
   # ---- 3. gender_ineq (Delta_rho_Agg) -------------------------------------
-  # Weighted average of NTD_New theta estimates across d.
+  # Weighted average of NTD_New Delta_rho estimates across d.
 
-  ntd_new_rows <- DT[method == "NTD_New" & estimand == "theta"]
+  ntd_new_rows <- DT[method == "NTD_New" & estimand == "Delta_rho"]
 
   agg3_list <- list()
   if (nrow(ntd_new_rows) > 0L) {
@@ -268,7 +267,7 @@ aggregate_estimands <- function(results,
 
       agg3_list[[i]] <- data.table(
         event_time = et,
-        estimand   = "theta",
+        estimand   = "Delta_rho",
         method     = "NTD_New",
         agg_type   = "gender_ineq",
         est        = est_agg,

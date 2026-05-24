@@ -15,6 +15,13 @@
 #' @param verbose Logical (default \code{TRUE}). Print progress messages.
 #'
 #' @return A \code{data.frame} stacking results from \code{single_treatment_group_analysis()}.
+#' @examples
+#' \donttest{
+#' set.seed(1)
+#' sim <- simulate_data(n_individuals = 500)
+#' res <- multiple_treatment_group_analysis(sim, treatment_groups = 26:28, periods_post = 2)
+#' head(res)
+#' }
 #' @export
 
 multiple_treatment_group_analysis <- function(data,

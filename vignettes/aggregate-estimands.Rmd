@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 library(ggplot2); library(dplyr); library(tidyr)
+data.table::setDTthreads(1L)
 options(dplyr.summarise.inform = FALSE, scipen = 999, digits = 5)
 theme_set(theme_bw(base_size = 12))
 ```
@@ -31,7 +32,7 @@ Three aggregate estimands are available:
 
 - **avg_of_ratios** ($\theta_{\text{Agg},1}$): weighted average of each group's normalized effect $\theta(g,d,d+e)$. Formally, $\theta_{\text{Agg},1}(g,e) = \sum_d w_d \cdot \theta(g,d,d+e)$, where $w_d$ are population weights normalised to sum to one. Preferred because normalization happens within each group before aggregation, so baseline differences do not inflate the average.
 - **ratio_of_avgs** ($\theta_{\text{Agg},2}$): ratio of the weighted-average ATE to the weighted-average APO. Formally, $\theta_{\text{Agg},2}(g,e) = \sum_d w_d \cdot \text{ATE}(g,d,d+e) \;/\; \sum_d w_d \cdot \text{APO}(g,d,d+e)$. This implicitly up-weights high-earning groups (their larger APO contributes proportionally more to the pooled denominator), so it differs from $\theta_{\text{Agg},1}$ when earnings vary across groups.
-- **gender_ineq** ($\Delta\rho_{\text{Agg}}$): weighted average of `NTD_New` theta estimates — the aggregate gender-inequality penalty. Formally, $\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)$.
+- **gender_ineq** ($\Delta\rho_{\text{Agg}}$): weighted average of `NTD_New` $\Delta\rho$ estimates — the aggregate gender-inequality penalty. Formally, $\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)$.
 
 ## Simulate data
 
@@ -39,19 +40,19 @@ Three aggregate estimands are available:
 library(childpen)
 
 set.seed(42)
-data <- simulate_data(n_individuals = 5000)
+data <- simulate_data(n_individuals = 2000, treatment_groups = 25:28)
 head(data)
 ```
 
 ## Run estimation
 
-We estimate all methods for treatment groups 25–34 with five post-treatment periods.
+We estimate all methods for treatment groups 25–28 with three post-treatment periods.
 
 ```{r estimation}
 res <- multiple_treatment_group_analysis(
   data             = data,
-  treatment_groups = 25:34,
-  periods_post     = 5,
+  treatment_groups = 25:28,
+  periods_post     = 3,
   periods_pre      = NULL,
   verbose          = FALSE
 )
@@ -130,19 +131,13 @@ By default all treatment groups receive equal weight. Researchers often want to 
 - **Left-skewed** (mimicking Southern Europe): most first births concentrate at older ages.
 
 ```{r custom_weights}
-groups <- as.character(25:34)
+groups <- as.character(25:28)
 
 # Right-skewed: more weight on younger groups
-w_us <- setNames(
-  c(0.22, 0.20, 0.17, 0.13, 0.10, 0.08, 0.05, 0.03, 0.01, 0.01),
-  groups
-)
+w_us <- setNames(c(0.40, 0.30, 0.20, 0.10), groups)
 
 # Left-skewed: more weight on older groups
-w_se <- setNames(
-  c(0.01, 0.01, 0.03, 0.05, 0.08, 0.10, 0.13, 0.17, 0.20, 0.22),
-  groups
-)
+w_se <- setNames(c(0.10, 0.20, 0.30, 0.40), groups)
 
 agg_us <- aggregate_estimands(res, weights = w_us)
 agg_se <- aggregate_estimands(res, weights = w_se)
@@ -182,11 +177,11 @@ When younger groups bear larger penalties than older groups (or vice versa), the
 
 ## Gender inequality aggregate
 
-The `gender_ineq` aggregate ($\Delta\rho_{\text{Agg}}$) is the weighted average of `NTD_New` theta estimates across treatment groups. It measures how parenthood affects the female-to-male earnings ratio: negative values indicate that mothers bear a larger proportional penalty — the female-to-male earnings ratio is lower post-birth than the counterfactual ratio.
+The `gender_ineq` aggregate ($\Delta\rho_{\text{Agg}}$) is the weighted average of `NTD_New` $\Delta\rho$ estimates across treatment groups. It measures how parenthood affects the female-to-male earnings ratio: negative values indicate that mothers bear a larger proportional penalty — the female-to-male earnings ratio is lower post-birth than the counterfactual ratio.
 
 ```{r gender_ineq}
 agg |>
-  filter(agg_type == "gender_ineq", estimand == "theta", method == "NTD_New") |>
+  filter(agg_type == "gender_ineq", estimand == "Delta_rho", method == "NTD_New") |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h)) +
   geom_ribbon(fill = "tomato", alpha = 0.25, color = NA) +
   geom_line(color = "tomato") +

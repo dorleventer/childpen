@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 library(ggplot2); library(dplyr); library(tidyr)
+data.table::setDTthreads(1L)
 options(dplyr.summarise.inform = FALSE, scipen = 999, digits = 5)
 theme_set(theme_bw(base_size = 12))
 ```

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# childpen <a href="https://dorleventer.github.io/childpen" title="childpen website"><img src="man/figures/logo.png" align="right" height="120" alt="childpen logo" /></a>
+# childpen <a href="https://dorleventer.github.io/childpen/" title="childpen website"><img src="man/figures/logo.png" align="right" height="120" alt="childpen logo" /></a>
 
 <!-- badges: start -->
 [![pkgdown](https://github.com/dorleventer/childpen/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/dorleventer/childpen/actions/workflows/pkgdown.yaml)
@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 - 🧪 DID / TD / NTD estimators (single & multiple treatment groups)
 - 📄 **Paper:** [arXiv:2602.07486](https://arxiv.org/abs/2602.07486)
 - 💻 **GitHub:** <https://github.com/dorleventer/childpen>
-- 🌐 **Website:** <https://dorleventer.github.io/childpen>
+- 🌐 **Website:** <https://dorleventer.github.io/childpen/>
 
 ---
 

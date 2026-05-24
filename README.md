@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# childpen <a href="https://dorleventer.github.io/childpen" title="childpen website"><img src="man/figures/logo.png" align="right" height="120" alt="childpen logo" /></a>
+# childpen <a href="https://dorleventer.github.io/childpen/" title="childpen website"><img src="man/figures/logo.png" align="right" height="120" alt="childpen logo" /></a>
 
 <!-- badges: start -->
 
@@ -17,7 +17,7 @@ MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 - 🧪 DID / TD / NTD estimators (single & multiple treatment groups)
 - 📄 **Paper:** [arXiv:2602.07486](https://arxiv.org/abs/2602.07486)
 - 💻 **GitHub:** <https://github.com/dorleventer/childpen>
-- 🌐 **Website:** <https://dorleventer.github.io/childpen>
+- 🌐 **Website:** <https://dorleventer.github.io/childpen/>
 
 ------------------------------------------------------------------------
 

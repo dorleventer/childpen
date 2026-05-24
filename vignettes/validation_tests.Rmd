@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
   warning = FALSE
 )
 library(ggplot2); library(dplyr); library(tidyr)
+data.table::setDTthreads(1L)
 options(dplyr.summarise.inform = FALSE, scipen = 999, digits = 5)
 theme_set(theme_bw(base_size = 12))
 ```
@@ -34,8 +35,7 @@ The package has a built in simulation function to draw data resembling child pen
 ```{r draw_data}
 library(childpen)
 
-N <- 20000
-data <- simulate_data(n_individuals = N)
+data <- simulate_data(n_individuals = 5000, treatment_groups = 25:26)
 data |> tibble()
 ```
 
@@ -43,9 +43,9 @@ data |> tibble()
 
 See the [estimation vignette](estimation.html) for an explainer on the $2\times2$ comparisons in `childpen`. Recall that $d$ is the treatment group, $a$ is the target age, and $d^\prime=a+1$ is the closest not-yet-treated control group. Recall that the control group is $d' = a + 1$, the cohort whose first birth is one year after the target age. 
 
-Assume that when presenting results, post-treatment, you report estimates for event times $e=0,...,5$. Then, for each treatment group $d$ you use 6 different control groups in post-treatment estimation. As the identification assumptions (e.g., parallel trends for DID) must hold for each point-estimate separately, this implies that it must hold within each treatment-control pair. 
+Assume that when presenting results, post-treatment, you report estimates for event times $e=0,...,3$. Then, for each treatment group $d$ you use 4 different control groups in post-treatment estimation. As the identification assumptions (e.g., parallel trends for DID) must hold for each point-estimate separately, this implies that it must hold within each treatment-control pair. 
 
-The above argument means that the validation tests should be done separately by treatment-control combinations. Returning to the above example, if you want to show results for $e=0,...,5$ then you need to conduct pre-trend analysis for 6 different control groups. This is done automatically in the `childpen` package, as we show below. 
+The above argument means that the validation tests should be done separately by treatment-control combinations. Returning to the above example, if you want to show results for $e=0,...,3$ then you need to conduct pre-trend analysis for 4 different control groups. This is done automatically in the `childpen` package, as we show below. 
 
 For completeness, the validation tests are:
 
@@ -55,12 +55,12 @@ For completeness, the validation tests are:
 
 ## Multiple treatment group analysis
 
-We will now do the main heavy lifting. We run the main estimation function, `multiple_treatment_group_analysis()`. Set `periods_pre` to the number of pre-treatment periods for which you want to conduct validation tests. As an example, we will examine three periods pre-treatment. Since we set the number of periods in the post-treatment to 5 using `periods_post`, this will report validation tests separately for 6 control groups, as discussed above. 
+We will now do the main heavy lifting. We run the main estimation function, `multiple_treatment_group_analysis()`. Set `periods_pre` to the number of pre-treatment periods for which you want to conduct validation tests. As an example, we will examine three periods pre-treatment. Since we set the number of periods in the post-treatment to 3 using `periods_post`, this will report validation tests separately for 4 control groups, as discussed above. 
 
 ```{r estimation}
 res = multiple_treatment_group_analysis(data = data,
                                   treatment_groups = 25:26, # which treatment groups to run in the analysis
-                                  periods_post = 5, # estimate results for post periods 0:5
+                                  periods_post = 3, # estimate results for post periods 0:3
                                   periods_pre = 3, # estimate pre-trend diagnostics, set to NULL to omit from estimation
                                   max_age = 40, # dont estimate results if age is above 40
                                   min_age = 20, # dont estimate results if age is below 20

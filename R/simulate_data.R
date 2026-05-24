@@ -4,6 +4,8 @@
 #' earnings. The data-generating process uses a male baseline earnings profile,
 #' female penalty parameters with partial recovery, and AR(1) shocks in logs.
 #' @param n_individuals Integer. Number of individuals to simulate (default \code{10000}).
+#' @param treatment_groups Integer vector. Which treatment groups (ages at first
+#'   birth) to include. Default \code{25:28}. Available values: 25 through 40.
 #' @param seed Integer. RNG seed.
 #'
 #'
@@ -18,7 +20,7 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' set.seed(1)
 #' sim <- simulate_data(n_individuals = 2000)
 #' head(sim)
@@ -26,6 +28,7 @@
 #'
 #' @export
 simulate_data <- function(n_individuals   = 10000,
+                          treatment_groups = 25:28,
                           seed            = 42) {
 
   set.seed(seed)
@@ -41,7 +44,15 @@ simulate_data <- function(n_individuals   = 10000,
   rho         <- variance_params$rho
   sigma_nu    <- variance_params$sigma_nu_log
 
-  treatment_groups <- sort(unique(male_profiles$age_d))
+  all_groups <- sort(unique(male_profiles$age_d))
+  treatment_groups <- as.integer(treatment_groups)
+  bad <- setdiff(treatment_groups, all_groups)
+  if (length(bad) > 0L)
+    stop("treatment_groups contains invalid values: ",
+         paste(bad, collapse = ", "),
+         ". Available: ", paste(all_groups, collapse = ", "))
+  treatment_groups <- sort(treatment_groups)
+  male_profiles <- male_profiles[male_profiles$age_d %in% treatment_groups, ]
 
   # Assign gender counts
   n_female <- round(n_individuals * 0.5)

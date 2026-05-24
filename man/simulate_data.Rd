@@ -4,10 +4,13 @@
 \alias{simulate_data}
 \title{Simulate panel data for child-penalty estimators}
 \usage{
-simulate_data(n_individuals = 10000, seed = 42)
+simulate_data(n_individuals = 10000, treatment_groups = 25:28, seed = 42)
 }
 \arguments{
 \item{n_individuals}{Integer. Number of individuals to simulate (default \code{10000}).}
+
+\item{treatment_groups}{Integer vector. Which treatment groups (ages at first
+birth) to include. Default \code{25:28}. Available values: 25 through 40.}
 
 \item{seed}{Integer. RNG seed.}
 }
@@ -28,7 +31,7 @@ earnings. The data-generating process uses a male baseline earnings profile,
 female penalty parameters with partial recovery, and AR(1) shocks in logs.
 }
 \examples{
-\dontrun{
+\donttest{
 set.seed(1)
 sim <- simulate_data(n_individuals = 2000)
 head(sim)

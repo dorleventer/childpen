@@ -1,11 +1,10 @@
 Package: childpen
-Title: Child Penalties Analysis
-Version: 0.2.0
+Title: Identification and Estimation of Child Penalties
+Version: 0.2.2
 Authors@R: c(
     person("Dor", "Leventer", 
-           email = "dorleventer@gmail.com", 
+           email = "leventerdor@gmail.com", 
            role = c("aut", "cre")))
-Maintainer: Dor Leventer <dorleventer@gmail.com>
 Description: Tools to simulate child-penalty data and estimate DID, TD, and NTD
     identification frameworks from Leventer (2025), "Identification of Child
     Penalties" <doi:10.48550/arXiv.2602.07486>.

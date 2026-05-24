@@ -49,3 +49,11 @@ A \code{data.frame} stacking results from \code{single_treatment_group_analysis(
 \description{
 Child penalty analysis over multiple treatment groups
 }
+\examples{
+\donttest{
+set.seed(1)
+sim <- simulate_data(n_individuals = 500)
+res <- multiple_treatment_group_analysis(sim, treatment_groups = 26:28, periods_post = 2)
+head(res)
+}
+}
