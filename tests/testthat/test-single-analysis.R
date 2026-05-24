@@ -75,10 +75,10 @@ test_that("single_treatment_group_analysis produces positive standard errors", {
 test_that("single_treatment_group_analysis sample counts are correct", {
   sim <- simulate_data(n_individuals = 300, seed = 14)
 
-  n_ft <- sum(sim$female == 1L & sim$D == 25L) / 21L  # divide by 21 ages
-  n_fc <- sum(sim$female == 1L & sim$D == 27L) / 21L
-  n_mt <- sum(sim$female == 0L & sim$D == 25L) / 21L
-  n_mc <- sum(sim$female == 0L & sim$D == 27L) / 21L
+  n_ft <- sum(sim$female == 1L & sim$D == 25L) / 8L  # divide by 8 ages (20:27, default groups 24:28)
+  n_fc <- sum(sim$female == 1L & sim$D == 27L) / 8L
+  n_mt <- sum(sim$female == 0L & sim$D == 25L) / 8L
+  n_mc <- sum(sim$female == 0L & sim$D == 27L) / 8L
 
   res <- single_treatment_group_analysis(sim, d = 25L, dp = 27L, a = 26L, pre = 1L)
 

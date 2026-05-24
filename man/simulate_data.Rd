@@ -2,37 +2,42 @@
 % Please edit documentation in R/simulate_data.R
 \name{simulate_data}
 \alias{simulate_data}
-\title{Simulate panel data for child-penalty estimators}
+\title{Simulate panel data for child-penalty estimation}
 \usage{
-simulate_data(n_individuals = 10000, treatment_groups = 25:28, seed = 42)
+simulate_data(n_individuals = 10000, treatment_groups = 24:28, seed = 42)
 }
 \arguments{
-\item{n_individuals}{Integer. Number of individuals to simulate (default \code{10000}).}
+\item{n_individuals}{Integer. Number of individuals (default 10 000).}
 
-\item{treatment_groups}{Integer vector. Which treatment groups (ages at first
-birth) to include. Default \code{25:28}. Available values: 25 through 40.}
+\item{treatment_groups}{Integer vector. Treatment groups to include
+(default \code{24:28}).}
 
-\item{seed}{Integer. RNG seed.}
+\item{seed}{Integer. RNG seed (default 42).}
 }
 \value{
-A \code{data.frame} with columns:
-\itemize{
-\item \code{id} (individual id),
-\item \code{female} (0/1),
-\item \code{age} (integer),
-\item \code{D} (treatment age group; renamed from \code{age_d} for consistency),
-\item \code{Y_inf} (counterfactual earnings absent penalties),
-\item \code{Y} (observed earnings).
-}
+A \code{data.frame} with columns \code{id}, \code{female},
+\code{age}, \code{D}, \code{Y}.
 }
 \description{
-Generates a panel of individuals over ages with gender, treatment group, and
-earnings. The data-generating process uses a male baseline earnings profile,
-female penalty parameters with partial recovery, and AR(1) shocks in logs.
+Generates a balanced panel with lifecycle earnings, a gender gap, selection
+on treatment timing, and gendered treatment effects. The DGP is:
+}
+\details{
+\deqn{\log Y_{it} = \mu_0 + \lambda D_i + \alpha_i
+  + \beta_1 (a - 20) + \beta_2 (a - 20)^2
+  + \gamma \cdot \mathbf{1}[f]
+  + \theta_f \cdot \mathbf{1}[f, a \ge D]
+  + \theta_m \cdot \mathbf{1}[m, a \ge D]
+  + \varepsilon_{it}}
+
+where \eqn{\alpha_i \sim N(0,\sigma_\alpha^2)} is a permanent individual
+effect and \eqn{\varepsilon_{it} \sim N(0,\sigma_\varepsilon^2)} is a
+transitory shock. The term \eqn{\lambda D_i} generates positive selection
+on treatment timing: individuals who have children later earn more, on
+average, than those who have children earlier.
 }
 \examples{
 \donttest{
-set.seed(1)
 sim <- simulate_data(n_individuals = 2000)
 head(sim)
 }

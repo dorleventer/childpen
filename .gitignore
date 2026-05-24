@@ -8,3 +8,7 @@ docs
 inst/doc
 /doc/
 /Meta/
+*.tar.gz
+*.Rcheck/
+CRAN-SUBMISSION
+README.html

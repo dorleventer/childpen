@@ -81,7 +81,7 @@ Requires helper functions \code{compute_mean_if()} and \code{se_cluster()}.
 \donttest{
 set.seed(1)
 sim <- simulate_data(n_individuals = 500)
-res <- single_treatment_group_analysis(sim, d = 27, dp = 28, a = 28, pre = 1)
+res <- single_treatment_group_analysis(sim, d = 25, dp = 26, a = 26, pre = 1)
 head(res)
 }
 }

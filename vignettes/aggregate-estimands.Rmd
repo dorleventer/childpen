@@ -34,25 +34,19 @@ Three aggregate estimands are available:
 - **ratio_of_avgs** ($\theta_{\text{Agg},2}$): ratio of the weighted-average ATE to the weighted-average APO. Formally, $\theta_{\text{Agg},2}(g,e) = \sum_d w_d \cdot \text{ATE}(g,d,d+e) \;/\; \sum_d w_d \cdot \text{APO}(g,d,d+e)$. This implicitly up-weights high-earning groups (their larger APO contributes proportionally more to the pooled denominator), so it differs from $\theta_{\text{Agg},1}$ when earnings vary across groups.
 - **gender_ineq** ($\Delta\rho_{\text{Agg}}$): weighted average of `NTD_New` $\Delta\rho$ estimates — the aggregate gender-inequality penalty. Formally, $\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)$.
 
-## Simulate data
+## Simulate and estimate
 
-```{r draw_data}
+We simulate 2 000 individuals spanning treatment groups 24–30 (the extra groups serve as clean controls for the youngest treated cohorts), then analyse groups 24–27 with two post-treatment periods.
+
+```{r simulate_and_estimate}
 library(childpen)
 
-set.seed(42)
-data <- simulate_data(n_individuals = 2000, treatment_groups = 25:32)
-head(data)
-```
+data <- simulate_data(n_individuals = 2000, treatment_groups = 24:30)
 
-## Run estimation
-
-We estimate all methods for treatment groups 25–28 with three post-treatment periods.
-
-```{r estimation}
 res <- multiple_treatment_group_analysis(
   data             = data,
-  treatment_groups = 25:28,
-  periods_post     = 3,
+  treatment_groups = 24:27,
+  periods_post     = 2,
   periods_pre      = NULL,
   verbose          = FALSE
 )
@@ -131,7 +125,7 @@ By default all treatment groups receive equal weight. Researchers often want to 
 - **Left-skewed** (mimicking Southern Europe): most first births concentrate at older ages.
 
 ```{r custom_weights}
-groups <- as.character(25:28)
+groups <- as.character(24:27)
 
 # Right-skewed: more weight on younger groups
 w_us <- setNames(c(0.40, 0.30, 0.20, 0.10), groups)

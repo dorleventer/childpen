@@ -10,7 +10,6 @@ utils::globalVariables(c(
   "agg_type", "n_groups",
   "est_ate", "se_ate", "est_apo", "se_apo",
   "event_time", "estimand", "method", "est", "se", "ci_l", "ci_h", "d",
-  "id","age","D","female","Y","Y_inf","obs_id",
-  "log_Y_inf_male","b0","b1","b2","b3","ratio","log_Y_inf_base",
-  "epsilon","alpha_i","initial_penalty","penalty_pct"
+  # simulate_data() columns
+  "alpha", "log_Y"
 ))

@@ -19,7 +19,7 @@ and \code{se}.}
 
 \item{weights}{Named numeric vector of treatment-group weights (names must
 match the values of the \code{d} column coerced to character).  Values
-are normalised to sum to 1 within each event_time × method cell, so you
+are normalised to sum to 1 within each event_time / method cell, so you
 only need to supply relative weights.  \code{NULL} (default) uses uniform
 weights over the treatment groups that have an estimate for that cell.}
 
@@ -31,18 +31,18 @@ event times (\code{event_time < 0}).  Default \code{FALSE}.}
 }
 \value{
 A \code{data.frame} with one row per
-\code{event_time} × \code{estimand} × \code{method} × \code{agg_type}
+\code{event_time} by \code{estimand} by \code{method} by \code{agg_type}
 combination, containing:
 \itemize{
-\item \code{event_time} — event time
-\item \code{estimand} — \code{"APO"}, \code{"ATE"}, \code{"theta"}, or \code{"Delta_rho"}
-\item \code{method} — method name
-\item \code{agg_type} — one of \code{"avg_of_ratios"},
+\item \code{event_time} --event time
+\item \code{estimand} --\code{"APO"}, \code{"ATE"}, \code{"theta"}, or \code{"Delta_rho"}
+\item \code{method} --method name
+\item \code{agg_type} --one of \code{"avg_of_ratios"},
 \code{"ratio_of_avgs"}, \code{"gender_ineq"}
-\item \code{est} — aggregate estimate
-\item \code{se} — standard error (see Details)
-\item \code{ci_l}, \code{ci_h} — 95 \\% Wald confidence interval
-\item \code{n_groups} — number of treatment groups contributing
+\item \code{est} --aggregate estimate
+\item \code{se} --standard error (see Details)
+\item \code{ci_l}, \code{ci_h} --95 \\% Wald confidence interval
+\item \code{n_groups} --number of treatment groups contributing
 }
 }
 \description{
@@ -63,7 +63,7 @@ implicit weight on each group is \eqn{p_d \cdot \text{APO}_d}, giving
 higher-earning groups more influence.}
 \item{\strong{gender_ineq} (\eqn{\Delta\rho_{\text{Agg}}})}{
 Weighted average of \code{NTD_New} (estimand == "Delta_rho") across
-treatment groups — the aggregate gender-inequality estimand.}
+treatment groups -- the aggregate gender-inequality estimand.}
 }
 
 \strong{Standard errors.}  Because the raw influence functions are not
@@ -92,7 +92,7 @@ are renormalised.
 \donttest{
 set.seed(1)
 sim <- simulate_data(n_individuals = 500)
-res <- multiple_treatment_group_analysis(sim, treatment_groups = 26:28,
+res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25,
                                          periods_post = 2, verbose = FALSE)
 agg <- aggregate_estimands(res)
 head(agg)
