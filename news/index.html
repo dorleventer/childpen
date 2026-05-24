@@ -31,9 +31,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="childpen-022">childpen 0.2.2<a class="anchor" aria-label="anchor" href="#childpen-022"></a></h2>
-<ul><li>Fixed CRAN check: restricted <code>data.table</code> threads to 1 in vignettes and tests to comply with CRAN’s 2-core policy.</li>
-<li>Added <code>treatment_groups</code> parameter to <code><a href="../reference/simulate_data.html">simulate_data()</a></code> (default <code>25:28</code>) to control which treatment groups are generated.</li>
-<li>Reduced vignette runtime by using fewer treatment groups and post-treatment periods in examples.</li>
+<ul><li>Rewrote <code><a href="../reference/simulate_data.html">simulate_data()</a></code> with a self-contained DGP: lifecycle earnings, gender gap, selection on treatment timing, and gendered treatment effects. No internal data dependencies.</li>
+<li>Removed internal datasets (<code>male_profiles</code>, <code>female_params</code>, <code>variance_params</code>) and related documentation.</li>
+<li>Rewrote vignettes to focus on estimator usage and interpretation rather than truth/counterfactual comparisons.</li>
+<li>Fixed CRAN check: restricted <code>data.table</code> threads to 1 in all vignettes and tests to comply with CRAN’s 2-core policy.</li>
+<li>Added <code>inst/CITATION</code> for the underlying paper.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="childpen-021">childpen 0.2.1<a class="anchor" aria-label="anchor" href="#childpen-021"></a></h2>
