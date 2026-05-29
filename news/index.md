@@ -1,5 +1,23 @@
 # Changelog
 
+## childpen 0.2.3
+
+- Replaced `T` with `TRUE` in
+  [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md)
+  default for `verbose` parameter, as flagged by CRAN review.
+- Fixed aggregate standard errors in
+  [`aggregate_estimands()`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md)
+  to correctly implement the paper’s Appendix G inference formulas.
+- [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md)
+  now routes skipped-cell diagnostics (e.g. empty subgroups) through the
+  `verbose` argument; previously these printed unconditionally to the
+  console.
+- [`simulate_data()`](https://dorleventer.github.io/childpen/reference/simulate_data.md)
+  now saves and restores the caller’s RNG state on exit, so it no longer
+  alters the global random stream. Generated output is unchanged.
+  `seed = NULL` is now accepted to draw from the current RNG without
+  reseeding.
+
 ## childpen 0.2.2
 
 - Rewrote

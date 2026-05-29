@@ -49,7 +49,7 @@
 <span>  D_name <span class="op">=</span> <span class="st">"D"</span>,</span>
 <span>  id_name <span class="op">=</span> <span class="st">"id"</span>,</span>
 <span>  female_name <span class="op">=</span> <span class="st">"female"</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">T</span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -109,9 +109,6 @@ control offsets used post, i.e., dp = d + 1, 2, ..., H + 1. Set <code>NULL</code
 <span class="r-in"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">multiple_treatment_group_analysis</span><span class="op">(</span><span class="va">sim</span>, treatment_groups <span class="op">=</span> <span class="fl">24</span><span class="op">:</span><span class="fl">25</span>, periods_post <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>                                         verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Error for d=24, event_time=-5, dp=25: Empty subgroup: age=19, female=1, D=24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Error for d=24, event_time=-5, dp=26: Empty subgroup: age=19, female=1, D=24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Error for d=24, event_time=-5, dp=27: Empty subgroup: age=19, female=1, D=24</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    d dp  a event_time estimand     method           est           se</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 24 25 24          0      APO DID_Female  5.463737e+04 2.307267e+03</span>

@@ -136,9 +136,6 @@ set.seed(1)
 sim <- simulate_data(n_individuals = 500)
 res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25,
                                          periods_post = 2, verbose = FALSE)
-#>   Error for d=24, event_time=-5, dp=25: Empty subgroup: age=19, female=1, D=24
-#>   Error for d=24, event_time=-5, dp=26: Empty subgroup: age=19, female=1, D=24
-#>   Error for d=24, event_time=-5, dp=27: Empty subgroup: age=19, female=1, D=24
 agg <- aggregate_estimands(res)
 head(agg)
 #>   event_time estimand     method      agg_type         est         se n_groups

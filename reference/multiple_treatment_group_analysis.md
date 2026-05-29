@@ -18,7 +18,7 @@ multiple_treatment_group_analysis(
   D_name = "D",
   id_name = "id",
   female_name = "female",
-  verbose = T
+  verbose = TRUE
 )
 ```
 
@@ -80,9 +80,6 @@ set.seed(1)
 sim <- simulate_data(n_individuals = 500)
 res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25, periods_post = 2,
                                          verbose = FALSE)
-#>   Error for d=24, event_time=-5, dp=25: Empty subgroup: age=19, female=1, D=24
-#>   Error for d=24, event_time=-5, dp=26: Empty subgroup: age=19, female=1, D=24
-#>   Error for d=24, event_time=-5, dp=27: Empty subgroup: age=19, female=1, D=24
 head(res)
 #>    d dp  a event_time estimand     method           est           se
 #> 1 24 25 24          0      APO DID_Female  5.463737e+04 2.307267e+03

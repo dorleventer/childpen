@@ -30,6 +30,15 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.3" id="childpen-023">childpen 0.2.3<a class="anchor" aria-label="anchor" href="#childpen-023"></a></h2>
+<ul><li>Replaced <code>T</code> with <code>TRUE</code> in <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> default for <code>verbose</code> parameter, as flagged by CRAN review.</li>
+<li>Fixed aggregate standard errors in <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> to correctly implement the paper’s Appendix G inference formulas.</li>
+<li>
+<code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> now routes skipped-cell diagnostics (e.g. empty subgroups) through the <code>verbose</code> argument; previously these printed unconditionally to the console.</li>
+<li>
+<code><a href="../reference/simulate_data.html">simulate_data()</a></code> now saves and restores the caller’s RNG state on exit, so it no longer alters the global random stream. Generated output is unchanged. <code>seed = NULL</code> is now accepted to draw from the current RNG without reseeding.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="childpen-022">childpen 0.2.2<a class="anchor" aria-label="anchor" href="#childpen-022"></a></h2>
 <ul><li>Rewrote <code><a href="../reference/simulate_data.html">simulate_data()</a></code> with a self-contained DGP: lifecycle earnings, gender gap, selection on treatment timing, and gendered treatment effects. No internal data dependencies.</li>
 <li>Removed internal datasets (<code>male_profiles</code>, <code>female_params</code>, <code>variance_params</code>) and related documentation.</li>

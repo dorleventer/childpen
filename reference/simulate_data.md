@@ -22,7 +22,10 @@ simulate_data(n_individuals = 10000, treatment_groups = 24:28, seed = 42)
 
 - seed:
 
-  Integer. RNG seed (default 42).
+  Integer or `NULL`. RNG seed (default 42). The caller's RNG state is
+  saved and restored on exit, so calling this function does not alter
+  the global random stream. Set to `NULL` to draw from the current RNG
+  state without reseeding.
 
 ## Value
 

@@ -56,7 +56,10 @@ on treatment timing, and gendered treatment effects. The DGP is:</p>
 
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
-<dd><p>Integer. RNG seed (default 42).</p></dd>
+<dd><p>Integer or <code>NULL</code>. RNG seed (default 42). The caller's RNG
+state is saved and restored on exit, so calling this function does not
+alter the global random stream. Set to <code>NULL</code> to draw from the
+current RNG state without reseeding.</p></dd>
 
 </dl></div>
     <div class="section level2">
