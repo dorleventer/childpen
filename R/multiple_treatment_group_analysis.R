@@ -37,7 +37,7 @@ multiple_treatment_group_analysis <- function(data,
                             D_name = "D",
                             id_name = "id",
                             female_name = "female",
-                            verbose = T) {
+                            verbose = TRUE) {
 
   # Suppress data.table messages and progress bars
   old_verbose <- getOption("datatable.verbose")
@@ -113,7 +113,7 @@ multiple_treatment_group_analysis <- function(data,
         }
 
       }, error = function(e) {
-        cat(sprintf("  Error for d=%d, event_time=%d: %s\n", d, event_time, e$message))
+        if (verbose) cat(sprintf("  Skipping d=%d, event_time=%d: %s\n", d, event_time, e$message))
       })
     }
   }
@@ -167,8 +167,8 @@ multiple_treatment_group_analysis <- function(data,
             }
 
           }, error = function(e) {
-            cat(sprintf("  Error for d=%d, event_time=%d, dp=%d: %s\n",
-                        d, event_time, dp, e$message))
+            if (verbose) cat(sprintf("  Skipping d=%d, event_time=%d, dp=%d: %s\n",
+                                     d, event_time, dp, e$message))
           })
         }
       }

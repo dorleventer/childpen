@@ -1,3 +1,16 @@
+# childpen 0.2.3
+
+* Replaced `T` with `TRUE` in `multiple_treatment_group_analysis()` default
+  for `verbose` parameter, as flagged by CRAN review.
+* Fixed aggregate standard errors in `aggregate_estimands()` to correctly
+  implement the paper's Appendix G inference formulas.
+* `multiple_treatment_group_analysis()` now routes skipped-cell diagnostics
+  (e.g. empty subgroups) through the `verbose` argument; previously these
+  printed unconditionally to the console.
+* `simulate_data()` now saves and restores the caller's RNG state on exit, so
+  it no longer alters the global random stream. Generated output is unchanged.
+  `seed = NULL` is now accepted to draw from the current RNG without reseeding.
+
 # childpen 0.2.2
 
 * Rewrote `simulate_data()` with a self-contained DGP: lifecycle earnings,

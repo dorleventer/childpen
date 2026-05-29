@@ -12,7 +12,10 @@ simulate_data(n_individuals = 10000, treatment_groups = 24:28, seed = 42)
 \item{treatment_groups}{Integer vector. Treatment groups to include
 (default \code{24:28}).}
 
-\item{seed}{Integer. RNG seed (default 42).}
+\item{seed}{Integer or \code{NULL}. RNG seed (default 42). The caller's RNG
+state is saved and restored on exit, so calling this function does not
+alter the global random stream. Set to \code{NULL} to draw from the
+current RNG state without reseeding.}
 }
 \value{
 A \code{data.frame} with columns \code{id}, \code{female},

@@ -17,7 +17,7 @@ multiple_treatment_group_analysis(
   D_name = "D",
   id_name = "id",
   female_name = "female",
-  verbose = T
+  verbose = TRUE
 )
 }
 \arguments{

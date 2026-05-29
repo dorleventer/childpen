@@ -19,7 +19,10 @@
 #' @param n_individuals Integer. Number of individuals (default 10 000).
 #' @param treatment_groups Integer vector. Treatment groups to include
 #'   (default \code{24:28}).
-#' @param seed Integer. RNG seed (default 42).
+#' @param seed Integer or \code{NULL}. RNG seed (default 42). The caller's RNG
+#'   state is saved and restored on exit, so calling this function does not
+#'   alter the global random stream. Set to \code{NULL} to draw from the
+#'   current RNG state without reseeding.
 #'
 #' @return A \code{data.frame} with columns \code{id}, \code{female},
 #'   \code{age}, \code{D}, \code{Y}.
@@ -35,7 +38,22 @@ simulate_data <- function(n_individuals   = 10000,
                           treatment_groups = 24:28,
                           seed            = 42) {
 
-  set.seed(seed)
+  # Seed for reproducible output, but restore the caller's RNG state on exit so
+  # the function has no global side effect (CRAN policy on RNG state).
+  if (!is.null(seed)) {
+    if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+      old_seed <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+      on.exit(assign(".Random.seed", old_seed, envir = .GlobalEnv), add = TRUE)
+    } else {
+      on.exit(
+        if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+          rm(".Random.seed", envir = .GlobalEnv)
+        },
+        add = TRUE
+      )
+    }
+    set.seed(seed)
+  }
   treatment_groups <- sort(as.integer(treatment_groups))
 
   # Age range: 20 to one below the latest treatment group
