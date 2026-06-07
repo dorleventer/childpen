@@ -2,6 +2,8 @@
 
 ## childpen 0.2.3
 
+CRAN release: 2026-06-02
+
 - Replaced `T` with `TRUE` in
   [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md)
   default for `verbose` parameter, as flagged by CRAN review.

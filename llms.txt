@@ -44,7 +44,14 @@
 
 ## Installation
 
-Install the latest development version from GitHub:
+Install the released version from CRAN:
+
+``` r
+
+install.packages("childpen")
+```
+
+Or the development version from GitHub:
 
 ``` r
 
