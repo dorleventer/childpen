@@ -1,0 +1,86 @@
+# childpen
+
+> This package accompanies my job market paper: **Leventer, Dor
+> (2025).** *Identification of Child Penalties.*
+
+- 🧪 DID / TD / NTD estimators (single & multiple treatment groups)
+- 📄 **Paper:** [arXiv:2602.07486](https://arxiv.org/abs/2602.07486)
+- 💻 **GitHub:** <https://github.com/dorleventer/childpen>
+- 🌐 **Website:** <https://dorleventer.github.io/childpen/>
+
+------------------------------------------------------------------------
+
+## Roadmap
+
+**Package functions**
+
+**Estimation of single 2×2** —
+[`single_treatment_group_analysis()`](https://dorleventer.github.io/childpen/dev/reference/single_treatment_group_analysis.md)
+
+**Wrapper for multiple 2×2** —
+[`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/dev/reference/multiple_treatment_group_analysis.md)
+
+**Data simulation** —
+[`simulate_data()`](https://dorleventer.github.io/childpen/dev/reference/simulate_data.md)
+
+**Aggregation over multiple groups** —
+[`aggregate_estimands()`](https://dorleventer.github.io/childpen/dev/reference/aggregate_estimands.md)
+
+**Explainers**
+
+**Estimation (DID, TD, NTD)** —
+[vignette](https://dorleventer.github.io/childpen/articles/estimation.html)
+
+**NTD identification** —
+[vignette](https://dorleventer.github.io/childpen/articles/NTD-identification.html)
+
+**Validation tests** —
+[vignette](https://dorleventer.github.io/childpen/articles/validation_tests.html)
+
+**Aggregate estimands** —
+[vignette](https://dorleventer.github.io/childpen/articles/aggregate-estimands.html)
+
+------------------------------------------------------------------------
+
+## Installation
+
+Install the released version from CRAN:
+
+``` r
+
+install.packages("childpen")
+```
+
+Or the development version from GitHub:
+
+``` r
+
+# install.packages("remotes")
+remotes::install_github("dorleventer/childpen")
+```
+
+# Package index
+
+## All functions
+
+- [`aggregate_estimands()`](https://dorleventer.github.io/childpen/dev/reference/aggregate_estimands.md)
+  : Aggregate estimands across treatment groups
+- [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/dev/reference/multiple_treatment_group_analysis.md)
+  : Child penalty analysis over multiple treatment groups
+- [`simulate_data()`](https://dorleventer.github.io/childpen/dev/reference/simulate_data.md)
+  : Simulate panel data for child-penalty estimation
+- [`single_treatment_group_analysis()`](https://dorleventer.github.io/childpen/dev/reference/single_treatment_group_analysis.md)
+  : Unconditional estimands for a single treatment group
+
+# Articles
+
+### Guides
+
+The following vignettes show how to use the code in the package, as well
+as the main take-aways from the paper.
+
+- [Notation](https://dorleventer.github.io/childpen/dev/articles/notation.md):
+- [Estimation](https://dorleventer.github.io/childpen/dev/articles/estimation.md):
+- [NTD-identification](https://dorleventer.github.io/childpen/dev/articles/NTD-identification.md):
+- [validation_tests](https://dorleventer.github.io/childpen/dev/articles/validation_tests.md):
+- [aggregate-estimands](https://dorleventer.github.io/childpen/dev/articles/aggregate-estimands.md):
