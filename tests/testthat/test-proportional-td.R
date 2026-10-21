@@ -39,8 +39,8 @@ cm <- function(df, age, g, D) mean(df$Y[df$age == age & df$female == g & df$D ==
 test_that("TD_E_LOGS and TD_PR rows are returned with their estimands", {
   sim <- simulate_data(n_individuals = 300, seed = 50)
   res <- single_treatment_group_analysis(sim, d = 25L, dp = 27L, a = 26L)
-  expect_equal(res$estimand[res$method == "TD_E_LOGS"], "Delta_rho")
-  expect_equal(res$estimand[res$method == "TD_PR"], "theta_pre")
+  expect_equal(res$estimand[res$method == "TD_E_LOGS"][1], "rho_effect")
+  expect_equal(res$estimand[res$method == "TD_PR"], "gap_theta_pre")
 })
 
 test_that("TD_E_LOGS and TD_PR equal their formulas in cell means", {
@@ -54,7 +54,8 @@ test_that("TD_E_LOGS and TD_PR equal their formulas in cell means", {
   pr      <- (cm(sim, a, 1, d) - x(1)) / cm(sim, d - 1, 1, d) -
              (cm(sim, a, 0, d) - x(0)) / cm(sim, d - 1, 0, d)
 
-  expect_equal(res$est[res$method == "TD_E_LOGS"], e_logs, tolerance = 1e-12)
+  expect_equal(res$est[res$method == "TD_E_LOGS" & res$estimand == "rho_effect"], e_logs,
+               tolerance = 1e-12)
   expect_equal(res$est[res$method == "TD_PR"], pr, tolerance = 1e-12)
 })
 
@@ -62,12 +63,13 @@ test_that("with a multiplicative counterfactual both estimators recover their es
   p <- mult_panel(d_val = 25L, dp_val = 28L)
   for (a in 25:27) {
     res <- single_treatment_group_analysis(p$data, d = 25L, dp = 28L, a = a)
-    expect_equal(res$est[res$method == "TD_E_LOGS"], p$truth_rho, tolerance = 1e-10)
+    expect_equal(res$est[res$method == "TD_E_LOGS" & res$estimand == "rho_effect"], p$truth_rho,
+                 tolerance = 1e-10)
     expect_equal(res$est[res$method == "TD_PR"], p$truth_theta_pre(a, 25L), tolerance = 1e-10)
   }
   # pre-treatment target ages: both are zero
   res <- single_treatment_group_analysis(p$data, d = 25L, dp = 28L, a = 22L)
-  expect_equal(res$est[res$method == "TD_E_LOGS"], 0, tolerance = 1e-10)
+  expect_equal(res$est[res$method == "TD_E_LOGS" & res$estimand == "rho_effect"], 0, tolerance = 1e-10)
   expect_equal(res$est[res$method == "TD_PR"], 0, tolerance = 1e-10)
 })
 
@@ -86,9 +88,10 @@ test_that("TD_E_LOGS and TD_PR standard errors match a cluster bootstrap", {
     bs <- DT[draw, on = "id", allow.cartesian = TRUE]
     bs[, id := new_id][, new_id := NULL]
     r <- single_treatment_group_analysis(bs, d = d, dp = dp, a = a)
-    c(r$est[r$method == "TD_E_LOGS"], r$est[r$method == "TD_PR"])
+    c(r$est[r$method == "TD_E_LOGS" & r$estimand == "rho_effect"], r$est[r$method == "TD_PR"])
   })
-  ratio <- c(res$se[res$method == "TD_E_LOGS"], res$se[res$method == "TD_PR"]) /
+  ratio <- c(res$se[res$method == "TD_E_LOGS" & res$estimand == "rho_effect"],
+             res$se[res$method == "TD_PR"]) /
            apply(boot, 1, stats::sd)
   expect_true(all(abs(ratio - 1) < 0.2))
 })
@@ -105,17 +108,17 @@ test_that("aggregate_estimands aggregates TD_E_LOGS and TD_PR by default", {
                                            periods_post = 1L, periods_pre = NULL,
                                            verbose = FALSE)
   agg <- aggregate_estimands(res)
-  rho <- agg[agg$method == "TD_E_LOGS", ]
+  rho <- agg[agg$method == "TD_E_LOGS" & agg$estimand == "rho_effect", ]
   pr  <- agg[agg$method == "TD_PR", ]
-  expect_equal(unique(rho$agg_type), "gender_ineq")
-  expect_equal(unique(rho$estimand), "Delta_rho")
-  expect_equal(unique(pr$agg_type), "avg_of_ratios")
-  expect_equal(unique(pr$estimand), "theta_pre")
+  expect_equal(unique(rho$agg_type), "weighted_avg")
+  expect_equal(unique(rho$estimand), "rho_effect")
+  expect_equal(unique(pr$agg_type), "weighted_avg")
+  expect_equal(unique(pr$estimand), "gap_theta_pre")
   expect_true(all(rho$se > 0) && all(pr$se > 0))
 
   # point estimate = sample-weighted average of the single-group estimates
   n_d <- table(unique(sim[, c("id", "D")])$D)
-  sub <- res[res$method == "TD_E_LOGS" & res$event_time == 0, ]
+  sub <- res[res$method == "TD_E_LOGS" & res$estimand == "rho_effect" & res$event_time == 0, ]
   w <- as.numeric(n_d[as.character(sub$d)]); w <- w / sum(w)
   expect_equal(rho$est[rho$event_time == 0], sum(w * sub$est), tolerance = 1e-12)
 })

@@ -62,8 +62,8 @@ res = multiple_treatment_group_analysis(data = data,
                                   treatment_groups = 24:25, # which treatment groups to run in the analysis
                                   periods_post = 2, # estimate results for post periods 0:2
                                   periods_pre = 2, # estimate pre-trend diagnostics, set to NULL to omit from estimation
-                                  max_age = 40, # dont estimate results if age is above 40
-                                  min_age = 20, # dont estimate results if age is below 20
+                                  max_control_group = 40, # dont use control groups with first-birth age above 40
+                                  min_pre_age = 20, # dont estimate pre-treatment results if target age is below 20
                                   pre = 1, # use 1 period before treatment, can make further away if anticipation is concern
                                   verbose = FALSE # set to TRUE to output progress (i like to time loops) set to FALSE to omit messages
                                   )
@@ -79,7 +79,7 @@ res |> tibble()
 
 Focusing on $d=24$, lets examine pre-trends. We will start with DID of females. Generally, valid pre-trend validation tests would behave such that the confidence intervals include 0, and there is no obvious trend in the pre-period, and there is no systematic difference between control groups. A valid pre-trend test shows point estimates near zero with confidence intervals covering zero and no systematic trend across pre-treatment event times.
 
-Note that in the plot below I define `control_offset` as the difference between the control group $d^\prime$ and the treatment group $d$. E.g., for $d=24$ and $d^\prime=25$, i.e., the closest not-yet-treated control group at event time $e=0$, I set control offset to 1.
+Note that in the plot below `control_offset` (a column of the results) is the difference between the control group $d^\prime$ and the treatment group $d$. E.g., for $d=24$ and $d^\prime=25$, i.e., the closest not-yet-treated control group at event time $e=0$, I set control offset to 1.
 
 Ribbons present 95\% CI based on standard errors clustered at the individual level.
 
@@ -89,8 +89,7 @@ res |>
          a < d,
          estimand == "ATE",
          method == "DID_Female") |>
-  mutate(control_offset = dp - d,
-         control_offset = factor(control_offset)) |>
+  mutate(control_offset = factor(control_offset)) |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset, fill = control_offset)) +
   geom_ribbon(alpha = .15, color = NA) + geom_point() + geom_line() +
   scale_x_continuous(breaks = -3:-2) +
@@ -106,8 +105,7 @@ res |>
          a < d,
          estimand == "ATE",
          method == "DID_Female") |>
-  mutate(control_offset = dp - d, 
-         control_offset = factor(control_offset)) |> 
+  mutate(control_offset = factor(control_offset)) |> 
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset, fill = control_offset)) +
   geom_ribbon(alpha = .15, color = NA) + geom_point() + geom_line() + 
   scale_x_continuous(breaks = -3:-2)
@@ -122,8 +120,7 @@ res |>
   filter(a < d, 
          estimand == "ATE",
          method == "DID_Female") |> 
-  mutate(control_offset = dp - d, 
-         control_offset = factor(control_offset)) |> 
+  mutate(control_offset = factor(control_offset)) |> 
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset, fill = control_offset)) +
   geom_ribbon(alpha = .15, color = NA) + geom_point() + geom_line() + 
   scale_x_continuous(breaks = -3:-2) + 
@@ -135,10 +132,10 @@ Finally, can do this for all methods.
 ```{r}
 res |> 
   filter(a < d, 
-         estimand == "ATE" & (method == "DID_Female" | method == "DID_Male" | method == "TD") |
-           estimand == "theta" & method == "NTD_Conv") |>
-  mutate(control_offset = dp - d, 
-         control_offset = factor(control_offset)) |> 
+         estimand == "ATE" & (method == "DID_Female" | method == "DID_Male") |
+           estimand == "gap_ATE" & method == "TD" |
+           estimand == "gap_theta" & method == "Conventional") |>
+  mutate(control_offset = factor(control_offset)) |> 
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset, fill = control_offset)) +
   geom_ribbon(alpha = .15, color = NA) + geom_point() + geom_line() + 
   scale_x_continuous(breaks = -3:-2) + 

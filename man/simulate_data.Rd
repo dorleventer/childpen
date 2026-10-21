@@ -7,42 +7,62 @@
 simulate_data(n_individuals = 10000, treatment_groups = 24:28, seed = 42)
 }
 \arguments{
-\item{n_individuals}{Integer. Number of individuals (default 10 000).}
+\item{n_individuals}{Whole number \eqn{\ge 2}. Number of individuals (default
+10 000), half of them women (rounded).}
 
-\item{treatment_groups}{Integer vector. Treatment groups to include
-(default \code{24:28}).}
+\item{treatment_groups}{Whole numbers \eqn{\ge 21}: ages at first birth (default
+\code{24:28}). Ages run from 20 to \code{max(treatment_groups) - 1}, so the
+largest group is never observed treated and serves only as a control.}
 
-\item{seed}{Integer or \code{NULL}. RNG seed (default 42). The caller's RNG
+\item{seed}{Whole number or \code{NULL}. RNG seed (default 42). The caller's RNG
 state is saved and restored on exit, so calling this function does not
-alter the global random stream. Set to \code{NULL} to draw from the
-current RNG state without reseeding.}
+alter the global random stream; \code{set.seed()} before the call has no
+effect unless \code{seed = NULL}, which draws from the current RNG state.}
 }
 \value{
-A \code{data.frame} with columns \code{id}, \code{female},
-\code{age}, \code{D}, \code{Y}.
+A balanced long panel (data.frame), \code{n_individuals} x
+(\code{max(treatment_groups)} - 20) rows sorted by id and age, with columns
+\code{id}, \code{female} (1 = female), \code{age}, \code{D} (age at first
+birth) and \code{Y} (earnings, positive).
 }
 \description{
-Generates a balanced panel with lifecycle earnings, a gender gap, selection
-on treatment timing, and gendered treatment effects. The DGP is:
+Generates a balanced panel of annual earnings with life-cycle growth, a gender
+gap, selection on the timing of first birth, and gendered effects of
+parenthood, for trying out the estimators.
 }
 \details{
-\deqn{\log Y_{it} = \mu_0 + \lambda D_i + \alpha_i
-  + \beta_1 (a - 20) + \beta_2 (a - 20)^2
-  + \gamma \cdot \mathbf{1}[f]
-  + \theta_f \cdot \mathbf{1}[f, a \ge D]
-  + \theta_m \cdot \mathbf{1}[m, a \ge D]
-  + \varepsilon_{it}}
+Earnings of person \eqn{i} at age \eqn{a} are
+\deqn{\log Y_{i,a} = \mu_0 + \lambda D_i + \alpha_i + \beta_1 (a - 20) +
+  \beta_2 (a - 20)^2 + \kappa F_i + \tau_f F_i 1\{a \ge D_i\} +
+  \tau_m (1 - F_i) 1\{a \ge D_i\} + \varepsilon_{i,a},}{
+  log Y = mu_0 + lambda D + alpha + beta_1 (a - 20) + beta_2 (a - 20)^2 +
+  kappa F + tau_f F 1{a >= D} + tau_m (1 - F) 1{a >= D} + eps,}
+with \eqn{F_i = 1} for women, \eqn{\mu_0 = 10}, \eqn{\lambda = 0.03},
+\eqn{\beta_1 = 0.08}, \eqn{\beta_2 = -0.003}, \eqn{\kappa = -0.10},
+\eqn{\tau_f = -0.30}, \eqn{\tau_m = -0.05}, a permanent effect
+\eqn{\alpha_i \sim N(0, 0.20^2)} and a transitory shock
+\eqn{\varepsilon_{i,a} \sim N(0, 0.15^2)}. The age at first birth \eqn{D_i} is
+drawn uniformly from \code{treatment_groups}, independently of gender and
+\eqn{\alpha_i}; \eqn{\lambda D_i} makes later first births earn more at every
+age (selection on timing).
 
-where \eqn{\alpha_i \sim N(0,\sigma_\alpha^2)} is a permanent individual
-effect and \eqn{\varepsilon_{it} \sim N(0,\sigma_\varepsilon^2)} is a
-transitory shock. The term \eqn{\lambda D_i} generates positive selection
-on treatment timing: individuals who have children later earn more, on
-average, than those who have children earlier.
+True values, the same for every treatment group and age after first birth:
+\eqn{\theta(f) = e^{-0.30} - 1 = -0.259}, \eqn{\theta(m) = e^{-0.05} - 1 =
+-0.049}, gap \eqn{-0.210}; counterfactual gender earnings ratio
+\eqn{\rho(\infty) = e^{-0.10} = 0.905}, observed ratio \eqn{\rho(d) = 0.705},
+effect of parenthood on the ratio \eqn{\rho(d) - \rho(\infty) = -0.200};
+parenthood's share of the gender gap 0.678. Because \eqn{\lambda D_i} scales
+earnings levels by group, parallel trends in levels (DID-PT) and TD-PT fail,
+while NTD-PT, TD-PR and TD-E-LOGS hold.
 }
 \examples{
 \donttest{
 sim <- simulate_data(n_individuals = 2000)
 head(sim)
+range(sim$age)
 }
 
+}
+\seealso{
+\code{\link{multiple_treatment_group_analysis}}
 }

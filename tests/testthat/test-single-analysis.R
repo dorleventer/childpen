@@ -41,10 +41,10 @@ make_noiseless_panel <- function(d_val, dp_val,
 
 # ---------------------------------------------------------------------------
 
-test_that("single_treatment_group_analysis returns 17 rows", {
+test_that("single_treatment_group_analysis returns 19 rows", {
   sim <- simulate_data(n_individuals = 300, seed = 10)
   res <- single_treatment_group_analysis(sim, d = 25L, dp = 27L, a = 26L, pre = 1L)
-  expect_equal(nrow(res), 17L)
+  expect_equal(nrow(res), 19L)
 })
 
 test_that("single_treatment_group_analysis returns expected columns", {
@@ -60,10 +60,11 @@ test_that("single_treatment_group_analysis estimand and method values are correc
   sim <- simulate_data(n_individuals = 300, seed = 12)
   res <- single_treatment_group_analysis(sim, d = 25L, dp = 27L, a = 26L, pre = 1L)
 
-  expect_true(all(res$estimand %in% c("APO", "ATE", "theta", "Delta_rho", "theta_pre")))
-  expect_true(all(res$method   %in%
-                    c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New",
-                      "TD_Null", "NTD_Conv_Null", "TD_E_LOGS", "TD_PR")))
+  expect_setequal(unique(res$estimand),
+                  c("APO", "ATE", "theta", "gap_ATE", "gap_theta", "rho_effect", "gap_theta_pre",
+                    "rho_obs", "rho_cf", "share_parenthood", "share_other"))
+  expect_setequal(unique(res$method),
+                  c("DID_Female", "DID_Male", "TD", "Conventional", "NTD", "TD_E_LOGS", "TD_PR"))
 })
 
 test_that("single_treatment_group_analysis produces positive standard errors", {
@@ -155,12 +156,12 @@ test_that("single_treatment_group_analysis column name mapping works", {
     Y_name = "earn", age_name = "yr", D_name = "cohort",
     id_name = "person", female_name = "sex"
   )
-  expect_equal(nrow(res), 17L)
+  expect_equal(nrow(res), 19L)
 })
 
 test_that("single_treatment_group_analysis accepts a data.table input", {
   sim <- simulate_data(n_individuals = 300, seed = 21)
   DT  <- data.table::as.data.table(sim)
   res <- single_treatment_group_analysis(DT, d = 25L, dp = 27L, a = 26L, pre = 1L)
-  expect_equal(nrow(res), 17L)
+  expect_equal(nrow(res), 19L)
 })

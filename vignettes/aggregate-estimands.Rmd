@@ -30,9 +30,9 @@ theme_set(theme_bw(base_size = 12))
 
 Three aggregate estimands are available:
 
-- **avg_of_ratios** ($\theta_{\text{Agg},1}$): weighted average of each group's normalized effect $\theta(g,d,d+e)$. Formally, $\theta_{\text{Agg},1}(g,e) = \sum_d w_d \cdot \theta(g,d,d+e)$, where $w_d$ are population weights normalised to sum to one. Preferred because normalization happens within each group before aggregation, so baseline differences do not inflate the average.
+- **weighted_avg** ($\theta_{\text{Agg},1}$): weighted average of each group's normalized effect $\theta(g,d,d+e)$. Formally, $\theta_{\text{Agg},1}(g,e) = \sum_d w_d \cdot \theta(g,d,d+e)$, where $w_d$ are population weights normalised to sum to one. Preferred because normalization happens within each group before aggregation, so baseline differences do not inflate the average.
 - **ratio_of_avgs** ($\theta_{\text{Agg},2}$): ratio of the weighted-average ATE to the weighted-average APO. Formally, $\theta_{\text{Agg},2}(g,e) = \sum_d w_d \cdot \text{ATE}(g,d,d+e) \;/\; \sum_d w_d \cdot \text{APO}(g,d,d+e)$. This implicitly up-weights high-earning groups (their larger APO contributes proportionally more to the pooled denominator), so it differs from $\theta_{\text{Agg},1}$ when earnings vary across groups.
-- **gender_ineq** ($\Delta\rho_{\text{Agg}}$): weighted average of `NTD_New` $\Delta\rho$ estimates — the aggregate gender-inequality penalty. Formally, $\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)$.
+- **weighted_avg of `rho_effect`** ($\Delta\rho_{\text{Agg}}$): weighted average of `NTD` $\Delta\rho$ (`rho_effect`) estimates — the aggregate gender-inequality penalty. Formally, $\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)$.
 
 ## Simulate and estimate
 
@@ -54,22 +54,22 @@ res <- multiple_treatment_group_analysis(
 
 ## Basic aggregation
 
-Calling `aggregate_estimands()` with default arguments applies sample-proportion weights (`weights = "sample"`), where each treatment group is weighted by its share of the sample, as in Leventer (2025). Standard errors account for the estimation of these weights via the influence-function formula in the paper's Appendix G. Pass `weights = NULL` for uniform weights.
+Calling `aggregate_estimands()` with default arguments applies sample-proportion weights (`weights = "sample"`), where each treatment group is weighted by its share of the sample, as in Leventer (2025). Standard errors account for the estimation of these weights via the influence-function formula in the paper's Appendix G. Pass `weights = "uniform"` (or `NULL`) for uniform weights.
 
 ```{r basic_agg}
 agg <- aggregate_estimands(res)
 head(agg)
 ```
 
-The output has one row per `event_time × estimand × method × agg_type` combination. The `n_groups` column records how many treatment groups contributed — useful for spotting cells where edge-of-sample groups drop out due to `max_age`/`min_age` bounds.
+The output has one row per `event_time × estimand × method × agg_type` combination. The `n_groups` column records how many treatment groups contributed — useful for spotting cells where edge-of-sample groups drop out due to `max_control_group`/`min_pre_age` bounds.
 
 ## Plot aggregate results
 
-Plot the `avg_of_ratios` aggregate for the `NTD_Conv` method across event times, with 95% confidence ribbons.
+Plot the `weighted_avg` aggregate for the `Conventional` method across event times, with 95% confidence ribbons.
 
-```{r plot_avg_of_ratios}
+```{r plot_weighted_avg}
 agg |>
-  filter(agg_type == "avg_of_ratios", method == "NTD_Conv", estimand == "theta") |>
+  filter(agg_type == "weighted_avg", method == "Conventional", estimand == "gap_theta") |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h)) +
   geom_ribbon(fill = "steelblue", alpha = 0.25, color = NA) +
   geom_line(color = "steelblue") +
@@ -77,19 +77,19 @@ agg |>
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
   labs(
     x     = "Event time",
-    y     = expression(theta[Agg * "," * 1] ~ "(avg of ratios)"),
-    title = "NTD_Conv aggregate: avg_of_ratios"
+    y     = expression(theta[Agg * "," * 1] ~ "(weighted avg)"),
+    title = "Conventional aggregate: weighted_avg"
   )
 ```
 
 ## Compare aggregation types
 
-`avg_of_ratios` and `ratio_of_avgs` answer the same underlying question but weight groups differently. When high first-birth-age groups have higher counterfactual earnings than low first-birth-age groups, `ratio_of_avgs` assigns them more weight (the APO enters the denominator for each group before the ratio is formed across groups). The two estimands therefore diverge whenever earnings are heterogeneous across groups.
+`weighted_avg` and `ratio_of_avgs` answer the same underlying question but weight groups differently. When high first-birth-age groups have higher counterfactual earnings than low first-birth-age groups, `ratio_of_avgs` assigns them more weight (the APO enters the denominator for each group before the ratio is formed across groups). The two estimands therefore diverge whenever earnings are heterogeneous across groups.
 
 ```{r compare_agg_types}
 agg |>
   filter(
-    agg_type %in% c("avg_of_ratios", "ratio_of_avgs"),
+    agg_type %in% c("weighted_avg", "ratio_of_avgs"),
     method   == "DID_Female",
     estimand == "theta"
   ) |>
@@ -108,7 +108,7 @@ agg |>
   labs(
     x     = "Event time",
     y     = expression(theta ~ "estimate"),
-    title = "DID_Female: avg_of_ratios vs ratio_of_avgs",
+    title = "DID_Female: weighted_avg vs ratio_of_avgs",
     color = "Aggregation type",
     fill  = "Aggregation type"
   ) +
@@ -141,9 +141,9 @@ bind_rows(
   mutate(agg_se, population = "Southern Europe (left-skewed)")
 ) |>
   filter(
-    agg_type == "avg_of_ratios",
-    method   == "NTD_Conv",
-    estimand == "theta"
+    agg_type == "weighted_avg",
+    method   == "Conventional",
+    estimand == "gap_theta"
   ) |>
   ggplot(aes(
     x     = event_time,
@@ -160,7 +160,7 @@ bind_rows(
   labs(
     x     = "Event time",
     y     = expression(theta[Agg * "," * 1]),
-    title = "Aggregate NTD_Conv estimate under different first-birth distributions",
+    title = "Aggregate Conventional estimate under different first-birth distributions",
     color = "Population weights",
     fill  = "Population weights"
   ) +
@@ -171,11 +171,11 @@ When younger groups bear larger penalties than older groups (or vice versa), the
 
 ## Gender inequality aggregate
 
-The `gender_ineq` aggregate ($\Delta\rho_{\text{Agg}}$) is the weighted average of `NTD_New` $\Delta\rho$ estimates across treatment groups. It measures how parenthood affects the female-to-male earnings ratio: negative values indicate that mothers bear a larger proportional penalty — the female-to-male earnings ratio is lower post-birth than the counterfactual ratio.
+The `weighted_avg` aggregate of `NTD` `rho_effect` ($\Delta\rho_{\text{Agg}}$) is the weighted average of `NTD` $\Delta\rho$ estimates across treatment groups. It measures how parenthood affects the female-to-male earnings ratio: negative values indicate that mothers bear a larger proportional penalty — the female-to-male earnings ratio is lower post-birth than the counterfactual ratio.
 
-```{r gender_ineq}
+```{r rho_agg}
 agg |>
-  filter(agg_type == "gender_ineq", estimand == "Delta_rho", method == "NTD_New") |>
+  filter(agg_type == "weighted_avg", estimand == "rho_effect", method == "NTD") |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h)) +
   geom_ribbon(fill = "tomato", alpha = 0.25, color = NA) +
   geom_line(color = "tomato") +
@@ -184,7 +184,7 @@ agg |>
   labs(
     x     = "Event time",
     y     = expression(Delta * rho[Agg]),
-    title = "Gender inequality aggregate (NTD_New, avg of ratios)"
+    title = "Gender inequality aggregate (NTD, weighted_avg)"
   )
 ```
 

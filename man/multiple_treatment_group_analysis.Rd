@@ -2,15 +2,15 @@
 % Please edit documentation in R/multiple_treatment_group_analysis.R
 \name{multiple_treatment_group_analysis}
 \alias{multiple_treatment_group_analysis}
-\title{Child penalty analysis over multiple treatment groups}
+\title{Child-penalty estimates for many treatment groups and event times}
 \usage{
 multiple_treatment_group_analysis(
   data,
   treatment_groups,
   periods_post,
   periods_pre = 4,
-  max_age = 999,
-  min_age = 0,
+  max_control_group = Inf,
+  min_pre_age = 0,
   pre = 1,
   Y_name = "Y",
   age_name = "age",
@@ -21,40 +21,74 @@ multiple_treatment_group_analysis(
 )
 }
 \arguments{
-\item{data}{A data.frame or data.table with the needed columns. Names can be
-mapped via \code{Y_name}, \code{age_name}, \code{D_name}, \code{id_name}, \code{female_name}.}
+\item{data}{A data.frame or data.table in long format, one row per person and
+age; see \code{\link{single_treatment_group_analysis}} for the requirements.
+It is not modified.}
 
-\item{treatment_groups}{Integer vector of treatment groups (e.g., 24:34).}
+\item{treatment_groups}{Integer vector of ages at first birth \eqn{d} to
+estimate (the paper uses 24:34). Groups \eqn{d + 1, \dots, d + H + 1} must be
+in \code{data} to serve as controls.}
 
-\item{periods_post}{Integer H >= 0. Post-treatment horizons; evaluates event
-times e = 0, 1, ..., H with target age a = d + e and control dp = a + 1.}
+\item{periods_post}{Whole number \eqn{H \ge 0}: post-treatment event times
+\eqn{e = 0, \dots, H} (the paper uses 5).}
 
-\item{periods_pre}{Integer K >= 0 (default 4). Number of pre-treatment horizons.
-Evaluates e = -K, ..., -pre with a = d + e. For each pre period, tests the same
-control offsets used post, i.e., dp = d + 1, 2, ..., H + 1. Set \code{NULL} to skip pre-trends.}
+\item{periods_pre}{Whole number \eqn{K \ge 0} (default 4), or \code{NULL}:
+number of pre-treatment event times for validation tests,
+\eqn{e = -(pre + K), \dots, -(pre + 1)} (with the defaults \eqn{-5, \dots, -2};
+\eqn{e = -pre} is the baseline). \code{0} or \code{NULL} skips them.}
 
-\item{max_age}{Integer (default 999). Upper bound; cells with dp > max_age are skipped.}
+\item{max_control_group}{Largest age at first birth allowed as a control group
+(the paper's \eqn{D_{max}}; default \code{Inf}, no bound). Cells whose control
+group is above it are not estimated.}
 
-\item{min_age}{Integer (default 0). Lower bound; cells with a < min_age are skipped.}
+\item{min_pre_age}{Smallest target age for pre-treatment cells (default 0, no
+bound). Post-treatment cells are not affected.}
 
-\item{pre}{Integer (default 1). Pre-treatment anchor used in APO (uses d - pre).}
+\item{pre}{Whole number \eqn{\ge 1} (default 1): the baseline age is \eqn{d - pre}.}
 
-\item{Y_name, age_name, D_name, id_name, female_name}{Column name mappings passed to \code{prep_data_table()}.}
+\item{Y_name, age_name, D_name, id_name, female_name}{Names of the columns holding
+earnings, age, age at first birth, the person id and the female indicator.}
 
-\item{verbose}{Logical (default \code{TRUE}). Print progress messages.}
+\item{verbose}{Logical (default \code{TRUE}). Report progress, one line per
+treatment group.}
 }
 \value{
-A \code{data.frame} stacking results from \code{single_treatment_group_analysis()}.
+A data.frame with one block of rows per estimated cell
+(\code{d}, \code{dp}, \code{a}), sorted by \code{d}, \code{event_time} and
+\code{dp}; the columns are those of
+\code{\link{single_treatment_group_analysis}}. Attributes used by
+\code{\link{aggregate_estimands}} and \code{\link{bias_bounds}}:
+\code{"if_data"} (person-level influence functions per cell), \code{"n_obs"}
+(rows of the prepared data), \code{"n_ids"} (persons), \code{"id_info"}
+(\code{id}, \code{female}, \code{D}). Attribute \code{"skipped"} lists cells
+that could not be estimated, with the reason (e.g. an empty
+gender x group x age cell). Pass the result to the aggregation functions
+unmodified.
 }
 \description{
-Child penalty analysis over multiple treatment groups
+Runs \code{\link{single_treatment_group_analysis}} over a grid of 2x2
+comparisons. For each treatment group \eqn{d} (age at first birth) and event
+time \eqn{e = 0, \dots, H}, the target age \eqn{a = d + e} is compared with the
+closest not-yet-treated group \eqn{d' = a + 1} (Leventer 2025, Section 1.3).
+Pre-treatment event times are estimated against every control group used
+after treatment, because the identifying assumptions must hold pair by pair
+(Section 2.3). Results are stacked, and the person-level influence functions
+that \code{\link{aggregate_estimands}} and \code{\link{bias_bounds}} need are
+attached.
 }
 \examples{
 \donttest{
-set.seed(1)
-sim <- simulate_data(n_individuals = 500)
-res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25, periods_post = 2,
-                                         verbose = FALSE)
-head(res)
+sim <- simulate_data(n_individuals = 2000)
+res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:26,
+  periods_post = 1, periods_pre = 2, verbose = FALSE)
+# The new estimand, by treatment group and event time
+subset(res, method == "NTD", c(d, event_time, dp, est, se))
+# Pre-treatment validation tests of NTD, one row per control group
+subset(res, method == "Conventional" & event_time < 0,
+       c(d, event_time, control_offset, est, se))
 }
+}
+\seealso{
+\code{\link{single_treatment_group_analysis}},
+\code{\link{aggregate_estimands}}, \code{\link{bias_bounds}}
 }
