@@ -40,9 +40,11 @@ single_treatment_group_analysis(
 \value{
 A \code{data.frame} with one row per estimand/method combination:
 \itemize{
-\item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}, \code{"Delta_rho"}
+\item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}, \code{"Delta_rho"},
+\code{"theta_pre"}
 \item \code{method} — one of \code{"DID_Female"}, \code{"DID_Male"}, \code{"TD"},
-\code{"NTD_Conv"}, \code{"NTD_New"}, \code{"TD_Null"}, \code{"NTD_Conv_Null"}
+\code{"NTD_Conv"}, \code{"NTD_New"}, \code{"TD_Null"}, \code{"NTD_Conv_Null"},
+\code{"TD_E_LOGS"}, \code{"TD_PR"}
 \item \code{est} — estimate
 \item \code{se} — cluster-robust standard error
 \item \code{n_female_treat}, \code{n_female_control},
@@ -50,7 +52,7 @@ A \code{data.frame} with one row per estimand/method combination:
 }
 }
 \description{
-Estimates 15 descriptive estimands for triplet (treatment group, control group and target age). SEs are calcualted using influence-function (IF) calculations with clustering within \code{id}.
+Estimates 17 descriptive estimands for triplet (treatment group, control group and target age). SEs are calculated using influence-function (IF) calculations with clustering within \code{id}.
 }
 \details{
 Let \eqn{Y(a, g, d^\star)} denote the mean outcome at age \eqn{a} for gender
@@ -69,6 +71,22 @@ From these, the cross-gender contrasts are formed:
 \item \strong{TD Null} and \strong{NTD_Conv_Null} variants are defined analogously
 under a null-effect-for-fathers bias-correction.
 }
+The proportional triple-differences estimators (Leventer 2025, online appendix
+"Proportional DID and TD") use the multiplicative imputation of the counterfactual
+\deqn{\mathrm{APO}^{\times}(g) = Y(d-\mathrm{pre}, g, d)\,\frac{Y(a, g, d')}{Y(d-\mathrm{pre}, g, d')}:}
+\itemize{
+\item \strong{TD_E_LOGS} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}^{\times}(F)}{\mathrm{APO}^{\times}(M)}}.
+Under TD-E-LOGS (equal gender trend gaps in logs of means) it identifies
+the same estimand as \code{NTD_New}, the effect of parenthood on the
+gender earnings ratio (\code{estimand = "Delta_rho"}).
+\item \strong{TD_PR} \eqn{= \theta_{pre}(F) - \theta_{pre}(M)}, with
+\eqn{\theta_{pre}(g) = (Y(a,g,d) - \mathrm{APO}^{\times}(g)) / Y(d-\mathrm{pre}, g, d)}.
+Under TD-PR (equal gender gaps in proportional trends) it identifies the
+gender gap in effects relative to pre-birth earnings,
+\eqn{\mathrm{ATE}(F)/\mathrm{APO}(F,\infty,d-1) - \mathrm{ATE}(M)/\mathrm{APO}(M,\infty,d-1)}
+(\code{estimand = "theta_pre"}).
+}
+Both require positive cell means.
 
 Internally, influence functions for all pieces are written into temporary
 columns of a \code{data.table} via \code{compute_mean_if()}, and cluster-robust

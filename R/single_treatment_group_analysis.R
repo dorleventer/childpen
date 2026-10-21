@@ -1,6 +1,6 @@
 #' Unconditional estimands for a single treatment group
 #'
-#' Estimates 15 descriptive estimands for triplet (treatment group, control group and target age). SEs are calcualted using influence-function (IF) calculations with clustering within \code{id}.
+#' Estimates 17 descriptive estimands for triplet (treatment group, control group and target age). SEs are calculated using influence-function (IF) calculations with clustering within \code{id}.
 #'
 #' @param data A \code{data.table} with columns:
 #'   \itemize{
@@ -33,6 +33,22 @@
 #'   \item \strong{TD Null} and \strong{NTD_Conv_Null} variants are defined analogously
 #'         under a null-effect-for-fathers bias-correction.
 #' }
+#' The proportional triple-differences estimators (Leventer 2025, online appendix
+#' "Proportional DID and TD") use the multiplicative imputation of the counterfactual
+#' \deqn{\mathrm{APO}^{\times}(g) = Y(d-\mathrm{pre}, g, d)\,\frac{Y(a, g, d')}{Y(d-\mathrm{pre}, g, d')}:}
+#' \itemize{
+#'   \item \strong{TD_E_LOGS} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}^{\times}(F)}{\mathrm{APO}^{\times}(M)}}.
+#'         Under TD-E-LOGS (equal gender trend gaps in logs of means) it identifies
+#'         the same estimand as \code{NTD_New}, the effect of parenthood on the
+#'         gender earnings ratio (\code{estimand = "Delta_rho"}).
+#'   \item \strong{TD_PR} \eqn{= \theta_{pre}(F) - \theta_{pre}(M)}, with
+#'         \eqn{\theta_{pre}(g) = (Y(a,g,d) - \mathrm{APO}^{\times}(g)) / Y(d-\mathrm{pre}, g, d)}.
+#'         Under TD-PR (equal gender gaps in proportional trends) it identifies the
+#'         gender gap in effects relative to pre-birth earnings,
+#'         \eqn{\mathrm{ATE}(F)/\mathrm{APO}(F,\infty,d-1) - \mathrm{ATE}(M)/\mathrm{APO}(M,\infty,d-1)}
+#'         (\code{estimand = "theta_pre"}).
+#' }
+#' Both require positive cell means.
 #'
 #' Internally, influence functions for all pieces are written into temporary
 #' columns of a \code{data.table} via \code{compute_mean_if()}, and cluster-robust
@@ -40,9 +56,11 @@
 #'
 #' @return A \code{data.frame} with one row per estimand/method combination:
 #' \itemize{
-#'   \item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}, \code{"Delta_rho"}
+#'   \item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}, \code{"Delta_rho"},
+#'         \code{"theta_pre"}
 #'   \item \code{method} — one of \code{"DID_Female"}, \code{"DID_Male"}, \code{"TD"},
-#'         \code{"NTD_Conv"}, \code{"NTD_New"}, \code{"TD_Null"}, \code{"NTD_Conv_Null"}
+#'         \code{"NTD_Conv"}, \code{"NTD_New"}, \code{"TD_Null"}, \code{"NTD_Conv_Null"},
+#'         \code{"TD_E_LOGS"}, \code{"TD_PR"}
 #'   \item \code{est} — estimate
 #'   \item \code{se} — cluster-robust standard error
 #'   \item \code{n_female_treat}, \code{n_female_control},
@@ -119,6 +137,34 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
 
   ntd_new <- (means$y_a_f_d / means$y_a_m_d) - (apo_f / apo_m)
 
+  # Proportional TD (Leventer 2025, online appendix "Proportional DID and TD").
+  # Multiplicative imputation of the counterfactual mean:
+  #   APO_mult(g) = Y(d-pre,g,d) * Y(a,g,dp) / Y(d-pre,g,dp)
+  apo_mult_f <- means$y_d_minus_1_f_d * means$y_a_f_dp / means$y_d_minus_1_f_dp
+  apo_mult_m <- means$y_d_minus_1_m_d * means$y_a_m_dp / means$y_d_minus_1_m_dp
+  DT[, if_apo_mult_f := apo_mult_f * (if_y_d_minus_1_f_d / means$y_d_minus_1_f_d +
+                                      if_y_a_f_dp / means$y_a_f_dp -
+                                      if_y_d_minus_1_f_dp / means$y_d_minus_1_f_dp)]
+  DT[, if_apo_mult_m := apo_mult_m * (if_y_d_minus_1_m_d / means$y_d_minus_1_m_d +
+                                      if_y_a_m_dp / means$y_a_m_dp -
+                                      if_y_d_minus_1_m_dp / means$y_d_minus_1_m_dp)]
+
+  # TD_E_LOGS: Y(a,F,d)/Y(a,M,d) - APO_mult(F)/APO_mult(M)  (same estimand as NTD_New)
+  DT[, if_ratio_apo_mult := (1/apo_mult_m) * if_apo_mult_f - (apo_mult_f/apo_mult_m^2) * if_apo_mult_m]
+  DT[, if_td_e_logs := if_ratio_y - if_ratio_apo_mult]
+  td_e_logs <- (means$y_a_f_d / means$y_a_m_d) - (apo_mult_f / apo_mult_m)
+
+  # TD_PR: theta_pre(F) - theta_pre(M), with
+  #   theta_pre(g) = (Y(a,g,d) - APO_mult(g)) / Y(d-pre,g,d)
+  theta_pre_f <- (means$y_a_f_d - apo_mult_f) / means$y_d_minus_1_f_d
+  theta_pre_m <- (means$y_a_m_d - apo_mult_m) / means$y_d_minus_1_m_d
+  DT[, if_theta_pre_f := (if_y_a_f_d - if_apo_mult_f) / means$y_d_minus_1_f_d -
+       (theta_pre_f / means$y_d_minus_1_f_d) * if_y_d_minus_1_f_d]
+  DT[, if_theta_pre_m := (if_y_a_m_d - if_apo_mult_m) / means$y_d_minus_1_m_d -
+       (theta_pre_m / means$y_d_minus_1_m_d) * if_y_d_minus_1_m_d]
+  DT[, if_td_pr := if_theta_pre_f - if_theta_pre_m]
+  td_pr <- theta_pre_f - theta_pre_m
+
   # TD Null estimands
   DT[, if_td_null_apo := if_apo_f + if_ate_m]
   td_null_apo <- apo_f + ate_m
@@ -150,7 +196,8 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
     se_cluster(DT, "if_td_null_apo"), se_cluster(DT, "if_td_null_ate"),
     se_cluster(DT, "if_td_null_theta"),
     se_cluster(DT, "if_ntd_conv_null_apo"), se_cluster(DT, "if_ntd_conv_null_ate"),
-    se_cluster(DT, "if_ntd_conv_null_theta")
+    se_cluster(DT, "if_ntd_conv_null_theta"),
+    se_cluster(DT, "if_td_e_logs"), se_cluster(DT, "if_td_pr")
   )
 
   # Compute sample sizes
@@ -173,24 +220,29 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
     if_theta_m  = sum(if_theta_m),
     if_td       = sum(if_td),
     if_ntd_conv = sum(if_ntd_conv),
-    if_ntd_new  = sum(if_ntd_new)
+    if_ntd_new  = sum(if_ntd_new),
+    if_td_e_logs = sum(if_td_e_logs),
+    if_td_pr     = sum(if_td_pr)
   ), by = id]
 
   # Create result data.frame (fast!)
   estimates <- c(apo_f, apo_m, ate_f, ate_m, theta_f, theta_m,
                  td, ntd_conv, ntd_new,
                  td_null_apo, td_null_ate, td_null_theta,
-                 ntd_conv_null_apo, ntd_conv_null_ate, ntd_conv_null_theta)
+                 ntd_conv_null_apo, ntd_conv_null_ate, ntd_conv_null_theta,
+                 td_e_logs, td_pr)
 
   result <- data.frame(
     estimand = c("APO", "APO", "ATE", "ATE", "theta", "theta",
                  "ATE", "theta", "Delta_rho",
                  "APO", "ATE", "theta",
-                 "APO", "ATE", "theta"),
+                 "APO", "ATE", "theta",
+                 "Delta_rho", "theta_pre"),
     method = c("DID_Female", "DID_Male", "DID_Female", "DID_Male", "DID_Female", "DID_Male",
                "TD", "NTD_Conv", "NTD_New",
                "TD_Null", "TD_Null", "TD_Null",
-               "NTD_Conv_Null", "NTD_Conv_Null", "NTD_Conv_Null"),
+               "NTD_Conv_Null", "NTD_Conv_Null", "NTD_Conv_Null",
+               "TD_E_LOGS", "TD_PR"),
     est = estimates,
     se = ses,
     n_female_treat = n_female_d,

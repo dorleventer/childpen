@@ -7,7 +7,8 @@
 aggregate_estimands(
   results,
   weights = "sample",
-  methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New"),
+  methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New", "TD_E_LOGS",
+    "TD_PR"),
   include_pre = FALSE
 )
 }
@@ -26,15 +27,17 @@ Leventer (2025).  Within-gender weights
 \eqn{w_{g,d} = n_{g,d}/\sum n_{g,\tilde d}} are used for
 \code{DID_Female} and \code{DID_Male}; cross-gender weights
 \eqn{w_d = n_d / \sum n_{\tilde d}} for \code{TD}, \code{NTD_Conv},
-and \code{NTD_New}.  Standard errors account for estimation of the
+\code{NTD_New}, \code{TD_E_LOGS} and \code{TD_PR}.  Standard errors account for estimation of the
 weights.
 \item \code{NULL}: uniform weights (equal weight per group).
 \item A named numeric vector: custom fixed weights (names = treatment
 groups as characters).  Values are renormalised to sum to 1.
 }}
 
-\item{methods}{Character vector of methods to aggregate.  Defaults to all
-five main methods.}
+\item{methods}{Character vector of methods to aggregate.  Defaults to
+\code{DID_Female}, \code{DID_Male}, \code{TD}, \code{NTD_Conv},
+\code{NTD_New}, \code{TD_E_LOGS} and \code{TD_PR}.  \code{TD_PR}
+(estimand \code{"theta_pre"}) is aggregated as an \code{avg_of_ratios}.}
 
 \item{include_pre}{Logical.  If \code{TRUE}, also aggregate pre-treatment
 event times (\code{event_time < 0}).  Default \code{FALSE}.}
@@ -45,7 +48,7 @@ A \code{data.frame} with one row per
 combination, containing:
 \itemize{
 \item \code{event_time} -- event time
-\item \code{estimand} -- \code{"APO"}, \code{"ATE"}, \code{"theta"}, or \code{"Delta_rho"}
+\item \code{estimand} -- \code{"theta"}, \code{"theta_pre"}, or \code{"Delta_rho"}
 \item \code{method} -- method name
 \item \code{agg_type} -- one of \code{"avg_of_ratios"},
 \code{"ratio_of_avgs"}, \code{"gender_ineq"}
@@ -72,8 +75,10 @@ Ratio of the weighted-average ATE to the weighted-average APO.  The
 implicit weight on each group is \eqn{p_d \cdot \text{APO}_d}, giving
 higher-earning groups more influence.}
 \item{\strong{gender_ineq} (\eqn{\Delta\rho_{\text{Agg}}})}{
-Weighted average of \code{NTD_New} (estimand == "Delta_rho") across
-treatment groups -- the aggregate gender-inequality estimand.}
+Weighted average of the \code{"Delta_rho"} rows across treatment groups --
+the aggregate gender-inequality estimand -- computed separately for
+\code{NTD_New} (additive imputation) and \code{TD_E_LOGS}
+(multiplicative imputation).}
 }
 
 \strong{Standard errors.}  When the \code{results} object carries

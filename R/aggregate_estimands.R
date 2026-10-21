@@ -15,8 +15,10 @@
 #'     implicit weight on each group is \eqn{p_d \cdot \text{APO}_d}, giving
 #'     higher-earning groups more influence.}
 #'   \item{\strong{gender_ineq} (\eqn{\Delta\rho_{\text{Agg}}})}{
-#'     Weighted average of \code{NTD_New} (estimand == "Delta_rho") across
-#'     treatment groups -- the aggregate gender-inequality estimand.}
+#'     Weighted average of the \code{"Delta_rho"} rows across treatment groups --
+#'     the aggregate gender-inequality estimand -- computed separately for
+#'     \code{NTD_New} (additive imputation) and \code{TD_E_LOGS}
+#'     (multiplicative imputation).}
 #' }
 #'
 #' @param results A \code{data.frame} as returned by
@@ -32,14 +34,16 @@
 #'       \eqn{w_{g,d} = n_{g,d}/\sum n_{g,\tilde d}} are used for
 #'       \code{DID_Female} and \code{DID_Male}; cross-gender weights
 #'       \eqn{w_d = n_d / \sum n_{\tilde d}} for \code{TD}, \code{NTD_Conv},
-#'       and \code{NTD_New}.  Standard errors account for estimation of the
+#'       \code{NTD_New}, \code{TD_E_LOGS} and \code{TD_PR}.  Standard errors account for estimation of the
 #'       weights.
 #'     \item \code{NULL}: uniform weights (equal weight per group).
 #'     \item A named numeric vector: custom fixed weights (names = treatment
 #'       groups as characters).  Values are renormalised to sum to 1.
 #'   }
-#' @param methods Character vector of methods to aggregate.  Defaults to all
-#'   five main methods.
+#' @param methods Character vector of methods to aggregate.  Defaults to
+#'   \code{DID_Female}, \code{DID_Male}, \code{TD}, \code{NTD_Conv},
+#'   \code{NTD_New}, \code{TD_E_LOGS} and \code{TD_PR}.  \code{TD_PR}
+#'   (estimand \code{"theta_pre"}) is aggregated as an \code{avg_of_ratios}.
 #' @param include_pre Logical.  If \code{TRUE}, also aggregate pre-treatment
 #'   event times (\code{event_time < 0}).  Default \code{FALSE}.
 #'
@@ -48,7 +52,7 @@
 #'   combination, containing:
 #'   \itemize{
 #'     \item \code{event_time} -- event time
-#'     \item \code{estimand} -- \code{"APO"}, \code{"ATE"}, \code{"theta"}, or \code{"Delta_rho"}
+#'     \item \code{estimand} -- \code{"theta"}, \code{"theta_pre"}, or \code{"Delta_rho"}
 #'     \item \code{method} -- method name
 #'     \item \code{agg_type} -- one of \code{"avg_of_ratios"},
 #'       \code{"ratio_of_avgs"}, \code{"gender_ineq"}
@@ -104,7 +108,8 @@
 #' }
 aggregate_estimands <- function(results,
                                 weights = "sample",
-                                methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New"),
+                                methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New",
+                                            "TD_E_LOGS", "TD_PR"),
                                 include_pre = FALSE) {
 
   # ---- Input checks -------------------------------------------------------
@@ -238,7 +243,7 @@ aggregate_estimands <- function(results,
   .weight_type <- function(mth) {
     if (mth == "DID_Female") return("within_female")
     if (mth == "DID_Male")   return("within_male")
-    return("cross")  # TD, NTD_Conv, NTD_New
+    return("cross")  # TD, NTD_Conv, NTD_New, TD_E_LOGS, TD_PR
   }
 
   # ---- Helper: SE from aggregate IFs (cluster-robust) ----------------------
@@ -324,13 +329,14 @@ aggregate_estimands <- function(results,
   }
 
   # ---- 1. avg_of_ratios (theta_Agg,1) -------------------------------------
-  theta_rows <- DT[estimand == "theta"]
+  theta_rows <- DT[estimand %in% c("theta", "theta_pre")]
 
-  # Map method -> IF column for theta
+  # Map method -> IF column for theta (theta_pre for TD_PR)
   theta_if_map <- c(
     DID_Female = "if_theta_f",
     DID_Male   = "if_theta_m",
-    NTD_Conv   = "if_ntd_conv"
+    NTD_Conv   = "if_ntd_conv",
+    TD_PR      = "if_td_pr"
   )
 
   agg1_list <- list()
@@ -347,7 +353,8 @@ aggregate_estimands <- function(results,
 
       est_agg <- sum(w * sub$est)
 
-      if (has_ifs && mth %in% names(theta_if_map)) {
+      if (has_ifs && mth %in% names(theta_if_map) &&
+          theta_if_map[[mth]] %in% names(if_data)) {
         se_agg <- .agg_se_from_ifs(theta_if_map[[mth]], sub$d, et, w,
                                    B_vals = sub$est, A_est = est_agg,
                                    weight_type = wt)
@@ -357,7 +364,7 @@ aggregate_estimands <- function(results,
 
       agg1_list[[length(agg1_list) + 1L]] <- data.table(
         event_time = et,
-        estimand   = "theta",
+        estimand   = sub$estimand[1],
         method     = mth,
         agg_type   = "avg_of_ratios",
         est        = est_agg,
@@ -450,22 +457,26 @@ aggregate_estimands <- function(results,
   }
 
   # ---- 3. gender_ineq (Delta_rho_Agg) -------------------------------------
-  ntd_new_rows <- DT[method == "NTD_New" & estimand == "Delta_rho"]
+  # Delta_rho is identified by NTD_New (additive imputation) and by TD_E_LOGS
+  # (multiplicative imputation); each is aggregated separately.
+  rho_if_map <- c(NTD_New = "if_ntd_new", TD_E_LOGS = "if_td_e_logs")
+  rho_rows <- DT[estimand == "Delta_rho" & method %in% names(rho_if_map)]
 
   agg3_list <- list()
-  if (nrow(ntd_new_rows) > 0L) {
-    cells3 <- unique(ntd_new_rows[, .(event_time)])
+  if (nrow(rho_rows) > 0L) {
+    cells3 <- unique(rho_rows[, .(event_time, method)])
 
     for (i in seq_len(nrow(cells3))) {
       et  <- cells3$event_time[i]
+      mth <- cells3$method[i]
 
-      sub <- ntd_new_rows[event_time == et]
+      sub <- rho_rows[event_time == et & method == mth]
       w   <- .get_weights(sub$d, "cross")
 
       est_agg <- sum(w * sub$est)
 
-      if (has_ifs) {
-        se_agg <- .agg_se_from_ifs("if_ntd_new", sub$d, et, w,
+      if (has_ifs && rho_if_map[[mth]] %in% names(if_data)) {
+        se_agg <- .agg_se_from_ifs(rho_if_map[[mth]], sub$d, et, w,
                                    B_vals = sub$est, A_est = est_agg,
                                    weight_type = "cross")
       } else {
@@ -475,7 +486,7 @@ aggregate_estimands <- function(results,
       agg3_list[[length(agg3_list) + 1L]] <- data.table(
         event_time = et,
         estimand   = "Delta_rho",
-        method     = "NTD_New",
+        method     = mth,
         agg_type   = "gender_ineq",
         est        = est_agg,
         se         = se_agg,

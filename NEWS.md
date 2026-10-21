@@ -1,3 +1,19 @@
+# childpen (development version)
+
+* `single_treatment_group_analysis()` gains two proportional triple-differences
+  estimators from the paper's online appendix ("Proportional DID and TD"), both
+  built on the multiplicative imputation of counterfactual earnings, with
+  cluster-robust influence-function standard errors:
+  `TD_E_LOGS` (estimand `"Delta_rho"`, the effect of parenthood on the gender
+  earnings ratio, as identified under TD-E-LOGS) and `TD_PR` (estimand
+  `"theta_pre"`, the gender gap in effects relative to pre-birth earnings, as
+  identified under TD-PR). Each triplet now returns 17 rows; existing rows are
+  unchanged.
+* `multiple_treatment_group_analysis()` carries the two new rows and their
+  individual-level influence functions.
+* `aggregate_estimands()` aggregates `TD_E_LOGS` (`gender_ineq`) and `TD_PR`
+  (`avg_of_ratios`) and includes both in the default `methods`.
+
 # childpen 0.2.3
 
 * Replaced `T` with `TRUE` in `multiple_treatment_group_analysis()` default

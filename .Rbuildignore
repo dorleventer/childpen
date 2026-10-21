@@ -14,3 +14,4 @@
 ^childpen\.Rcheck$
 ^README\.html$
 ^CRAN-SUBMISSION$
+^dev$
