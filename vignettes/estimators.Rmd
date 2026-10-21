@@ -116,10 +116,14 @@ $$
 ($1\{G = g, D = d\} - p_{g,d}$ for within-gender shares).
 With fixed or uniform weights the first term drops out. For `share_other` the influence function
 is minus that of `share_parenthood`.
-* `ratio_of_avgs` (`DID_Female`, `DID_Male`): $\hat\theta_{Agg,2} = \sum_d w_d \hat\delta_{ATE,d} \big/ \sum_d w_d \hat\delta_{APO,d}$,
-with influence function $\psi_{num}/den - num\,\psi_{den}/den^2$, where
-$\psi_{num} = \sum_d w_d \psi_{\delta_{ATE,d}}$ and $\psi_{den} = \sum_d w_d \psi_{\delta_{APO,d}}$; the
-weights are treated as fixed.
+* `ratio_of_avgs` (`DID_Female`, `DID_Male`): $\hat\theta_{Agg,2} = num/den$ with
+$num = \sum_d w_d \hat\delta_{ATE,d}$ and $den = \sum_d w_d \hat\delta_{APO,d}$, and influence function
+$\psi_{num}/den - num\,\psi_{den}/den^2$, where $\psi_{num}$ and $\psi_{den}$ are the influence
+functions of the two weighted averages above (each with its share term).
+
+Pre-treatment event times have one cell per control group; `include_pre = TRUE` aggregates each
+control offset $d' - d$ separately. The share term is put on the person-age scale with the
+average number of ages per person, which is exact for a balanced panel.
 
 Group influence functions are summed per person across treatment groups before squaring, so the
 standard errors account for persons who are controls for several treatment groups.
