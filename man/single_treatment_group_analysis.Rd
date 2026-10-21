@@ -84,11 +84,11 @@ DID_Female, DID_Male \tab theta \tab ATE row / APO row; \eqn{\theta(g)} under DI
 TD \tab gap_ATE \tab ATE row f minus m; \eqn{ATE(f) - ATE(m)} under TD-PT \cr
 Conventional \tab gap_theta \tab theta row f minus m; \eqn{\theta(f) - \theta(m)} under DID-PT only (under NTD-PT it is biased, Theorem 1) \cr
 NTD \tab rho_effect \tab \eqn{\mu(f,d,a)/\mu(m,d,a) - \delta_{APO}(f)/\delta_{APO}(m)}; \eqn{\rho(d) - \rho(\infty)} under NTD-PT (Theorem 2) \cr
-TD_E_LOGS \tab rho_effect \tab as NTD with \eqn{\delta^{\times}_{APO}}; \eqn{\rho(d) - \rho(\infty)} under TD-E-LOGS (Proposition D.1) \cr
-TD_PR \tab gap_theta_pre \tab \eqn{[\mu(g,d,a) - \delta^{\times}_{APO}(g)] / \mu(g,d,b)}, f minus m; \eqn{ATE(g)/APO(g,d,\infty,b)}, f minus m, under TD-PR (Proposition D.1) \cr
+TD_E_LOGS \tab rho_effect \tab as NTD with \eqn{\delta^{\times}_{APO}}; \eqn{\rho(d) - \rho(\infty)} under TD-E-LOGS (proposition in the online appendix on proportional DID and TD) \cr
+TD_PR \tab gap_theta_pre \tab \eqn{[\mu(g,d,a) - \delta^{\times}_{APO}(g)] / \mu(g,d,b)}, f minus m; \eqn{ATE(g)/APO(g,d,\infty,b)}, f minus m, under TD-PR (same proposition) \cr
 NTD, TD_E_LOGS \tab rho_obs \tab \eqn{\mu(f,d,a)/\mu(m,d,a)}; the observed gender earnings ratio \eqn{\rho(d)} \cr
-NTD, TD_E_LOGS \tab rho_cf \tab \eqn{\delta_{APO}(f)/\delta_{APO}(m)} (NTD) or with \eqn{\delta^{\times}_{APO}} (TD_E_LOGS); \eqn{\rho(\infty)} \cr
-NTD, TD_E_LOGS \tab share_parenthood \tab \eqn{(\rho_{cf} - \rho_{obs}) / (1 - \rho_{obs})}; parenthood's share of the observed gender gap (Section 4.2) \cr
+NTD, TD_E_LOGS \tab rho_cf \tab \eqn{\delta_{APO}(f)/\delta_{APO}(m)} (NTD) or with \eqn{\delta^{\times}_{APO}} (TD_E_LOGS); \eqn{\rho(\infty)} under NTD-PT (NTD) or TD-E-LOGS (TD_E_LOGS) \cr
+NTD, TD_E_LOGS \tab share_parenthood \tab \eqn{(\rho_{cf} - \rho_{obs}) / (1 - \rho_{obs})}; parenthood's share of the observed gender gap (Section 4.2), under the same assumption as rho_cf \cr
 NTD, TD_E_LOGS \tab share_other \tab \eqn{1 -} share_parenthood; the share of other factors
 }
 Gaps are female minus male. The conventional estimator is the 2x2 version of
@@ -101,7 +101,7 @@ exercise.
 \strong{Standard errors.} Each row is a smooth function of the eight cell
 means; its influence function follows by the chain rule from those of the cell
 means, \eqn{\psi_{\mu} = S (Y - \mu) / P(S)} with \eqn{S} the cell indicator
-(Appendix C). The variance is \eqn{n^{-2} \sum_c (\sum_{i \in c} \psi_i)^2 \,
+(the appendix on estimation and inference). The variance is \eqn{n^{-2} \sum_c (\sum_{i \in c} \psi_i)^2 \,
 G / (G - 1)}, clustering by person (\eqn{n} person-age rows, \eqn{G} persons).
 \code{vignette("estimators")} writes out every estimator and influence
 function.

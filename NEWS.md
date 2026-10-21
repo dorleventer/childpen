@@ -25,7 +25,8 @@ of rows that exist in both versions are unchanged (checked with
 
 * `bias_bounds()`: the paper's bias-bounding exercise (Proposition 2), the
   bias-corrected conventional gap at assumed fathers' effects
-  (default `theta_m = c(-0.1, 0.1)`), with influence-function standard errors.
+  (default `theta_m = c(-0.1, 0.1)`) for every post-treatment cell, with
+  influence-function standard errors.
 * Accounting rows for `NTD` and `TD_E_LOGS`: `rho_obs`, `rho_cf`,
   `share_parenthood` (parenthood's share of the gender gap) and `share_other`,
   with standard errors; also aggregated by `aggregate_estimands()`.
@@ -58,10 +59,16 @@ of rows that exist in both versions are unchanged (checked with
   weight.
 * `simulate_data()` works with a single treatment group and checks its inputs;
   its help page lists the true parameter values.
+* `multiple_treatment_group_analysis()` stops when no cell can be estimated, and
+  `aggregate_estimands()` stops when no requested method is in `results` or
+  nothing can be aggregated (both used to return an empty data.frame).
+* A non-numeric outcome column is an error (it used to be coerced).
+* Row order: `multiple_treatment_group_analysis()` sorts by `d`, `event_time`,
+  `dp`; `aggregate_estimands()` by `method`, `agg_type`, `event_time`.
 
 ## Proportional triple differences
 
-* Two estimators from the paper's online appendix D ("Proportional DID and TD"),
+* Two estimators from the paper's online appendix "Proportional DID and TD",
   built on the multiplicative imputation of counterfactual earnings, with
   cluster-robust influence-function standard errors: `TD_E_LOGS` (estimand
   `rho_effect`, the effect of parenthood on the gender earnings ratio, as

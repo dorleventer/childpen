@@ -82,7 +82,8 @@ sim <- simulate_data(n_individuals = 2000)
 res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:26,
   periods_post = 1, periods_pre = 2, verbose = FALSE)
 # The new estimand, by treatment group and event time
-subset(res, method == "NTD", c(d, event_time, dp, est, se))
+subset(res, method == "NTD" & estimand == "rho_effect" & event_time >= 0,
+       c(d, event_time, dp, est, se))
 # Pre-treatment validation tests of NTD, one row per control group
 subset(res, method == "Conventional" & event_time < 0,
        c(d, event_time, control_offset, est, se))

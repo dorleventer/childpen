@@ -5,16 +5,19 @@
 #' gender gap in normalized effects \eqn{\theta(f) - \theta(m)} when parallel
 #' trends fails (Theorem 1). If fathers' normalized effect \eqn{\theta(m)} were
 #' known, the gap would be identified (Proposition 2). This function computes the
-#' bias-corrected gap for each assumed value of \eqn{\theta(m)}, for every cell of
-#' \code{results}; comparing it with the conventional estimate bounds the bias.
+#' bias-corrected gap for each assumed value of \eqn{\theta(m)}, for every
+#' post-treatment cell of \code{results} (Proposition 2 applies after
+#' treatment, \eqn{d' > a \ge d}); comparing it with the conventional estimate
+#' bounds the bias.
 #'
-#' For a cell \eqn{(d, d', a)}, with \eqn{\hat\rho} the \code{NTD} estimate (the
-#' effect of parenthood on the gender earnings ratio) and
+#' For a post-treatment cell \eqn{(d, d', a)}, with \eqn{\hat\Delta} the
+#' \code{NTD} \code{rho_effect} estimate (the effect of parenthood on the gender
+#' earnings ratio) and
 #' \eqn{\hat\delta_{APO}(g)} the DID-imputed counterfactual mean of gender
 #' \eqn{g} (rows \code{APO}, \code{DID_Female} / \code{DID_Male}), the
-#' bias-corrected gap is (Appendix C)
-#' \deqn{\hat\rho \, \frac{\hat\delta_{APO}(m)}{\hat\delta_{APO}(f)} \, (1 + \theta(m)).}{
-#' rho_hat * delta_APO(m) / delta_APO(f) * (1 + theta_m).}
+#' bias-corrected gap is (Proposition 2, in the form of the appendix on estimation and inference)
+#' \deqn{\hat\Delta \, \frac{\hat\delta_{APO}(m)}{\hat\delta_{APO}(f)} \, (1 + \theta(m)).}{
+#' Delta_hat * delta_APO(m) / delta_APO(f) * (1 + theta_m).}
 #' It is linear in \eqn{\theta(m)}, so the values at the ends of an interval
 #' bound it over the whole interval. Standard errors come from the delta method on
 #' the stored person-level influence functions, clustered by person.
@@ -62,7 +65,8 @@ bias_bounds <- function(results, theta_m = c(-0.1, 0.1)) {
 
   R <- data.table::as.data.table(results)
   cells <- merge(
-    R[method == "NTD" & estimand == "rho_effect", .(d, dp, a, event_time, rho = est)],
+    R[method == "NTD" & estimand == "rho_effect" & event_time >= 0,
+      .(d, dp, a, event_time, rho = est)],
     merge(R[method == "DID_Female" & estimand == "APO", .(d, dp, a, apo_f = est)],
           R[method == "DID_Male"   & estimand == "APO", .(d, dp, a, apo_m = est)],
           by = c("d", "dp", "a")),

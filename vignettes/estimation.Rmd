@@ -2,7 +2,7 @@
 title: "Estimation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{estimation}
+  %\VignetteIndexEntry{Estimation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

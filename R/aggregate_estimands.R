@@ -13,8 +13,8 @@
 #' @param weights How to weight treatment groups:
 #'   \itemize{
 #'     \item \code{"sample"} (default): treatment-group shares. Within gender,
-#'       \eqn{w_{g,d} = n_{g,d} / \sum_{d'} n_{g,d'}}, for \code{DID_Female} and
-#'       \code{DID_Male}; across genders, \eqn{w_d = n_d / \sum_{d'} n_{d'}}, for
+#'       \eqn{w_{g,d} = n_{g,d} / \sum_{k} n_{g,k}}, for \code{DID_Female} and
+#'       \code{DID_Male}; across genders, \eqn{w_d = n_d / \sum_{k} n_{k}}, for
 #'       all other methods.
 #'     \item \code{"uniform"} or \code{NULL}: equal weight per treatment group.
 #'     \item A named numeric vector (names = treatment groups): fixed weights,
@@ -24,7 +24,9 @@
 #' @param methods Methods to aggregate (default: all). \code{DID_Female},
 #'   \code{DID_Male}: \code{weighted_avg} and \code{ratio_of_avgs} of
 #'   \code{theta}; \code{Conventional}: \code{weighted_avg} of \code{gap_theta};
-#'   \code{NTD} and \code{TD_E_LOGS}: \code{weighted_avg} of \code{rho_effect};
+#'   \code{NTD} and \code{TD_E_LOGS}: \code{weighted_avg} of \code{rho_effect}
+#'   and of the accounting rows \code{rho_obs}, \code{rho_cf},
+#'   \code{share_parenthood}, \code{share_other};
 #'   \code{TD}: \code{weighted_avg} of \code{gap_ATE}; \code{TD_PR}:
 #'   \code{weighted_avg} of \code{gap_theta_pre}.
 #' @param include_pre Logical (default \code{FALSE}). Also aggregate
@@ -48,12 +50,14 @@
 #' weighted average APO; it puts more weight on higher-earning groups, which is
 #' why the paper prefers \eqn{\theta_{Agg,1}} (Section 5.1).
 #'
-#' \strong{Standard errors.} The influence function of an aggregate (Appendix
-#' C.1) sums the treatment-group influence functions with the weights; with
+#' \strong{Standard errors.} The influence function of an aggregate (aggregate
+#' estimator section of the appendix on estimation and inference) sums the treatment-group influence functions with the weights; with
 #' \code{weights = "sample"} it adds the term for the estimated shares,
 #' \eqn{\psi_{A(e)} = P_e^{-1}\sum_d [(B_d - A(e))\psi_{p_d} + p_d\psi_{B_d}]},
-#' \eqn{\psi_{p_d} = 1\{D = d\} - p_d}. For \code{ratio_of_avgs} the delta method
-#' is applied to the ratio. Standard errors are clustered by person.
+#' \eqn{\psi_{p_d} = 1\{D = d\} - p_d} (\eqn{1\{G = g, D = d\} - p_{g,d}} for
+#' within-gender shares). For \code{ratio_of_avgs} the chain rule is applied to
+#' the ratio, with the weights treated as fixed. Standard errors are clustered by
+#' person.
 #'
 #' Not every treatment group has an estimate at every event time; each event
 #' time uses the groups present, and \code{n_groups} reports how many.
