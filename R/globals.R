@@ -6,6 +6,8 @@ utils::globalVariables(c(
   "if_td","if_ntd_conv","if_ratio_y","if_ratio_apo","if_ntd_new",
   "if_td_null_apo","if_td_null_ate","if_td_null_theta",
   "if_ntd_conv_null_apo","if_ntd_conv_null_ate","if_ntd_conv_null_theta",
+  "if_apo_mult_f","if_apo_mult_m","if_ratio_apo_mult","if_td_e_logs",
+  "if_theta_pre_f","if_theta_pre_m","if_td_pr",
   # aggregate_estimands() columns
   "agg_type", "n_groups",
   "est_ate", "se_ate", "est_apo", "se_apo",

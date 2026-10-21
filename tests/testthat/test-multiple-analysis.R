@@ -51,7 +51,7 @@ test_that("multiple_treatment_group_analysis event_time equals a minus d", {
 })
 
 test_that("multiple_treatment_group_analysis correct row count for post-only run", {
-  # 2 groups x 2 event_times (0,1) x 15 estimands = 60 rows
+  # 2 groups x 2 event_times (0,1) x 17 estimands = 68 rows
   sim <- simulate_data(n_individuals = 300, seed = 34)
   res <- multiple_treatment_group_analysis(
     sim,
@@ -60,11 +60,11 @@ test_that("multiple_treatment_group_analysis correct row count for post-only run
     periods_pre      = NULL,
     verbose          = FALSE
   )
-  expect_equal(nrow(res), 60L)
+  expect_equal(nrow(res), 68L)
 })
 
 test_that("multiple_treatment_group_analysis correct row count for single group", {
-  # 1 group x 1 event_time (0) x 15 estimands = 15 rows
+  # 1 group x 1 event_time (0) x 17 estimands = 17 rows
   sim <- simulate_data(n_individuals = 300, seed = 35)
   res <- multiple_treatment_group_analysis(
     sim,
@@ -73,7 +73,7 @@ test_that("multiple_treatment_group_analysis correct row count for single group"
     periods_pre      = NULL,
     verbose          = FALSE
   )
-  expect_equal(nrow(res), 15L)
+  expect_equal(nrow(res), 17L)
 })
 
 test_that("periods_pre = NULL skips pre-treatment event times", {
@@ -103,9 +103,9 @@ test_that("multiple_treatment_group_analysis includes pre-treatment event times 
 })
 
 test_that("multiple_treatment_group_analysis correct row count with pre-treatment periods", {
-  # Post: 2 groups x 2 event_times x 15 = 60
-  # Pre:  2 groups x 2 pre event_times x 2 control offsets x 15 = 120
-  # Total = 180
+  # Post: 2 groups x 2 event_times x 17 = 68
+  # Pre:  2 groups x 2 pre event_times x 2 control offsets x 17 = 136
+  # Total = 204
   sim <- simulate_data(n_individuals = 300, seed = 38)
   res <- multiple_treatment_group_analysis(
     sim,
@@ -114,7 +114,7 @@ test_that("multiple_treatment_group_analysis correct row count with pre-treatmen
     periods_pre      = 2L,
     verbose          = FALSE
   )
-  expect_equal(nrow(res), 180L)
+  expect_equal(nrow(res), 204L)
 })
 
 test_that("verbose = FALSE produces no console output", {

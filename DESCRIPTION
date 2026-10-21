@@ -1,6 +1,6 @@
 Package: childpen
 Title: Identification and Estimation of Child Penalties
-Version: 0.2.3
+Version: 0.2.3.9000
 Authors@R: c(
     person("Dor", "Leventer", 
            email = "leventerdor@gmail.com", 
