@@ -52,9 +52,11 @@ with \eqn{F_i = 1} for women and:
 experience \eqn{x = \max(a - s(D), 0)}, entry age
 \eqn{s(D) = 20 + 0.7 (D - 24)} and slope \eqn{\beta(D) = 0.09 + 0.008 (D - 28)}.
 Later first births enter the labor market later (more schooling) and then
-grow faster. Before treatment, later groups grow more slowly (they are not
-yet working), so pre-treatment DID estimates are negative and grow with the
-distance to the control group; after treatment, the later control groups
+grow faster. Before treatment, distant control groups are not yet working
+and grow more slowly, so pre-treatment DID estimates grow in magnitude with
+the distance to the control group and are negative for distant control
+groups (for the closest ones they are small and can be positive); after
+treatment, the later control groups
 grow faster, so parallel trends fails with a negative violation for earlier
 treatment groups.
 \item \strong{Gender gap by age}: \eqn{\kappa(a) = -0.04 - 0.015 \max(a - 25, 0)},
