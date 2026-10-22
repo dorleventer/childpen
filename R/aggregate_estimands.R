@@ -237,7 +237,7 @@ aggregate_estimands <- function(results,
 
   # ---- Helper: person-level IF of a weighted aggregate (cluster-robust) ------
   # psi_A = sum_d w_d psi_{B_d}  +  (with sample weights) the term for the estimated
-  # shares, (B_{D_i} - A) / P_e for persons i in the aggregated groups (Appendix C.1):
+  # shares, (B_{D_i} - A) / P_e for persons i in the aggregated groups (estimation appendix):
   #   psi_A(e) = P_e^{-1} sum_d [ (B_d - A) psi_{p_d} + p_d psi_{B_d} ],
   #   psi_{p_d} = 1{D = d} - p_d,  P_e = sum_d p_d  (shares of persons, not counts).
   # if_data is person-level and on the person-age scale (sums of observation IFs), so the

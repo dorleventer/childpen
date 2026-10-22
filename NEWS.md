@@ -69,10 +69,11 @@ of rows that exist in both versions are unchanged (checked with
 ## Bug fixes (standard errors change)
 
 * `aggregate_estimands()` with `weights = "sample"` (the default): the term for
-  the estimated treatment-group shares in the influence function (Appendix C.1)
+  the estimated treatment-group shares in the influence function (the paper's
+  estimation and inference appendix)
   divided by the number of persons in the aggregated groups instead of their
   share, so it was about n times too small and the standard errors treated the
-  weights as known. It now follows Appendix C.1. Point estimates are unchanged;
+  weights as known. It now follows the paper's formula. Point estimates are unchanged;
   standard errors are larger when treatment-group estimates differ (in a test
   design with heterogeneous effects, the old standard error was 22% below a
   person bootstrap, the new one matches it). `ratio_of_avgs` now also includes
