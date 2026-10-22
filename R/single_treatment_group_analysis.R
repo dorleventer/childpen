@@ -130,19 +130,25 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
 
   # Data prepared by prep_data_table() (e.g. inside multiple_treatment_group_analysis())
   # is used as is; anything else is validated and copied first.
-  DT <- if (isTRUE(attr(data, "childpen_prepared"))) data else
+  DT_full <- if (isTRUE(attr(data, "childpen_prepared"))) data else
     prep_data_table(data, Y_name, age_name, D_name, id_name, female_name)
+  n_total <- attr(DT_full, "n_obs")
+  G_total <- attr(DT_full, "n_ids")
+
+  # Only the rows of groups d and dp at the baseline age and the target age enter the
+  # estimators; the influence functions and SEs are scaled by the full data's n and G.
+  DT <- DT_full[!is.na(D) & D %in% c(d, dp) & age %in% c(d - pre, a)]
 
   # Compute all 8 base means we need
   means <- list(
-    y_d_minus_1_f_d    = compute_mean_if(DT, d-pre, 1, d,  "if_y_d_minus_1_f_d"),
-    y_d_minus_1_m_d    = compute_mean_if(DT, d-pre, 0, d,  "if_y_d_minus_1_m_d"),
-    y_a_f_d            = compute_mean_if(DT, a,   1, d,  "if_y_a_f_d"),
-    y_a_m_d            = compute_mean_if(DT, a,   0, d,  "if_y_a_m_d"),
-    y_a_f_dp           = compute_mean_if(DT, a,   1, dp, "if_y_a_f_dp"),
-    y_a_m_dp           = compute_mean_if(DT, a,   0, dp, "if_y_a_m_dp"),
-    y_d_minus_1_f_dp   = compute_mean_if(DT, d-pre, 1, dp, "if_y_d_minus_1_f_dp"),
-    y_d_minus_1_m_dp   = compute_mean_if(DT, d-pre, 0, dp, "if_y_d_minus_1_m_dp")
+    y_d_minus_1_f_d    = compute_mean_if(DT, d-pre, 1, d, "if_y_d_minus_1_f_d", n_total),
+    y_d_minus_1_m_d    = compute_mean_if(DT, d-pre, 0, d, "if_y_d_minus_1_m_d", n_total),
+    y_a_f_d            = compute_mean_if(DT, a,   1, d, "if_y_a_f_d", n_total),
+    y_a_m_d            = compute_mean_if(DT, a,   0, d, "if_y_a_m_d", n_total),
+    y_a_f_dp           = compute_mean_if(DT, a,   1, dp, "if_y_a_f_dp", n_total),
+    y_a_m_dp           = compute_mean_if(DT, a,   0, dp, "if_y_a_m_dp", n_total),
+    y_d_minus_1_f_dp   = compute_mean_if(DT, d-pre, 1, dp, "if_y_d_minus_1_f_dp", n_total),
+    y_d_minus_1_m_dp   = compute_mean_if(DT, d-pre, 0, dp, "if_y_d_minus_1_m_dp", n_total)
   )
 
   # APO and ATE formulas using pure column operations
@@ -229,27 +235,28 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
 
   # Compute all SEs upfront
   ses <- c(
-    se_cluster(DT, "if_apo_f"), se_cluster(DT, "if_apo_m"),
-    se_cluster(DT, "if_ate_f"), se_cluster(DT, "if_ate_m"),
-    se_cluster(DT, "if_theta_f"), se_cluster(DT, "if_theta_m"),
-    se_cluster(DT, "if_td"), se_cluster(DT, "if_ntd_conv"), se_cluster(DT, "if_ntd_new"),
-    se_cluster(DT, "if_td_e_logs"), se_cluster(DT, "if_td_pr"),
-    se_cluster(DT, "if_ratio_y"), se_cluster(DT, "if_ratio_apo"),
-    se_cluster(DT, "if_share_ntd"), se_cluster(DT, "if_share_ntd"),
-    se_cluster(DT, "if_ratio_y"), se_cluster(DT, "if_ratio_apo_mult"),
-    se_cluster(DT, "if_share_elogs"), se_cluster(DT, "if_share_elogs")
+    se_cluster(DT, "if_apo_f", n_total, G_total), se_cluster(DT, "if_apo_m", n_total, G_total),
+    se_cluster(DT, "if_ate_f", n_total, G_total), se_cluster(DT, "if_ate_m", n_total, G_total),
+    se_cluster(DT, "if_theta_f", n_total, G_total), se_cluster(DT, "if_theta_m", n_total, G_total),
+    se_cluster(DT, "if_td", n_total, G_total), se_cluster(DT, "if_ntd_conv", n_total, G_total), se_cluster(DT, "if_ntd_new", n_total, G_total),
+    se_cluster(DT, "if_td_e_logs", n_total, G_total), se_cluster(DT, "if_td_pr", n_total, G_total),
+    se_cluster(DT, "if_ratio_y", n_total, G_total), se_cluster(DT, "if_ratio_apo", n_total, G_total),
+    se_cluster(DT, "if_share_ntd", n_total, G_total), se_cluster(DT, "if_share_ntd", n_total, G_total),
+    se_cluster(DT, "if_ratio_y", n_total, G_total), se_cluster(DT, "if_ratio_apo_mult", n_total, G_total),
+    se_cluster(DT, "if_share_elogs", n_total, G_total), se_cluster(DT, "if_share_elogs", n_total, G_total)
   )
 
   # Compute sample sizes (persons in each group, over all ages)
-  n_female_d  <- DT[female == 1 & D == d,  uniqueN(id)]
-  n_female_dp <- DT[female == 1 & D == dp, uniqueN(id)]
-  n_male_d    <- DT[female == 0 & D == d,  uniqueN(id)]
-  n_male_dp   <- DT[female == 0 & D == dp, uniqueN(id)]
+  n_female_d  <- DT_full[female == 1 & D == d,  uniqueN(id)]
+  n_female_dp <- DT_full[female == 1 & D == dp, uniqueN(id)]
+  n_male_d    <- DT_full[female == 0 & D == d,  uniqueN(id)]
+  n_male_dp   <- DT_full[female == 0 & D == dp, uniqueN(id)]
 
   # ---- Extract id-level IF scores for aggregation ---------------------------
-  # These are the cluster-summed influence functions per individual. Needed by
-  # aggregate_estimands() and bias_bounds() to compute SEs that account for
-  # shared control groups across treatment groups.
+  # These are the cluster-summed influence functions per individual, for the persons
+  # in groups d and dp (everyone else has zero). Needed by aggregate_estimands() and
+  # bias_bounds() to compute SEs that account for shared control groups across
+  # treatment groups.
   if_scores <- DT[, .(
     if_apo_f    = sum(if_apo_f),
     if_apo_m    = sum(if_apo_m),
