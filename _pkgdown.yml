@@ -19,8 +19,6 @@ navbar:
       menu:
         - text: "Notation and output"
           href: articles/notation.html
-        - text: "Identification"
-          href: articles/identification.html
         - text: "Estimation"
           href: articles/estimators.html
         - text: "Aggregation"
@@ -48,7 +46,6 @@ articles:
     navbar: ~
     contents:
       - notation
-      - identification
       - estimators
       - aggregation
       - articles/replication

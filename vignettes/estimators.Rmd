@@ -14,8 +14,7 @@ data.table::setDTthreads(1L)
 
 This page describes how the package runs the paper's 2x2 comparisons, then writes out every
 estimator it returns and the influence function its standard error is built from. Notation
-follows [Notation and output](notation.html); the identification results behind each row are in
-[Identification](identification.html). Section, theorem and appendix numbers refer to Leventer (2025),
+follows [Notation and output](notation.html). Section, theorem and appendix numbers refer to Leventer (2025),
 *Identification of Child Penalties*; appendices are referred to by name, because their letters
 differ between the arXiv and journal versions: *Estimation appendix* is the appendix on
 estimation and inference, *Proportional appendix* the online appendix on proportional DID and
@@ -102,24 +101,24 @@ $$
 \psi_{\delta^{\times}_{APO}(g)} = \hat\delta^{\times}_{APO}(g)\Big(\frac{\psi_1}{\mu_1} + \frac{\psi_2}{\mu_2} - \frac{\psi_3}{\mu_3}\Big).
 $$
 
-| method | estimand | estimator | influence function | in the paper |
-|---|---|---|---|---|
-| `DID_Female`, `DID_Male` | `APO` | $\hat\delta_{APO}(g)$ | $\psi_{\delta_{APO}(g)}$ | eq. (3), Estimation app. |
-| `DID_Female`, `DID_Male` | `ATE` | $\hat\delta_{ATE}(g) = \mu_4 - \hat\delta_{APO}(g)$ | $\psi_4 - \psi_{\delta_{APO}(g)}$ | eq. (3), Estimation app. |
-| `DID_Female`, `DID_Male` | `theta` | $\hat\delta_\theta(g) = \hat\delta_{ATE}(g)/\hat\delta_{APO}(g)$ | $\dfrac{\psi_{\delta_{ATE}}}{\delta_{APO}} - \dfrac{\delta_{ATE}\,\psi_{\delta_{APO}}}{\delta_{APO}^2}$ | eq. (3), Estimation app. |
-| `TD` | `gap_ATE` | $\hat\delta_{ATE}(f) - \hat\delta_{ATE}(m)$ | $\psi_{\delta_{ATE}(f)} - \psi_{\delta_{ATE}(m)}$ | Estimation app. |
-| `Conventional` | `gap_theta` | $\hat\delta_\theta(f) - \hat\delta_\theta(m)$ | $\psi_{\delta_\theta(f)} - \psi_{\delta_\theta(m)}$ | Thm. 1, Estimation app. |
-| `NTD` | `rho_obs` | $\hat\rho_{obs} = \mu_4(f)/\mu_4(m)$ | $\dfrac{\psi_4(f)}{\mu_4(m)} - \dfrac{\mu_4(f)\,\psi_4(m)}{\mu_4(m)^2}$ | Estimation app. |
-| `NTD` | `rho_cf` | $\hat\rho_{cf} = \hat\delta_{APO}(f)/\hat\delta_{APO}(m)$ | $\dfrac{\psi_{\delta_{APO}(f)}}{\delta_{APO}(m)} - \dfrac{\delta_{APO}(f)\,\psi_{\delta_{APO}(m)}}{\delta_{APO}(m)^2}$ | Estimation app. |
-| `NTD` | `rho_effect` | $\hat\rho_{obs} - \hat\rho_{cf}$ | $\psi_{\rho_{obs}} - \psi_{\rho_{cf}}$ | Thm. 2, Estimation app. |
-| `TD_E_LOGS` | `rho_cf` | $\hat\rho^{\times}_{cf} = \hat\delta^{\times}_{APO}(f)/\hat\delta^{\times}_{APO}(m)$ | as `NTD` `rho_cf`, with $\delta^{\times}_{APO}$ | Proportional app.; IF **not in the paper** |
-| `TD_E_LOGS` | `rho_obs`, `rho_effect` | as `NTD`, with $\hat\rho^{\times}_{cf}$ | as `NTD`, with $\psi_{\rho^{\times}_{cf}}$ | Proportional app.; IF **not in the paper** |
-| `TD_PR` | `gap_theta_pre` | $\hat\theta_{pre}(f) - \hat\theta_{pre}(m)$, $\hat\theta_{pre}(g) = \dfrac{\mu_4 - \hat\delta^{\times}_{APO}(g)}{\mu_1}$ | $\psi_{\theta_{pre}(f)} - \psi_{\theta_{pre}(m)}$, $\psi_{\theta_{pre}(g)} = \dfrac{\psi_4 - \psi_{\delta^{\times}_{APO}(g)}}{\mu_1} - \dfrac{\theta_{pre}(g)\,\psi_1}{\mu_1}$ | Proportional app.; IF **not in the paper** |
-| `NTD`, `TD_E_LOGS` | `share_parenthood` | $\hat s = \dfrac{\hat\rho_{cf} - \hat\rho_{obs}}{1 - \hat\rho_{obs}}$ | $\dfrac{\psi_{\rho_{cf}} - \psi_{\rho_{obs}}}{1 - \rho_{obs}} + \dfrac{(\rho_{cf} - \rho_{obs})\,\psi_{\rho_{obs}}}{(1 - \rho_{obs})^2}$ | Sec. 4.2 (estimate); **not in the paper** (IF) |
-| `NTD`, `TD_E_LOGS` | `share_other` | $1 - \hat s$ | $-\psi_s$ | **not in the paper** |
+| method | estimand | estimator | influence function | identifies its target under | in the paper |
+|---|---|---|---|---|---|
+| `DID_Female`, `DID_Male` | `APO` | $\hat\delta_{APO}(g)$ | $\psi_{\delta_{APO}(g)}$ | NA, DID-PT | Lemma 1; eq. (3), Estimation app. |
+| `DID_Female`, `DID_Male` | `ATE` | $\hat\delta_{ATE}(g) = \mu_4 - \hat\delta_{APO}(g)$ | $\psi_4 - \psi_{\delta_{APO}(g)}$ | NA, DID-PT | Lemma 1; eq. (3), Estimation app. |
+| `DID_Female`, `DID_Male` | `theta` | $\hat\delta_\theta(g) = \hat\delta_{ATE}(g)/\hat\delta_{APO}(g)$ | $\dfrac{\psi_{\delta_{ATE}}}{\delta_{APO}} - \dfrac{\delta_{ATE}\,\psi_{\delta_{APO}}}{\delta_{APO}^2}$ | NA, DID-PT | Lemma 1; eq. (3), Estimation app. |
+| `TD` | `gap_ATE` | $\hat\delta_{ATE}(f) - \hat\delta_{ATE}(m)$ | $\psi_{\delta_{ATE}(f)} - \psi_{\delta_{ATE}(m)}$ | NA, TD-PT | Lemma 1; Estimation app. |
+| `Conventional` | `gap_theta` | $\hat\delta_\theta(f) - \hat\delta_\theta(m)$ | $\psi_{\delta_\theta(f)} - \psi_{\delta_\theta(m)}$ | NA, DID-PT; under NA and NTD-PT it equals $\text{Bias} \times [\theta(f) - \theta(m)]$ | Thm. 1; Estimation app. |
+| `NTD` | `rho_obs` | $\hat\rho_{obs} = \mu_4(f)/\mu_4(m)$ | $\dfrac{\psi_4(f)}{\mu_4(m)} - \dfrac{\mu_4(f)\,\psi_4(m)}{\mu_4(m)^2}$ | consistency | Thm. 2; Estimation app. |
+| `NTD` | `rho_cf` | $\hat\rho_{cf} = \hat\delta_{APO}(f)/\hat\delta_{APO}(m)$ | $\dfrac{\psi_{\delta_{APO}(f)}}{\delta_{APO}(m)} - \dfrac{\delta_{APO}(f)\,\psi_{\delta_{APO}(m)}}{\delta_{APO}(m)^2}$ | NA, NTD-PT | Thm. 2; Estimation app. |
+| `NTD` | `rho_effect` | $\hat\rho_{obs} - \hat\rho_{cf}$ | $\psi_{\rho_{obs}} - \psi_{\rho_{cf}}$ | NA, NTD-PT | Thm. 2; Estimation app. |
+| `TD_E_LOGS` | `rho_cf` | $\hat\rho^{\times}_{cf} = \hat\delta^{\times}_{APO}(f)/\hat\delta^{\times}_{APO}(m)$ | as `NTD` `rho_cf`, with $\delta^{\times}_{APO}$ | NA, TD-E-LOGS | Proportional app.; IF **not in the paper** |
+| `TD_E_LOGS` | `rho_obs`, `rho_effect` | as `NTD`, with $\hat\rho^{\times}_{cf}$ | as `NTD`, with $\psi_{\rho^{\times}_{cf}}$ | `rho_obs`: consistency; `rho_effect`: NA, TD-E-LOGS | Proportional app.; IF **not in the paper** |
+| `TD_PR` | `gap_theta_pre` | $\hat\theta_{pre}(f) - \hat\theta_{pre}(m)$, $\hat\theta_{pre}(g) = \dfrac{\mu_4 - \hat\delta^{\times}_{APO}(g)}{\mu_1}$ | $\psi_{\theta_{pre}(f)} - \psi_{\theta_{pre}(m)}$, $\psi_{\theta_{pre}(g)} = \dfrac{\psi_4 - \psi_{\delta^{\times}_{APO}(g)}}{\mu_1} - \dfrac{\theta_{pre}(g)\,\psi_1}{\mu_1}$ | NA, TD-PR | Proportional app.; IF **not in the paper** |
+| `NTD`, `TD_E_LOGS` | `share_parenthood` | $\hat s = \dfrac{\hat\rho_{cf} - \hat\rho_{obs}}{1 - \hat\rho_{obs}}$ | $\dfrac{\psi_{\rho_{cf}} - \psi_{\rho_{obs}}}{1 - \rho_{obs}} + \dfrac{(\rho_{cf} - \rho_{obs})\,\psi_{\rho_{obs}}}{(1 - \rho_{obs})^2}$ | as `rho_cf` of the same method | Sec. 4.2 (estimate); **not in the paper** (IF) |
+| `NTD`, `TD_E_LOGS` | `share_other` | $1 - \hat s$ | $-\psi_s$ | as `rho_cf` of the same method | **not in the paper** |
 
-What each row identifies, and under which assumption, is in `?single_treatment_group_analysis`
-(Details). For `TD_E_LOGS` the counterfactual ratio uses $\hat\delta^{\times}_{APO}$; the
+NA (no anticipation), DID-PT (parallel trends), TD-PT and NTD-PT are the assumptions of Sections 2
+and 3 of the paper; TD-E-LOGS and TD-PR are those of the Proportional appendix. For `TD_E_LOGS` the counterfactual ratio uses $\hat\delta^{\times}_{APO}$; the
 `share_parenthood` row of `TD_E_LOGS` uses $\hat\rho^{\times}_{cf}$ in place of $\hat\rho_{cf}$.
 
 **Rows behind the paper's figures.** Pre-treatment `DID_Female` / `DID_Male` `ATE` rows: the

@@ -75,7 +75,7 @@ In $\mathrm{APO}(g, d, d', a)$ and $\rho(d')$ the argument $d'$ is a counterfact
 | `TD_E_LOGS` | `rho_effect`, `rho_obs`, `rho_cf`, `share_parenthood`, `share_other` | as `NTD`, with counterfactual earnings imputed multiplicatively | as `NTD` |
 | `TD_PR` | `gap_theta_pre` | gender gap in effects relative to baseline earnings, imputed multiplicatively | $\dfrac{\mathrm{ATE}(f)}{\mathrm{APO}(f, d, \infty, d - 1)} - \dfrac{\mathrm{ATE}(m)}{\mathrm{APO}(m, d, \infty, d - 1)}$ |
 
-Under which assumption each row identifies its target is in [Identification](identification.html); the estimators and standard errors are in [Estimation](estimators.html). `aggregate_estimands()` returns the same labels averaged over treatment groups ([Aggregation](aggregation.html)).
+The estimators, their standard errors, and the assumption under which each row identifies its target (with the result in the paper) are in [Estimation](estimators.html). `aggregate_estimands()` returns the same labels averaged over treatment groups ([Aggregation](aggregation.html)).
 
 A cell of simulated data, treatment group $d = 26$ one year after the first birth ($a = 27$, $e = 1$) against the control group $d' = 28$:
 
