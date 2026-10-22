@@ -10,38 +10,48 @@ template:
 
 navbar:
   title: "childpen"
-  left:
-    - text: "Home"
-      href: index.html
-    - text: "Articles"
-      href: articles/index.html
-  right:
-    - icon: fa-github
+  structure:
+    left: [intro, articles, reference, news]
+    right: [github]
+  components:
+    articles:
+      text: Articles
+      menu:
+        - text: "Notation and output"
+          href: articles/notation.html
+        - text: "Identification"
+          href: articles/identification.html
+        - text: "Estimation"
+          href: articles/estimators.html
+        - text: "Aggregation"
+          href: articles/aggregation.html
+        - text: "Replicating the paper"
+          href: articles/replication.html
+    github:
+      icon: fa-github
       href: https://github.com/dorleventer/childpen
       aria-label: "GitHub repository"
 
 home:
   title: "Identification of Child Penalties"
   description: >
-    Tools for simulating child-penalty data and estimating
-    DID, TD, and NTD frameworks—plus conditional and alternative
-    identification approaches from Leventer (2025),
-    *Identification of Child Penalties*.
+    Estimators from Leventer, Identification of Child Penalties: within-gender
+    DID, triple differences, the conventional normalized estimator with bias
+    bounding, the effect of parenthood on the gender earnings ratio, accounting
+    for the gender gap, and aggregation across treatment groups.
   links:
     - text: "Read the paper (arXiv)"
       href: "https://arxiv.org/abs/2602.07486"
 
 articles:
-  - title: "Guides"
-    description: >
-      The following vignettes show how to use the code in the package, as well as the main take-aways from the paper.
+  - title: "Articles"
+    navbar: ~
     contents:
       - notation
-      - estimation
-      - NTD-identification
-      - validation_tests
-      - aggregate-estimands
+      - identification
       - estimators
+      - aggregation
+      - articles/replication
 
 reference:
   - title: "Estimation"

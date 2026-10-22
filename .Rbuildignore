@@ -15,3 +15,4 @@
 ^README\.html$
 ^CRAN-SUBMISSION$
 ^dev$
+^vignettes/articles$
