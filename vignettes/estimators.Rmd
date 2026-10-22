@@ -44,6 +44,23 @@ With the paper's sample this grid is the one behind its figures: treatment group
 event times 0 to 5, pre-treatment event times $-4$ to $-2$ (baseline $d - 1$), and controls up to
 40 ([Replicating the paper](replication.html)).
 
+**Input data.** `data` is a data.frame or data.table in long format, one row per person and age;
+the panel need not be balanced. The columns are located by name:
+
+| argument | default | content |
+|---|---|---|
+| `id_name` | `"id"` | person identifier (the clustering unit) |
+| `age_name` | `"age"` | age, numeric |
+| `D_name` | `"D"` | age at first birth, constant within person; a missing (or infinite) value means the person never has a child |
+| `female_name` | `"female"` | gender, constant within person; `1` / `TRUE` is female and `0` / `FALSE` male; labels such as `"female"` / `"male"`, `"f"` / `"m"`, `"woman"` / `"man"` are also accepted |
+| `Y_name` | `"Y"` | earnings, numeric; zeros are allowed, while the ratio rows need positive cell means |
+
+Rows with a missing outcome are dropped with a message. The functions stop with an error if a
+person-age pair is repeated, if `female` or `D` varies within a person, if a gender label is not
+recognised, or if only one gender is present. `data` is not modified. Persons with a missing `D`
+stay in the data, belong to no treatment or control group, and count in the totals the standard
+errors are scaled by.
+
 ## Setup
 
 Data are one row per person $i$ and age $t$, with earnings $Y$, gender $g \in \{f, m\}$ and age at
