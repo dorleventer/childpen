@@ -90,6 +90,25 @@ unchanged (checked with `dev/snapshot_compare.R` against v0.2.3 output).
   [`aggregate_estimands()`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md)
   by `method`, `agg_type`, `event_time`.
 
+### Bug fixes (standard errors change)
+
+- [`aggregate_estimands()`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md)
+  with `weights = "sample"` (the default): the term for the estimated
+  treatment-group shares in the influence function (the paper’s
+  estimation and inference appendix) divided by the number of persons in
+  the aggregated groups instead of their share, so it was about n times
+  too small and the standard errors treated the weights as known. It now
+  follows the paper’s formula. Point estimates are unchanged; standard
+  errors are larger when treatment-group estimates differ (in a test
+  design with heterogeneous effects, the old standard error was 22%
+  below a person bootstrap, the new one matches it). `ratio_of_avgs` now
+  also includes the share term. Standard errors with uniform or fixed
+  weights are unchanged.
+- `aggregate_estimands(include_pre = TRUE)` failed (or pooled control
+  groups as if they were treatment groups). Pre-treatment cells are now
+  aggregated separately for each control offset, reported in the new
+  `control_offset` column.
+
 ### Proportional triple differences
 
 - Two estimators from the paper’s online appendix “Proportional DID and

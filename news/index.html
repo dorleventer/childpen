@@ -71,6 +71,13 @@
 <li>Row order: <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> sorts by <code>d</code>, <code>event_time</code>, <code>dp</code>; <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> by <code>method</code>, <code>agg_type</code>, <code>event_time</code>.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="bug-fixes-standard-errors-change-0-3-0">Bug fixes (standard errors change)<a class="anchor" aria-label="anchor" href="#bug-fixes-standard-errors-change-0-3-0"></a></h3>
+<ul><li>
+<code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> with <code>weights = "sample"</code> (the default): the term for the estimated treatment-group shares in the influence function (the paper’s estimation and inference appendix) divided by the number of persons in the aggregated groups instead of their share, so it was about n times too small and the standard errors treated the weights as known. It now follows the paper’s formula. Point estimates are unchanged; standard errors are larger when treatment-group estimates differ (in a test design with heterogeneous effects, the old standard error was 22% below a person bootstrap, the new one matches it). <code>ratio_of_avgs</code> now also includes the share term. Standard errors with uniform or fixed weights are unchanged.</li>
+<li>
+<code>aggregate_estimands(include_pre = TRUE)</code> failed (or pooled control groups as if they were treatment groups). Pre-treatment cells are now aggregated separately for each control offset, reported in the new <code>control_offset</code> column.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="proportional-triple-differences-0-3-0">Proportional triple differences<a class="anchor" aria-label="anchor" href="#proportional-triple-differences-0-3-0"></a></h3>
 <ul><li>Two estimators from the paper’s online appendix “Proportional DID and TD”, built on the multiplicative imputation of counterfactual earnings, with cluster-robust influence-function standard errors: <code>TD_E_LOGS</code> (estimand <code>rho_effect</code>, the effect of parenthood on the gender earnings ratio, as identified under TD-E-LOGS) and <code>TD_PR</code> (estimand <code>gap_theta_pre</code>, the gender gap in effects relative to pre-birth earnings, as identified under TD-PR). Both are carried by <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> and aggregated by <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code>; their standard errors are validated by Monte Carlo (<code>dev/sims/td_sim_results.md</code> in the source repository).</li>
 </ul></div>

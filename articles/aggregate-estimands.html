@@ -141,27 +141,27 @@ weights.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_estimands.html">aggregate_estimands</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">agg</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   event_time  estimand       method      agg_type      est        se n_groups</span></span>
-<span><span class="co">#&gt; 1          0 gap_theta Conventional  weighted_avg -0.19863 0.0186503        4</span></span>
-<span><span class="co">#&gt; 2          1 gap_theta Conventional  weighted_avg -0.23738 0.0168712        4</span></span>
-<span><span class="co">#&gt; 3          2 gap_theta Conventional  weighted_avg -0.22217 0.0161315        4</span></span>
-<span><span class="co">#&gt; 4          0     theta   DID_Female ratio_of_avgs -0.25017 0.0109377        4</span></span>
-<span><span class="co">#&gt; 5          1     theta   DID_Female ratio_of_avgs -0.28547 0.0100193        4</span></span>
-<span><span class="co">#&gt; 6          2     theta   DID_Female ratio_of_avgs -0.27479 0.0098381        4</span></span>
-<span><span class="co">#&gt;       ci_l     ci_h       t</span></span>
-<span><span class="co">#&gt; 1 -0.23518 -0.16207 -10.650</span></span>
-<span><span class="co">#&gt; 2 -0.27045 -0.20431 -14.070</span></span>
-<span><span class="co">#&gt; 3 -0.25378 -0.19055 -13.772</span></span>
-<span><span class="co">#&gt; 4 -0.27161 -0.22873 -22.872</span></span>
-<span><span class="co">#&gt; 5 -0.30511 -0.26584 -28.492</span></span>
-<span><span class="co">#&gt; 6 -0.29407 -0.25551 -27.931</span></span>
-<span><span class="co">#&gt;                                                                                                                                                                                          p</span></span>
-<span><span class="co">#&gt; 1 0.00000000000000000000000001741792931789258406764263261791868310968670157358502935106626010504653374877381821761446190066635608673095703125000000000000000000000000000000000000000000000</span></span>
-<span><span class="co">#&gt; 2 0.00000000000000000000000000000000000000000000578860193086585259221252156430448219550584442784223215202558675876870164484031885091426825816896102771046734474565814698721055719943251461</span></span>
-<span><span class="co">#&gt; 3 0.00000000000000000000000000000000000000000037517998610558247012333830012507161780281976444790549586389320481079720562754405304985739447621758470256819609570109186336139828199520707130</span></span>
-<span><span class="co">#&gt; 4 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008762326849895803243864384457156786769408393629942849363854699769935</span></span>
-<span><span class="co">#&gt; 5 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000014582</span></span>
-<span><span class="co">#&gt; 6 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000110826037094</span></span></code></pre></div>
+<span><span class="co">#&gt;   event_time control_offset  estimand       method      agg_type      est</span></span>
+<span><span class="co">#&gt; 1          0              1 gap_theta Conventional  weighted_avg -0.19863</span></span>
+<span><span class="co">#&gt; 2          1              2 gap_theta Conventional  weighted_avg -0.23738</span></span>
+<span><span class="co">#&gt; 3          2              3 gap_theta Conventional  weighted_avg -0.22217</span></span>
+<span><span class="co">#&gt; 4          0              1     theta   DID_Female ratio_of_avgs -0.25017</span></span>
+<span><span class="co">#&gt; 5          1              2     theta   DID_Female ratio_of_avgs -0.28547</span></span>
+<span><span class="co">#&gt; 6          2              3     theta   DID_Female ratio_of_avgs -0.27479</span></span>
+<span><span class="co">#&gt;          se n_groups     ci_l     ci_h       t</span></span>
+<span><span class="co">#&gt; 1 0.0186538        4 -0.23519 -0.16207 -10.648</span></span>
+<span><span class="co">#&gt; 2 0.0168885        4 -0.27048 -0.20428 -14.056</span></span>
+<span><span class="co">#&gt; 3 0.0161334        4 -0.25379 -0.19054 -13.770</span></span>
+<span><span class="co">#&gt; 4 0.0110106        4 -0.27175 -0.22859 -22.721</span></span>
+<span><span class="co">#&gt; 5 0.0100437        4 -0.30516 -0.26579 -28.423</span></span>
+<span><span class="co">#&gt; 6 0.0098543        4 -0.29411 -0.25548 -27.885</span></span>
+<span><span class="co">#&gt;                                                                                                                                                                                         p</span></span>
+<span><span class="co">#&gt; 1 0.0000000000000000000000000177959721049207484593315940123361966179227990038251675760203644910439121223921787873223365750163793563842773437500000000000000000000000000000000000000000000</span></span>
+<span><span class="co">#&gt; 2 0.0000000000000000000000000000000000000000000070967826282938661396436275209375462340740355324704575319491229538001174842225675027225963950577750443161226010326848856468728854451910593</span></span>
+<span><span class="co">#&gt; 3 0.0000000000000000000000000000000000000000003836100886242283211800881410713648203343334883769248089459772619145727314567998045477993390537286473019847662241366137436671124305576086044</span></span>
+<span><span class="co">#&gt; 4 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000027925448022253425661212982653191493412559479795135324075007813192015</span></span>
+<span><span class="co">#&gt; 5 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010464</span></span>
+<span><span class="co">#&gt; 6 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040250669249</span></span></code></pre></div>
 <p>The output has one row per
 <code>event_time × estimand × method × agg_type</code> combination. The
 <code>n_groups</code> column records how many treatment groups

@@ -56,14 +56,19 @@ aggregate_estimands(
 
 - include_pre:
 
-  Logical (default `FALSE`). Also aggregate pre-treatment event times.
+  Logical (default `FALSE`). Also aggregate pre-treatment event times. A
+  pre-treatment event time has one cell per control group
+  (`control_offset` = \\d' - d\\), and each offset is aggregated
+  separately, so each row is the validation test of one
+  treatment-control distance.
 
 ## Value
 
 A data.frame with one row per event time, estimand, method and
-aggregation type: `event_time`, `estimand`, `method`, `agg_type`, `est`,
-`se`, `n_groups` (treatment groups with positive weight), `ci_l`, `ci_h`
-(est -/+ 1.96 se), `t`, `p`.
+aggregation type: `event_time`, `control_offset` (\\d' - d\\; after
+treatment it is `event_time` + 1), `estimand`, `method`, `agg_type`,
+`est`, `se`, `n_groups` (treatment groups with positive weight), `ci_l`,
+`ci_h` (est -/+ 1.96 se), `t`, `p`.
 
 ## Details
 
@@ -83,10 +88,14 @@ estimator section of the appendix on estimation and inference) sums the
 treatment-group influence functions with the weights; with
 `weights = "sample"` it adds the term for the estimated shares,
 \\\psi\_{A(e)} = P_e^{-1}\sum_d \[(B_d - A(e))\psi\_{p_d} +
-p_d\psi\_{B_d}\]\\, \\\psi\_{p_d} = 1\\D = d\\ - p_d\\ (\\1\\G = g, D =
-d\\ - p\_{g,d}\\ for within-gender shares). For `ratio_of_avgs` the
-chain rule is applied to the ratio, with the weights treated as fixed.
-Standard errors are clustered by person.
+p_d\psi\_{B_d}\]\\, \\\psi\_{p_d} = 1\\D = d\\ - p_d\\, where \\p_d\\ is
+the share of persons in group \\d\\ (\\1\\G = g, D = d\\ - p\_{g,d}\\
+with the joint share of gender \\g\\ and group \\d\\ for the
+within-gender DID rows) and \\P_e\\ the summed share of the aggregated
+groups. For `ratio_of_avgs` the chain rule is applied to the ratio of
+the two weighted averages, each with its share term. Standard errors are
+clustered by person. The share term is put on the person-age scale with
+the average number of ages per person, exact for a balanced panel.
 
 Not every treatment group has an estimate at every event time; each
 event time uses the groups present, and `n_groups` reports how many.
@@ -106,43 +115,62 @@ res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:26,
 #> 1 cells could not be estimated (see attr(result, "skipped")), e.g.: No women with age at first birth 26 observed at age 28.
 agg <- aggregate_estimands(res)
 agg[agg$method %in% c("NTD", "Conventional"), ]
-#>    event_time         estimand       method     agg_type        est         se
-#> 1           0        gap_theta Conventional weighted_avg -0.2289949 0.01685878
-#> 2           1        gap_theta Conventional weighted_avg -0.2260591 0.01622344
-#> 3           2        gap_theta Conventional weighted_avg -0.1805275 0.01796477
-#> 16          0           rho_cf          NTD weighted_avg  0.9373967 0.01976108
-#> 17          0       rho_effect          NTD weighted_avg -0.2264505 0.01804575
-#> 18          0          rho_obs          NTD weighted_avg  0.7109462 0.01017532
-#> 19          0      share_other          NTD weighted_avg  0.2110782 0.06668928
-#> 20          0 share_parenthood          NTD weighted_avg  0.7889218 0.06668928
-#> 21          1           rho_cf          NTD weighted_avg  0.9311086 0.01840458
-#> 22          1       rho_effect          NTD weighted_avg -0.2222094 0.01696201
-#> 23          1          rho_obs          NTD weighted_avg  0.7088991 0.01057655
-#> 24          1      share_other          NTD weighted_avg  0.2340747 0.06095593
-#> 25          1 share_parenthood          NTD weighted_avg  0.7659253 0.06095593
-#> 26          2           rho_cf          NTD weighted_avg  0.9038630 0.02003697
-#> 27          2       rho_effect          NTD weighted_avg -0.1791240 0.01868496
-#> 28          2          rho_obs          NTD weighted_avg  0.7247390 0.01270538
-#> 29          2      share_other          NTD weighted_avg  0.3480063 0.06841233
-#> 30          2 share_parenthood          NTD weighted_avg  0.6519937 0.06841233
-#>    n_groups        ci_l       ci_h          t            p
-#> 1         3 -0.26203814 -0.1959517 -13.583127 5.042671e-42
-#> 2         3 -0.25785707 -0.1942612 -13.934102 3.931151e-44
-#> 3         2 -0.21573844 -0.1453165 -10.048971 9.283150e-24
-#> 16        3  0.89866497  0.9761284  47.436503 0.000000e+00
-#> 17        3 -0.26182017 -0.1910808 -12.548687 4.041575e-36
-#> 18        3  0.69100257  0.7308898  69.869643 0.000000e+00
-#> 19        3  0.08036718  0.3417892   3.165099 1.550303e-03
-#> 20        3  0.65821084  0.9196328  11.829814 2.737462e-32
-#> 21        3  0.89503561  0.9671816  50.591130 0.000000e+00
-#> 22        3 -0.25545498 -0.1889639 -13.100421 3.274364e-39
-#> 23        3  0.68816911  0.7296292  67.025585 0.000000e+00
-#> 24        3  0.11460110  0.3535483   3.840065 1.230018e-04
-#> 25        3  0.64645167  0.8853989  12.565231 3.279160e-36
-#> 26        2  0.86459051  0.9431354  45.109759 0.000000e+00
-#> 27        2 -0.21574649 -0.1425015  -9.586534 9.109414e-22
-#> 28        2  0.69983646  0.7496415  57.041913 0.000000e+00
-#> 29        2  0.21391816  0.4820945   5.086895 3.639737e-07
-#> 30        2  0.51790549  0.7860818   9.530353 1.567495e-21
+#>    event_time control_offset         estimand       method     agg_type
+#> 1           0              1        gap_theta Conventional weighted_avg
+#> 2           1              2        gap_theta Conventional weighted_avg
+#> 3           2              3        gap_theta Conventional weighted_avg
+#> 16          0              1           rho_cf          NTD weighted_avg
+#> 17          0              1       rho_effect          NTD weighted_avg
+#> 18          0              1          rho_obs          NTD weighted_avg
+#> 19          0              1      share_other          NTD weighted_avg
+#> 20          0              1 share_parenthood          NTD weighted_avg
+#> 21          1              2           rho_cf          NTD weighted_avg
+#> 22          1              2       rho_effect          NTD weighted_avg
+#> 23          1              2          rho_obs          NTD weighted_avg
+#> 24          1              2      share_other          NTD weighted_avg
+#> 25          1              2 share_parenthood          NTD weighted_avg
+#> 26          2              3           rho_cf          NTD weighted_avg
+#> 27          2              3       rho_effect          NTD weighted_avg
+#> 28          2              3          rho_obs          NTD weighted_avg
+#> 29          2              3      share_other          NTD weighted_avg
+#> 30          2              3 share_parenthood          NTD weighted_avg
+#>           est         se n_groups        ci_l       ci_h          t
+#> 1  -0.2289949 0.01685930        3 -0.26203916 -0.1959507 -13.582709
+#> 2  -0.2260591 0.01623418        3 -0.25787811 -0.1942401 -13.924888
+#> 3  -0.1805275 0.01796581        2 -0.21574048 -0.1453145 -10.048389
+#> 16  0.9373967 0.01977675        3  0.89863427  0.9761591  47.398927
+#> 17 -0.2264505 0.01804710        3 -0.26182280 -0.1910782 -12.547753
+#> 18  0.7109462 0.01019243        3  0.69096905  0.7309234  69.752393
+#> 19  0.2110782 0.06672640        3  0.08029442  0.3418619   3.163338
+#> 20  0.7889218 0.06672640        3  0.65813808  0.9197056  11.823233
+#> 21  0.9311086 0.01842272        3  0.89500005  0.9672171  50.541308
+#> 22 -0.2222094 0.01697487        3 -0.25548019 -0.1889387 -13.090495
+#> 23  0.7088991 0.01058702        3  0.68814859  0.7296497  66.959288
+#> 24  0.2340747 0.06100866        3  0.11449773  0.3536517   3.836745
+#> 25  0.7659253 0.06100866        3  0.64634831  0.8855023  12.554369
+#> 26  0.9038630 0.02004104        2  0.86458254  0.9431434  45.100608
+#> 27 -0.1791240 0.01868540        2 -0.21574737 -0.1425006  -9.586304
+#> 28  0.7247390 0.01271655        2  0.69981456  0.7496634  56.991800
+#> 29  0.3480063 0.06841690        2  0.21390921  0.4821035   5.086555
+#> 30  0.6519937 0.06841690        2  0.51789654  0.7860908   9.529717
+#>               p
+#> 1  5.071533e-42
+#> 2  4.472410e-44
+#> 3  9.338157e-24
+#> 16 0.000000e+00
+#> 17 4.089526e-36
+#> 18 0.000000e+00
+#> 19 1.559711e-03
+#> 20 2.960656e-32
+#> 21 0.000000e+00
+#> 22 3.731659e-39
+#> 23 0.000000e+00
+#> 24 1.246756e-04
+#> 25 3.761670e-36
+#> 26 0.000000e+00
+#> 27 9.129684e-22
+#> 28 0.000000e+00
+#> 29 3.646257e-07
+#> 30 1.577132e-21
 # }
 ```
