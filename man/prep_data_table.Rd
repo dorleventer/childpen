@@ -20,12 +20,13 @@ prep_data_table(
 
 \item{age_name}{Character. Column holding age. Default \code{"age"}.}
 
-\item{D_name}{Character. Column holding the treatment group (e.g., age-at-treatment).
+\item{D_name}{Character. Column holding the age at first birth (treatment group).
 Will be renamed to \code{D}. Default \code{"D"}.}
 
-\item{id_name}{Character. Column holding the cluster identifier. Default \code{"id"}.}
+\item{id_name}{Character. Column holding the person identifier (clustering unit).
+Default \code{"id"}.}
 
-\item{female_name}{Character. Column holding the binary female indicator (1=female).
+\item{female_name}{Character. Column holding the female indicator (1 = female).
 Default \code{"female"}.}
 }
 \value{
@@ -34,7 +35,18 @@ A \code{data.table} with columns \code{id}, \code{age}, \code{D},
 }
 \description{
 Standardizes input column names to \code{id}, \code{age}, \code{D},
-\code{female}, and \code{Y}; coerces types; validates basic conditions; and
-returns a keyed \code{data.table} ready for the estimators.
+\code{female}, and \code{Y}; coerces types; validates the panel; and
+returns a keyed \code{data.table} ready for the estimators. The input is
+never modified (a data.table is copied).
+}
+\details{
+Validation: every column must exist; \code{female} must be 0/1, logical, or
+a recognised label (female: "1", "f", "female", "w", "woman", "women", "t",
+"true", "y", "yes"; male: "0", "m", "male", "man", "men", "false", "n", "no");
+any other value is an error. Rows with a missing outcome are dropped with a
+message. A missing or non-finite \code{D} marks a person who never has a
+child (kept, with a message). \code{id} must not be missing;
+(\code{id}, \code{age}) must be unique; \code{female} and \code{D} must be
+constant within \code{id}; both genders must be present.
 }
 \keyword{internal}

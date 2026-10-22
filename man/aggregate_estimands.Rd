@@ -2,123 +2,93 @@
 % Please edit documentation in R/aggregate_estimands.R
 \name{aggregate_estimands}
 \alias{aggregate_estimands}
-\title{Aggregate estimands across treatment groups}
+\title{Aggregate estimates across treatment groups}
 \usage{
 aggregate_estimands(
   results,
   weights = "sample",
-  methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New", "TD_E_LOGS",
+  methods = c("DID_Female", "DID_Male", "TD", "Conventional", "NTD", "TD_E_LOGS",
     "TD_PR"),
   include_pre = FALSE
 )
 }
 \arguments{
-\item{results}{A \code{data.frame} as returned by
-\code{multiple_treatment_group_analysis()}, with at minimum the columns
-\code{d}, \code{event_time}, \code{estimand}, \code{method}, \code{est},
-and \code{se}.  If \code{results} carries influence-function data (attached
-automatically by \code{multiple_treatment_group_analysis()}), standard
-errors account for shared control groups across treatment groups.}
+\item{results}{The data.frame returned by
+\code{\link{multiple_treatment_group_analysis}}, unmodified (its attributes
+carry the influence functions). A table without them is accepted, with
+standard errors under an independence approximation and a warning.}
 
-\item{weights}{How to weight treatment groups.  One of:
+\item{weights}{How to weight treatment groups:
 \itemize{
-\item \code{"sample"} (default): use sample-proportion weights as in
-Leventer (2025).  Within-gender weights
-\eqn{w_{g,d} = n_{g,d}/\sum n_{g,\tilde d}} are used for
-\code{DID_Female} and \code{DID_Male}; cross-gender weights
-\eqn{w_d = n_d / \sum n_{\tilde d}} for \code{TD}, \code{NTD_Conv},
-\code{NTD_New}, \code{TD_E_LOGS} and \code{TD_PR}.  Standard errors account for estimation of the
-weights.
-\item \code{NULL}: uniform weights (equal weight per group).
-\item A named numeric vector: custom fixed weights (names = treatment
-groups as characters).  Values are renormalised to sum to 1.
+\item \code{"sample"} (default): treatment-group shares. Within gender,
+\eqn{w_{g,d} = n_{g,d} / \sum_{k} n_{g,k}}, for \code{DID_Female} and
+\code{DID_Male}; across genders, \eqn{w_d = n_d / \sum_{k} n_{k}}, for
+all other methods.
+\item \code{"uniform"} or \code{NULL}: equal weight per treatment group.
+\item A named numeric vector (names = treatment groups): fixed weights,
+renormalized to sum to one over the groups present at each event time.
+Groups missing from the vector get weight zero, with a warning.
 }}
 
-\item{methods}{Character vector of methods to aggregate.  Defaults to
-\code{DID_Female}, \code{DID_Male}, \code{TD}, \code{NTD_Conv},
-\code{NTD_New}, \code{TD_E_LOGS} and \code{TD_PR}.  \code{TD_PR}
-(estimand \code{"theta_pre"}) is aggregated as an \code{avg_of_ratios}.}
+\item{methods}{Methods to aggregate (default: all). \code{DID_Female},
+\code{DID_Male}: \code{weighted_avg} and \code{ratio_of_avgs} of
+\code{theta}; \code{Conventional}: \code{weighted_avg} of \code{gap_theta};
+\code{NTD} and \code{TD_E_LOGS}: \code{weighted_avg} of \code{rho_effect}
+and of the accounting rows \code{rho_obs}, \code{rho_cf},
+\code{share_parenthood}, \code{share_other};
+\code{TD}: \code{weighted_avg} of \code{gap_ATE}; \code{TD_PR}:
+\code{weighted_avg} of \code{gap_theta_pre}.}
 
-\item{include_pre}{Logical.  If \code{TRUE}, also aggregate pre-treatment
-event times (\code{event_time < 0}).  Default \code{FALSE}.}
+\item{include_pre}{Logical (default \code{FALSE}). Also aggregate
+pre-treatment event times.}
 }
 \value{
-A \code{data.frame} with one row per
-\code{event_time} by \code{estimand} by \code{method} by \code{agg_type}
-combination, containing:
-\itemize{
-\item \code{event_time} -- event time
-\item \code{estimand} -- \code{"theta"}, \code{"theta_pre"}, or \code{"Delta_rho"}
-\item \code{method} -- method name
-\item \code{agg_type} -- one of \code{"avg_of_ratios"},
-\code{"ratio_of_avgs"}, \code{"gender_ineq"}
-\item \code{est} -- aggregate estimate
-\item \code{se} -- standard error (see Details)
-\item \code{ci_l}, \code{ci_h} -- 95 \\% Wald confidence interval
-\item \code{n_groups} -- number of treatment groups contributing
-}
+A data.frame with one row per event time, estimand, method and
+aggregation type: \code{event_time}, \code{estimand}, \code{method},
+\code{agg_type}, \code{est}, \code{se}, \code{n_groups} (treatment groups
+with positive weight), \code{ci_l}, \code{ci_h} (est -/+ 1.96 se),
+\code{t}, \code{p}.
 }
 \description{
-Takes the stacked output of \code{multiple_treatment_group_analysis()} and
-computes three aggregate estimands across treatment groups for each event
-time:
+Averages the treatment-group-specific estimates from
+\code{\link{multiple_treatment_group_analysis}} across treatment groups, by
+event time (Leventer 2025, Section 5). The default weights are the
+treatment-group shares in the sample. Standard errors account for persons who
+serve as controls for several treatment groups.
 }
 \details{
-\describe{
-\item{\strong{avg_of_ratios} (\eqn{\theta_{\text{Agg},1}})}{
-Weighted average of the group-specific normalised effects
-\eqn{\theta(g, d, d+e)} across treatment groups \eqn{d}.  This is the
-preferred estimand because it averages effects that are already scaled
-by each group's baseline.}
-\item{\strong{ratio_of_avgs} (\eqn{\theta_{\text{Agg},2}})}{
-Ratio of the weighted-average ATE to the weighted-average APO.  The
-implicit weight on each group is \eqn{p_d \cdot \text{APO}_d}, giving
-higher-earning groups more influence.}
-\item{\strong{gender_ineq} (\eqn{\Delta\rho_{\text{Agg}}})}{
-Weighted average of the \code{"Delta_rho"} rows across treatment groups --
-the aggregate gender-inequality estimand -- computed separately for
-\code{NTD_New} (additive imputation) and \code{TD_E_LOGS}
-(multiplicative imputation).}
-}
+\code{agg_type = "weighted_avg"} is \eqn{\sum_d w_d B_d} over the
+treatment-group estimates \eqn{B_d}. For \code{DID_Female} / \code{DID_Male}
+this is \eqn{\theta_{Agg,1}(g, e)}; for \code{Conventional} it is the
+conventional aggregate gap \eqn{\Delta\theta_{Agg}(e)}, which under NTD is
+biased for the gap in normalized effects (Theorem 1); for \code{NTD} it is
+\eqn{\rho_{Agg}(e)}, the aggregate effect of parenthood on the gender earnings
+ratio. \code{agg_type = "ratio_of_avgs"} (DID rows only) is
+\eqn{\theta_{Agg,2}(g, e)}, the ratio of the weighted average ATE to the
+weighted average APO; it puts more weight on higher-earning groups, which is
+why the paper prefers \eqn{\theta_{Agg,1}} (Section 5.1).
 
-\strong{Standard errors.}  When the \code{results} object carries
-influence-function (IF) data from \code{multiple_treatment_group_analysis()},
-aggregate SEs account for dependence across treatment groups caused by shared
-control individuals.
+\strong{Standard errors.} The influence function of an aggregate (aggregate
+estimator section of the appendix on estimation and inference) sums the treatment-group influence functions with the weights; with
+\code{weights = "sample"} it adds the term for the estimated shares,
+\eqn{\psi_{A(e)} = P_e^{-1}\sum_d [(B_d - A(e))\psi_{p_d} + p_d\psi_{B_d}]},
+\eqn{\psi_{p_d} = 1\{D = d\} - p_d} (\eqn{1\{G = g, D = d\} - p_{g,d}} for
+within-gender shares). For \code{ratio_of_avgs} the chain rule is applied to
+the ratio, with the weights treated as fixed. Standard errors are clustered by
+person.
 
-With \code{weights = "sample"}, the IF additionally accounts for estimation
-of the weights, following the formula in Leventer (2025, Appendix G):
-\deqn{\psi_{A(e)} = \sum_d \left[ w_d\,\psi_{B_d}
-  + \frac{B_d - A(e)}{M}\,\psi_{p_d} \right]}
-where \eqn{M = \sum_d p_d} and \eqn{\psi_{p_d}} is the IF of the group
-proportion.
-
-With fixed weights (\code{NULL} or a named vector), the second term drops
-out and the IF reduces to \eqn{\sum_d w_d\,\psi_{B_d}}.
-
-For \code{ratio_of_avgs}, the delta method is applied to the ratio
-\eqn{\bar\mu_{\text{ATE}} / \bar\mu_{\text{APO}}} using the aggregate IFs
-for the numerator and denominator.
-
-If IF data is not available (e.g., when the user supplies a manually
-constructed results table), SEs are computed under an independence
-approximation with a warning.
-
-\strong{Handling missing cells.}  Not every treatment group produces an
-estimate for every event time (due to \code{max_age} / \code{min_age}
-bounds).  The function operates on whichever groups are present for each
-cell and reports how many via \code{n_groups}.  If \code{weights} is
-supplied as a named vector, only the entries whose names appear in the
-observed treatment groups are used; the remaining weights are dropped and
-the retained weights are renormalised.
+Not every treatment group has an estimate at every event time; each event
+time uses the groups present, and \code{n_groups} reports how many.
 }
 \examples{
 \donttest{
-set.seed(1)
-sim <- simulate_data(n_individuals = 500)
-res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25,
-                                         periods_post = 2, verbose = FALSE)
+sim <- simulate_data(n_individuals = 2000)
+res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:26,
+  periods_post = 2, periods_pre = NULL, verbose = FALSE)
 agg <- aggregate_estimands(res)
-head(agg)
+agg[agg$method \%in\% c("NTD", "Conventional"), ]
 }
+}
+\seealso{
+\code{\link{multiple_treatment_group_analysis}}, \code{\link{bias_bounds}}
 }

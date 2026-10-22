@@ -2,7 +2,7 @@
 % Please edit documentation in R/single_treatment_group_analysis.R
 \name{single_treatment_group_analysis}
 \alias{single_treatment_group_analysis}
-\title{Unconditional estimands for a single treatment group}
+\title{Child-penalty estimates for one 2x2 comparison}
 \usage{
 single_treatment_group_analysis(
   data,
@@ -18,88 +18,109 @@ single_treatment_group_analysis(
 )
 }
 \arguments{
-\item{data}{A \code{data.table} with columns:
-\itemize{
-\item \code{id} — cluster identifier (i.e., person)
-\item \code{age} — integer age
-\item \code{female} — 0/1 indicator (1 = females)
-\item \code{D} — treatment group
-\item \code{Y} — numeric outcome
-}}
+\item{data}{A data.frame (or data.table) in long format: one row per person
+and age, with the person id, age, age at first birth, a female indicator and
+earnings. The panel need not be balanced. Each person's female indicator and
+age at first birth must be constant; a missing age at first birth means the
+person never has a child. Rows with missing earnings are dropped (with a
+message). Earnings may be zero, but the ratio rows need positive cell means.
+\code{data} is not modified.}
 
-\item{d}{Integer. Treatment group (age at first childbirth)}
+\item{d}{Whole number. Treatment group: age at first birth.}
 
-\item{dp}{Integer. Control group (closest not-yet-treated group)}
+\item{dp}{Whole number. Control group \eqn{d'}: an age at first birth that is
+not yet treated at the target age, \code{dp > a} (and \code{dp > d}). The
+paper uses the closest not-yet-treated group, \code{dp = a + 1} (Section
+1.3), as \code{\link{multiple_treatment_group_analysis}} does.}
 
-\item{a}{Integer. Target age.}
+\item{a}{Whole number. Target age; event time is \eqn{e = a - d}. With
+\code{a >= d} the rows are post-birth estimates; with \code{a < d - pre} they
+are pre-treatment validation (placebo) estimates (Sections 2.3, 4.2).}
 
-\item{pre}{Integer, default \code{1}. Offset used for the pre-treatment anchor.}
+\item{pre}{Whole number \eqn{\ge 1} (default 1). The baseline age is
+\eqn{d - pre}. The default, \eqn{d - 1}, is the paper's choice; larger values
+move the baseline earlier in case earnings at \eqn{d - 1} reflect
+anticipation (Section 3.1).}
 
-\item{Y_name, age_name, D_name, id_name, female_name}{Column name mappings passed to \code{prep_data_table()}.}
+\item{Y_name, age_name, D_name, id_name, female_name}{Names of the columns holding
+earnings, age, age at first birth, the person id (clustering unit) and the
+female indicator (1 / \code{TRUE} = female; also accepted: labels such as
+"female"/"male", "f"/"m", "woman"/"man"; any other label is an error).}
 }
 \value{
-A \code{data.frame} with one row per estimand/method combination:
-\itemize{
-\item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}, \code{"Delta_rho"},
-\code{"theta_pre"}
-\item \code{method} — one of \code{"DID_Female"}, \code{"DID_Male"}, \code{"TD"},
-\code{"NTD_Conv"}, \code{"NTD_New"}, \code{"TD_Null"}, \code{"NTD_Conv_Null"},
-\code{"TD_E_LOGS"}, \code{"TD_PR"}
-\item \code{est} — estimate
-\item \code{se} — cluster-robust standard error
-\item \code{n_female_treat}, \code{n_female_control},
-\code{n_male_treat}, \code{n_male_control} — sample counts
-}
+A data.frame with 19 rows and columns \code{d}, \code{dp}, \code{a},
+\code{event_time} (\eqn{a - d}), \code{control_offset} (\eqn{d' - d}),
+\code{estimand}, \code{method}, \code{est}, \code{se}, \code{ci_l},
+\code{ci_h} (est -/+ 1.96 se), \code{t}, \code{p} (two-sided, normal), and
+\code{n_female_treat}, \code{n_female_control}, \code{n_male_treat},
+\code{n_male_control} (persons with \eqn{D = d} and \eqn{D = d'}). Attribute
+\code{"if_scores"}: person-level sums of the influence functions, used by
+\code{\link{aggregate_estimands}} and \code{\link{bias_bounds}}.
 }
 \description{
-Estimates 17 descriptive estimands for triplet (treatment group, control group and target age). SEs are calculated using influence-function (IF) calculations with clustering within \code{id}.
+For one treatment group \eqn{d} (age at first birth), control group \eqn{d'}
+and target age \eqn{a}, estimates the descriptive estimands of Leventer (2025):
+within-gender DID, the gender gaps under TD, the conventional estimator, the
+effect of parenthood on the gender earnings ratio (NTD and proportional TD),
+and the accounting of the gender gap. Returns 19 rows with standard errors
+clustered by person.
 }
 \details{
-Let \eqn{Y(a, g, d^\star)} denote the mean outcome at age \eqn{a} for gender
-\eqn{g \in \{0,1\}} (1 = female) when assigned to group \eqn{d^\star}.
-The core components are:
-\itemize{
-\item \strong{APO}(g; d, d', a) \eqn{= Y(d-\mathrm{pre}, g, d) + Y(a, g, d') - Y(d-\mathrm{pre}, g, d')}
-\item \strong{ATE}(g; d, d', a) \eqn{= Y(a, g, d) - \mathrm{APO}(g; d, d', a)}
-\item \strong{\eqn{\theta}(g)} \eqn{= \mathrm{ATE}(g) / \mathrm{APO}(g)}
+Let \eqn{\mu(g, k, t)} be the mean earnings of gender \eqn{g \in \{f, m\}}
+with age at first birth \eqn{k} at age \eqn{t}, estimated by the cell mean,
+and \eqn{b = d - pre} the baseline age. The additive (DID) and multiplicative
+imputations of counterfactual earnings at age \eqn{a} are
+\deqn{\delta_{APO}(g) = \mu(g,d,b) + \mu(g,d',a) - \mu(g,d',b), \qquad
+  \delta^{\times}_{APO}(g) = \mu(g,d,b)\,\mu(g,d',a) / \mu(g,d',b).}{
+  delta_APO(g) = mu(g,d,b) + mu(g,d',a) - mu(g,d',b),
+  delta_APO_x(g) = mu(g,d,b) mu(g,d',a) / mu(g,d',b).}
+The rows, with the assumption under which each identifies its target
+(all also need no anticipation):
+\tabular{lll}{
+\strong{method} \tab \strong{estimand} \tab \strong{estimator; target} \cr
+DID_Female, DID_Male \tab APO \tab \eqn{\delta_{APO}(g)}; \eqn{APO(g, \infty)} under DID-PT \cr
+DID_Female, DID_Male \tab ATE \tab \eqn{\mu(g,d,a) - \delta_{APO}(g)}; \eqn{ATE(g)} under DID-PT \cr
+DID_Female, DID_Male \tab theta \tab ATE row / APO row; \eqn{\theta(g)} under DID-PT \cr
+TD \tab gap_ATE \tab ATE row f minus m; \eqn{ATE(f) - ATE(m)} under TD-PT \cr
+Conventional \tab gap_theta \tab theta row f minus m; \eqn{\theta(f) - \theta(m)} under DID-PT only (under NTD-PT it is biased, Theorem 1) \cr
+NTD \tab rho_effect \tab \eqn{\mu(f,d,a)/\mu(m,d,a) - \delta_{APO}(f)/\delta_{APO}(m)}; \eqn{\rho(d) - \rho(\infty)} under NTD-PT (Theorem 2) \cr
+TD_E_LOGS \tab rho_effect \tab as NTD with \eqn{\delta^{\times}_{APO}}; \eqn{\rho(d) - \rho(\infty)} under TD-E-LOGS (proposition in the online appendix on proportional DID and TD) \cr
+TD_PR \tab gap_theta_pre \tab \eqn{[\mu(g,d,a) - \delta^{\times}_{APO}(g)] / \mu(g,d,b)}, f minus m; \eqn{ATE(g)/APO(g,d,\infty,b)}, f minus m, under TD-PR (same proposition) \cr
+NTD, TD_E_LOGS \tab rho_obs \tab \eqn{\mu(f,d,a)/\mu(m,d,a)}; the observed gender earnings ratio \eqn{\rho(d)} \cr
+NTD, TD_E_LOGS \tab rho_cf \tab \eqn{\delta_{APO}(f)/\delta_{APO}(m)} (NTD) or with \eqn{\delta^{\times}_{APO}} (TD_E_LOGS); \eqn{\rho(\infty)} under NTD-PT (NTD) or TD-E-LOGS (TD_E_LOGS) \cr
+NTD, TD_E_LOGS \tab share_parenthood \tab \eqn{(\rho_{cf} - \rho_{obs}) / (1 - \rho_{obs})}; parenthood's share of the observed gender gap (Section 4.2), under the same assumption as rho_cf \cr
+NTD, TD_E_LOGS \tab share_other \tab \eqn{1 -} share_parenthood; the share of other factors
 }
-From these, the cross-gender contrasts are formed:
-\itemize{
-\item \strong{TD} \eqn{= \mathrm{ATE}(F) - \mathrm{ATE}(M)}
-\item \strong{NTD_Conv} \eqn{= \theta(F) - \theta(M)}
-\item \strong{NTD_New} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}}
-\item \strong{TD Null} and \strong{NTD_Conv_Null} variants are defined analogously
-under a null-effect-for-fathers bias-correction.
-}
-The proportional triple-differences estimators (Leventer 2025, online appendix
-"Proportional DID and TD") use the multiplicative imputation of the counterfactual
-\deqn{\mathrm{APO}^{\times}(g) = Y(d-\mathrm{pre}, g, d)\,\frac{Y(a, g, d')}{Y(d-\mathrm{pre}, g, d')}:}
-\itemize{
-\item \strong{TD_E_LOGS} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}^{\times}(F)}{\mathrm{APO}^{\times}(M)}}.
-Under TD-E-LOGS (equal gender trend gaps in logs of means) it identifies
-the same estimand as \code{NTD_New}, the effect of parenthood on the
-gender earnings ratio (\code{estimand = "Delta_rho"}).
-\item \strong{TD_PR} \eqn{= \theta_{pre}(F) - \theta_{pre}(M)}, with
-\eqn{\theta_{pre}(g) = (Y(a,g,d) - \mathrm{APO}^{\times}(g)) / Y(d-\mathrm{pre}, g, d)}.
-Under TD-PR (equal gender gaps in proportional trends) it identifies the
-gender gap in effects relative to pre-birth earnings,
-\eqn{\mathrm{ATE}(F)/\mathrm{APO}(F,\infty,d-1) - \mathrm{ATE}(M)/\mathrm{APO}(M,\infty,d-1)}
-(\code{estimand = "theta_pre"}).
-}
-Both require positive cell means.
+Gaps are female minus male. The conventional estimator is the 2x2 version of
+the normalized event-study child penalty; under NTD it equals the target gap
+times a gender-invariant bias factor (Theorem 1), see \code{\link{bias_bounds}}
+for the paper's bias-bounding exercise. The accounting rows and their
+standard errors are an extension of the paper's Section 4.2 accounting
+exercise.
 
-Internally, influence functions for all pieces are written into temporary
-columns of a \code{data.table} via \code{compute_mean_if()}, and cluster-robust
-standard errors are computed by summing the IFs at the \code{id} level via \code{se_cluster()}.
-}
-\note{
-Requires helper functions \code{compute_mean_if()} and \code{se_cluster()}.
+\strong{Standard errors.} Each row is a smooth function of the eight cell
+means; its influence function follows by the chain rule from those of the cell
+means, \eqn{\psi_{\mu} = S (Y - \mu) / P(S)} with \eqn{S} the cell indicator
+(the appendix on estimation and inference). The variance is \eqn{n^{-2} \sum_c (\sum_{i \in c} \psi_i)^2 \,
+G / (G - 1)}, clustering by person (\eqn{n} person-age rows, \eqn{G} persons).
+\code{vignette("estimators")} writes out every estimator and influence
+function.
 }
 \examples{
 \donttest{
-set.seed(1)
-sim <- simulate_data(n_individuals = 500)
-res <- single_treatment_group_analysis(sim, d = 25, dp = 26, a = 26, pre = 1)
-head(res)
+sim <- simulate_data(n_individuals = 2000)
+# Treatment group d = 25 one year after first birth (a = 26),
+# closest not-yet-treated control group d' = a + 1 = 27
+res <- single_treatment_group_analysis(sim, d = 25, dp = 27, a = 26)
+res[res$method \%in\% c("Conventional", "NTD"), c("method", "estimand", "est", "se")]
+# Pre-treatment validation (placebo) test: a < d - 1
+val <- single_treatment_group_analysis(sim, d = 25, dp = 27, a = 22)
+val[val$method \%in\% c("Conventional", "NTD") & val$estimand \%in\% c("gap_theta", "rho_effect"),
+    c("method", "estimand", "est", "se")]
 }
+}
+\seealso{
+\code{\link{multiple_treatment_group_analysis}} for the grid of
+comparisons the paper uses, \code{\link{aggregate_estimands}},
+\code{\link{bias_bounds}}, \code{vignette("estimators")}
 }

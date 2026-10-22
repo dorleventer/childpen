@@ -17,3 +17,15 @@ golden-master gate (dev/snapshot_compare.R) confirms estimates do not move.
    rows; `multiple_treatment_group_analysis()` repeats this for every triplet, so on the
    paper's data (13.7M rows) a run is very slow. Subsetting the rows changes nothing in the
    estimates; the SE is unchanged if the cluster count G in G / (G - 1) is kept as the total.
+
+## For the site review (T1738), from the v0.3.0 vignette label sweep
+1. estimation.Rmd: "five estimators"; TD_E_LOGS, TD_PR and the accounting rows (rho_obs, rho_cf,
+   share_parenthood, share_other) are not described; "## NTD" section vs "### NTD" method.
+2. validation_tests.Rmd: the "all methods" plot shows DID_Female, DID_Male, TD, Conventional only;
+   NTD / TD_E_LOGS / TD_PR pre-treatment rows not shown.
+3. aggregate-estimands.Rmd: "three aggregate estimands"; Conventional aggregate labelled
+   theta_Agg,1 (it is the gap Delta theta_Agg); min_pre_age only affects pre cells (excluded by
+   default); t and p columns and the five weighted_avg estimands per NTD / TD_E_LOGS undescribed;
+   cites "Appendix G" (should be C.1).
+4. NTD-identification.Rmd: no pointer to bias_bounds().
+5. No accounting-exercise walk-through anywhere; no function reference index in _pkgdown.yml.

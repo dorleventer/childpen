@@ -8,8 +8,9 @@
 # the baseline to be identical() in the new object; result rows are matched by their key columns,
 # so new rows (e.g. a new method) and new columns are allowed, changed or missing ones fail.
 #
-# The calls use only argument names that must keep working (renamed arguments keep the old name
-# as an alias), so this script runs unchanged on every later commit.
+# v0.3.0 renamed arguments and labels without aliases (max_age -> max_control_group, min_age ->
+# min_pre_age; method/estimand labels): this script uses the new names, and
+# dev/snapshot_compare.R maps the v0.2.x labels of an older baseline with dev/label_map_v030.R.
 suppressMessages(pkgload::load_all(".", quiet = TRUE))
 data.table::setDTthreads(1)
 out_path <- commandArgs(trailingOnly = TRUE)[1]
@@ -45,8 +46,8 @@ snap$multiple <- list(
   no_pre   = multiple_treatment_group_analysis(sim, treatment_groups = 24:26, periods_post = 1,
                                                periods_pre = NULL, verbose = FALSE),
   bounded  = multiple_treatment_group_analysis(sim, treatment_groups = 24:27, periods_post = 3,
-                                               periods_pre = 2, max_age = 29, min_age = 21,
-                                               verbose = FALSE)
+                                               periods_pre = 2, max_control_group = 29,
+                                               min_pre_age = 21, verbose = FALSE)
 )
 
 # ---- aggregate_estimands --------------------------------------------------------------------------
@@ -59,7 +60,7 @@ snap$aggregate <- list(
   # message is recorded so a later fix shows up as a change here.
   with_pre    = tryCatch(aggregate_estimands(multi, include_pre = TRUE),
                          error = function(e) paste("ERROR:", conditionMessage(e))),
-  some_method = aggregate_estimands(multi, methods = c("NTD_New", "DID_Female"))
+  some_method = aggregate_estimands(multi, methods = c("NTD", "DID_Female"))
 )
 
 saveRDS(snap, out_path)

@@ -1,18 +1,82 @@
-# childpen (development version)
+# childpen 0.3.0
 
-* `single_treatment_group_analysis()` gains two proportional triple-differences
-  estimators from the paper's online appendix ("Proportional DID and TD"), both
+Labels, arguments and help pages now follow the paper. This release changes the
+output format; there are no deprecated aliases. All estimates and standard errors
+of rows that exist in both versions are unchanged (checked with
+`dev/snapshot_compare.R` against v0.2.3 output).
+
+## Breaking changes
+
+* Method and estimand labels: `NTD_Conv` / `theta` is now `Conventional` /
+  `gap_theta`; `NTD_New` / `Delta_rho` is now `NTD` / `rho_effect`; `TD` / `ATE`
+  is now `TD` / `gap_ATE`; `TD_E_LOGS` / `Delta_rho` is now `TD_E_LOGS` /
+  `rho_effect`; `TD_PR` / `theta_pre` is now `TD_PR` / `gap_theta_pre`.
+* The fathers'-null rows `TD_Null` and `NTD_Conv_Null` are removed; see
+  `bias_bounds()`.
+* `multiple_treatment_group_analysis()`: `max_age` is now `max_control_group`
+  (it bounds the control group d', the paper's D_max) and `min_age` is now
+  `min_pre_age` (it bounds the target age of pre-treatment cells).
+  `periods_post` must be one number H (event times 0..H); `periods_pre = 0` now
+  means no pre-treatment cells (it used to run e = -1 and -2).
+* `aggregate_estimands()`: `agg_type` is `"weighted_avg"` (was
+  `"avg_of_ratios"` and `"gender_ineq"`) or `"ratio_of_avgs"`.
+
+## New
+
+* `bias_bounds()`: the paper's bias-bounding exercise (Proposition 2), the
+  bias-corrected conventional gap at assumed fathers' effects
+  (default `theta_m = c(-0.1, 0.1)`) for every post-treatment cell, with
+  influence-function standard errors.
+* Accounting rows for `NTD` and `TD_E_LOGS`: `rho_obs`, `rho_cf`,
+  `share_parenthood` (parenthood's share of the gender gap) and `share_other`,
+  with standard errors; also aggregated by `aggregate_estimands()`.
+* `aggregate_estimands()` aggregates the `TD` gap (`gap_ATE`), accepts
+  `weights = "uniform"`, and reports `t` and `p`.
+* `single_treatment_group_analysis()` returns the same columns as
+  `multiple_treatment_group_analysis()` (`d`, `dp`, `a`, `event_time`,
+  `control_offset`, `ci_l`, `ci_h`, `t`, `p`); results carry `control_offset`
+  (= dp - d), and `multiple_treatment_group_analysis()` attaches
+  `attr(, "skipped")`.
+* `vignette("estimators")`: every estimator and its influence function.
+
+## Input checks and messages
+
+* Gender labels outside a recognised set ("1"/"0", "female"/"male", "f"/"m", ...)
+  are an error; before, text codes such as "1"/"2" silently swapped genders.
+* Rows with missing earnings are dropped with a message (before, one missing
+  value made every estimate `NA`); a missing or infinite age at first birth marks
+  a person who never has a child.
+* Duplicate (id, age) rows, gender or age at first birth varying within a
+  person, and missing ids are errors; messages name the argument to fix.
+* A data.table input is no longer modified in place, and the column-name
+  arguments now work for data.table input in `single_treatment_group_analysis()`.
+* Invalid comparisons are errors: a control group already treated at the target
+  age (`dp <= a`), `dp <= d`, `pre < 1`, or a target age equal to the baseline.
+* Progress is reported with `message()`, one line per treatment group; cells
+  that cannot be estimated are summarised in one message.
+* `aggregate_estimands()` stops when no weight name matches a treatment group and
+  warns about groups without a weight; `n_groups` counts groups with positive
+  weight.
+* `simulate_data()` works with a single treatment group and checks its inputs;
+  its help page lists the true parameter values.
+* `multiple_treatment_group_analysis()` stops when no cell can be estimated, and
+  `aggregate_estimands()` stops when no requested method is in `results` or
+  nothing can be aggregated (both used to return an empty data.frame).
+* A non-numeric outcome column is an error (it used to be coerced).
+* Row order: `multiple_treatment_group_analysis()` sorts by `d`, `event_time`,
+  `dp`; `aggregate_estimands()` by `method`, `agg_type`, `event_time`.
+
+## Proportional triple differences
+
+* Two estimators from the paper's online appendix "Proportional DID and TD",
   built on the multiplicative imputation of counterfactual earnings, with
-  cluster-robust influence-function standard errors:
-  `TD_E_LOGS` (estimand `"Delta_rho"`, the effect of parenthood on the gender
-  earnings ratio, as identified under TD-E-LOGS) and `TD_PR` (estimand
-  `"theta_pre"`, the gender gap in effects relative to pre-birth earnings, as
-  identified under TD-PR). Each triplet now returns 17 rows; existing rows are
-  unchanged.
-* `multiple_treatment_group_analysis()` carries the two new rows and their
-  individual-level influence functions.
-* `aggregate_estimands()` aggregates `TD_E_LOGS` (`gender_ineq`) and `TD_PR`
-  (`avg_of_ratios`) and includes both in the default `methods`.
+  cluster-robust influence-function standard errors: `TD_E_LOGS` (estimand
+  `rho_effect`, the effect of parenthood on the gender earnings ratio, as
+  identified under TD-E-LOGS) and `TD_PR` (estimand `gap_theta_pre`, the gender
+  gap in effects relative to pre-birth earnings, as identified under TD-PR).
+  Both are carried by `multiple_treatment_group_analysis()` and aggregated by
+  `aggregate_estimands()`; their standard errors are validated by Monte Carlo
+  (`dev/sims/td_sim_results.md` in the source repository).
 
 # childpen 0.2.3
 

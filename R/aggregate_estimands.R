@@ -1,143 +1,129 @@
-#' Aggregate estimands across treatment groups
+#' Aggregate estimates across treatment groups
 #'
-#' Takes the stacked output of \code{multiple_treatment_group_analysis()} and
-#' computes three aggregate estimands across treatment groups for each event
-#' time:
+#' Averages the treatment-group-specific estimates from
+#' \code{\link{multiple_treatment_group_analysis}} across treatment groups, by
+#' event time (Leventer 2025, Section 5). The default weights are the
+#' treatment-group shares in the sample. Standard errors account for persons who
+#' serve as controls for several treatment groups.
 #'
-#' \describe{
-#'   \item{\strong{avg_of_ratios} (\eqn{\theta_{\text{Agg},1}})}{
-#'     Weighted average of the group-specific normalised effects
-#'     \eqn{\theta(g, d, d+e)} across treatment groups \eqn{d}.  This is the
-#'     preferred estimand because it averages effects that are already scaled
-#'     by each group's baseline.}
-#'   \item{\strong{ratio_of_avgs} (\eqn{\theta_{\text{Agg},2}})}{
-#'     Ratio of the weighted-average ATE to the weighted-average APO.  The
-#'     implicit weight on each group is \eqn{p_d \cdot \text{APO}_d}, giving
-#'     higher-earning groups more influence.}
-#'   \item{\strong{gender_ineq} (\eqn{\Delta\rho_{\text{Agg}}})}{
-#'     Weighted average of the \code{"Delta_rho"} rows across treatment groups --
-#'     the aggregate gender-inequality estimand -- computed separately for
-#'     \code{NTD_New} (additive imputation) and \code{TD_E_LOGS}
-#'     (multiplicative imputation).}
-#' }
-#'
-#' @param results A \code{data.frame} as returned by
-#'   \code{multiple_treatment_group_analysis()}, with at minimum the columns
-#'   \code{d}, \code{event_time}, \code{estimand}, \code{method}, \code{est},
-#'   and \code{se}.  If \code{results} carries influence-function data (attached
-#'   automatically by \code{multiple_treatment_group_analysis()}), standard
-#'   errors account for shared control groups across treatment groups.
-#' @param weights How to weight treatment groups.  One of:
+#' @param results The data.frame returned by
+#'   \code{\link{multiple_treatment_group_analysis}}, unmodified (its attributes
+#'   carry the influence functions). A table without them is accepted, with
+#'   standard errors under an independence approximation and a warning.
+#' @param weights How to weight treatment groups:
 #'   \itemize{
-#'     \item \code{"sample"} (default): use sample-proportion weights as in
-#'       Leventer (2025).  Within-gender weights
-#'       \eqn{w_{g,d} = n_{g,d}/\sum n_{g,\tilde d}} are used for
-#'       \code{DID_Female} and \code{DID_Male}; cross-gender weights
-#'       \eqn{w_d = n_d / \sum n_{\tilde d}} for \code{TD}, \code{NTD_Conv},
-#'       \code{NTD_New}, \code{TD_E_LOGS} and \code{TD_PR}.  Standard errors account for estimation of the
-#'       weights.
-#'     \item \code{NULL}: uniform weights (equal weight per group).
-#'     \item A named numeric vector: custom fixed weights (names = treatment
-#'       groups as characters).  Values are renormalised to sum to 1.
+#'     \item \code{"sample"} (default): treatment-group shares. Within gender,
+#'       \eqn{w_{g,d} = n_{g,d} / \sum_{k} n_{g,k}}, for \code{DID_Female} and
+#'       \code{DID_Male}; across genders, \eqn{w_d = n_d / \sum_{k} n_{k}}, for
+#'       all other methods.
+#'     \item \code{"uniform"} or \code{NULL}: equal weight per treatment group.
+#'     \item A named numeric vector (names = treatment groups): fixed weights,
+#'       renormalized to sum to one over the groups present at each event time.
+#'       Groups missing from the vector get weight zero, with a warning.
 #'   }
-#' @param methods Character vector of methods to aggregate.  Defaults to
-#'   \code{DID_Female}, \code{DID_Male}, \code{TD}, \code{NTD_Conv},
-#'   \code{NTD_New}, \code{TD_E_LOGS} and \code{TD_PR}.  \code{TD_PR}
-#'   (estimand \code{"theta_pre"}) is aggregated as an \code{avg_of_ratios}.
-#' @param include_pre Logical.  If \code{TRUE}, also aggregate pre-treatment
-#'   event times (\code{event_time < 0}).  Default \code{FALSE}.
+#' @param methods Methods to aggregate (default: all). \code{DID_Female},
+#'   \code{DID_Male}: \code{weighted_avg} and \code{ratio_of_avgs} of
+#'   \code{theta}; \code{Conventional}: \code{weighted_avg} of \code{gap_theta};
+#'   \code{NTD} and \code{TD_E_LOGS}: \code{weighted_avg} of \code{rho_effect}
+#'   and of the accounting rows \code{rho_obs}, \code{rho_cf},
+#'   \code{share_parenthood}, \code{share_other};
+#'   \code{TD}: \code{weighted_avg} of \code{gap_ATE}; \code{TD_PR}:
+#'   \code{weighted_avg} of \code{gap_theta_pre}.
+#' @param include_pre Logical (default \code{FALSE}). Also aggregate
+#'   pre-treatment event times.
 #'
-#' @return A \code{data.frame} with one row per
-#'   \code{event_time} by \code{estimand} by \code{method} by \code{agg_type}
-#'   combination, containing:
-#'   \itemize{
-#'     \item \code{event_time} -- event time
-#'     \item \code{estimand} -- \code{"theta"}, \code{"theta_pre"}, or \code{"Delta_rho"}
-#'     \item \code{method} -- method name
-#'     \item \code{agg_type} -- one of \code{"avg_of_ratios"},
-#'       \code{"ratio_of_avgs"}, \code{"gender_ineq"}
-#'     \item \code{est} -- aggregate estimate
-#'     \item \code{se} -- standard error (see Details)
-#'     \item \code{ci_l}, \code{ci_h} -- 95 \% Wald confidence interval
-#'     \item \code{n_groups} -- number of treatment groups contributing
-#'   }
+#' @return A data.frame with one row per event time, estimand, method and
+#'   aggregation type: \code{event_time}, \code{estimand}, \code{method},
+#'   \code{agg_type}, \code{est}, \code{se}, \code{n_groups} (treatment groups
+#'   with positive weight), \code{ci_l}, \code{ci_h} (est -/+ 1.96 se),
+#'   \code{t}, \code{p}.
 #'
 #' @details
-#' \strong{Standard errors.}  When the \code{results} object carries
-#' influence-function (IF) data from \code{multiple_treatment_group_analysis()},
-#' aggregate SEs account for dependence across treatment groups caused by shared
-#' control individuals.
+#' \code{agg_type = "weighted_avg"} is \eqn{\sum_d w_d B_d} over the
+#' treatment-group estimates \eqn{B_d}. For \code{DID_Female} / \code{DID_Male}
+#' this is \eqn{\theta_{Agg,1}(g, e)}; for \code{Conventional} it is the
+#' conventional aggregate gap \eqn{\Delta\theta_{Agg}(e)}, which under NTD is
+#' biased for the gap in normalized effects (Theorem 1); for \code{NTD} it is
+#' \eqn{\rho_{Agg}(e)}, the aggregate effect of parenthood on the gender earnings
+#' ratio. \code{agg_type = "ratio_of_avgs"} (DID rows only) is
+#' \eqn{\theta_{Agg,2}(g, e)}, the ratio of the weighted average ATE to the
+#' weighted average APO; it puts more weight on higher-earning groups, which is
+#' why the paper prefers \eqn{\theta_{Agg,1}} (Section 5.1).
 #'
-#' With \code{weights = "sample"}, the IF additionally accounts for estimation
-#' of the weights, following the formula in Leventer (2025, Appendix G):
-#' \deqn{\psi_{A(e)} = \sum_d \left[ w_d\,\psi_{B_d}
-#'   + \frac{B_d - A(e)}{M}\,\psi_{p_d} \right]}
-#' where \eqn{M = \sum_d p_d} and \eqn{\psi_{p_d}} is the IF of the group
-#' proportion.
+#' \strong{Standard errors.} The influence function of an aggregate (aggregate
+#' estimator section of the appendix on estimation and inference) sums the treatment-group influence functions with the weights; with
+#' \code{weights = "sample"} it adds the term for the estimated shares,
+#' \eqn{\psi_{A(e)} = P_e^{-1}\sum_d [(B_d - A(e))\psi_{p_d} + p_d\psi_{B_d}]},
+#' \eqn{\psi_{p_d} = 1\{D = d\} - p_d} (\eqn{1\{G = g, D = d\} - p_{g,d}} for
+#' within-gender shares). For \code{ratio_of_avgs} the chain rule is applied to
+#' the ratio, with the weights treated as fixed. Standard errors are clustered by
+#' person.
 #'
-#' With fixed weights (\code{NULL} or a named vector), the second term drops
-#' out and the IF reduces to \eqn{\sum_d w_d\,\psi_{B_d}}.
+#' Not every treatment group has an estimate at every event time; each event
+#' time uses the groups present, and \code{n_groups} reports how many.
 #'
-#' For \code{ratio_of_avgs}, the delta method is applied to the ratio
-#' \eqn{\bar\mu_{\text{ATE}} / \bar\mu_{\text{APO}}} using the aggregate IFs
-#' for the numerator and denominator.
-#'
-#' If IF data is not available (e.g., when the user supplies a manually
-#' constructed results table), SEs are computed under an independence
-#' approximation with a warning.
-#'
-#' \strong{Handling missing cells.}  Not every treatment group produces an
-#' estimate for every event time (due to \code{max_age} / \code{min_age}
-#' bounds).  The function operates on whichever groups are present for each
-#' cell and reports how many via \code{n_groups}.  If \code{weights} is
-#' supplied as a named vector, only the entries whose names appear in the
-#' observed treatment groups are used; the remaining weights are dropped and
-#' the retained weights are renormalised.
-#'
-#' @import data.table
-#' @export
-#'
+#' @seealso \code{\link{multiple_treatment_group_analysis}}, \code{\link{bias_bounds}}
 #' @examples
 #' \donttest{
-#' set.seed(1)
-#' sim <- simulate_data(n_individuals = 500)
-#' res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25,
-#'                                          periods_post = 2, verbose = FALSE)
+#' sim <- simulate_data(n_individuals = 2000)
+#' res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:26,
+#'   periods_post = 2, periods_pre = NULL, verbose = FALSE)
 #' agg <- aggregate_estimands(res)
-#' head(agg)
+#' agg[agg$method %in% c("NTD", "Conventional"), ]
 #' }
+#' @import data.table
+#' @export
 aggregate_estimands <- function(results,
                                 weights = "sample",
-                                methods = c("DID_Female", "DID_Male", "TD", "NTD_Conv", "NTD_New",
+                                methods = c("DID_Female", "DID_Male", "TD", "Conventional", "NTD",
                                             "TD_E_LOGS", "TD_PR"),
                                 include_pre = FALSE) {
 
   # ---- Input checks -------------------------------------------------------
   if (!is.data.frame(results) || nrow(results) == 0L) {
-    stop("`results` must be a non-empty data.frame.")
+    stop("`results` must be a non-empty data.frame (the output of multiple_treatment_group_analysis()).",
+         call. = FALSE)
   }
 
   required_cols <- c("d", "event_time", "estimand", "method", "est", "se")
   missing_cols  <- setdiff(required_cols, names(results))
   if (length(missing_cols) > 0L) {
     stop("Missing required columns in `results`: ",
-         paste(missing_cols, collapse = ", "))
+         paste(missing_cols, collapse = ", "), call. = FALSE)
   }
 
+  unknown <- setdiff(methods, unique(results$method))
+  if (length(unknown) == length(methods)) {
+    stop(sprintf("None of `methods` is in `results`. Methods in `results`: %s.",
+                 paste(unique(results$method), collapse = ", ")), call. = FALSE)
+  }
+
+  if (identical(weights, "uniform")) weights <- NULL
   use_sample_weights <- is.character(weights) && length(weights) == 1L &&
                         weights == "sample"
   use_fixed_weights  <- is.numeric(weights)
   use_uniform        <- is.null(weights)
 
   if (!use_sample_weights && !use_fixed_weights && !use_uniform) {
-    stop('`weights` must be "sample", NULL, or a named numeric vector.')
+    stop('`weights` must be "sample", "uniform", NULL, or a named numeric vector.', call. = FALSE)
   }
 
   if (use_fixed_weights) {
     if (is.null(names(weights))) {
-      stop("`weights` must be a named numeric vector (names = treatment groups as characters).")
+      stop("`weights` must be a named numeric vector (names = treatment groups, e.g. c(`24` = 1)).",
+           call. = FALSE)
     }
-    if (any(weights < 0)) stop("All `weights` must be non-negative.")
+    if (any(weights < 0)) stop("All `weights` must be non-negative.", call. = FALSE)
+    groups <- as.character(unique(results$d))
+    if (!any(names(weights) %in% groups)) {
+      stop(sprintf("No name of `weights` matches a treatment group in `results` (%s).",
+                   paste(groups, collapse = ", ")), call. = FALSE)
+    }
+    unmatched <- setdiff(groups, names(weights))
+    if (length(unmatched)) {
+      warning(sprintf("Treatment groups without a weight get weight zero: %s.",
+                      paste(unmatched, collapse = ", ")), call. = FALSE)
+    }
   }
 
   # ---- Extract IF data if available ----------------------------------------
@@ -152,12 +138,12 @@ aggregate_estimands <- function(results,
             "SEs are computed under an independence approximation, ",
             "which ignores dependence from shared control groups. ",
             "Pass the output of multiple_treatment_group_analysis() directly ",
-            "to get proper SEs.")
+            "to get proper SEs.", call. = FALSE)
   }
 
   if (use_sample_weights && is.null(id_info)) {
     warning('weights = "sample" requires id_info from ',
-            "multiple_treatment_group_analysis(). Falling back to uniform weights.")
+            "multiple_treatment_group_analysis(). Falling back to uniform weights.", call. = FALSE)
     use_sample_weights <- FALSE
     use_uniform <- TRUE
   }
@@ -187,17 +173,12 @@ aggregate_estimands <- function(results,
   }
 
   if (nrow(DT) == 0L) {
-    warning("No rows remain after filtering. Returning empty data.frame.")
+    warning("No rows remain after filtering. Returning empty data.frame.", call. = FALSE)
     return(data.frame())
   }
 
   # ---- Filter to requested methods ----------------------------------------
   DT <- DT[method %in% methods]
-
-  if (nrow(DT) == 0L) {
-    warning("No rows match the requested `methods`. Returning empty data.frame.")
-    return(data.frame())
-  }
 
   # ---- Helper: compute normalised weights for a cell -----------------------
   # Returns weights for a vector of d values.
@@ -243,7 +224,7 @@ aggregate_estimands <- function(results,
   .weight_type <- function(mth) {
     if (mth == "DID_Female") return("within_female")
     if (mth == "DID_Male")   return("within_male")
-    return("cross")  # TD, NTD_Conv, NTD_New, TD_E_LOGS, TD_PR
+    return("cross")  # TD, Conventional, NTD, TD_E_LOGS, TD_PR
   }
 
   # ---- Helper: SE from aggregate IFs (cluster-robust) ----------------------
@@ -328,35 +309,49 @@ aggregate_estimands <- function(results,
     sqrt(sum(w_vec^2 * se_vec^2))
   }
 
-  # ---- 1. avg_of_ratios (theta_Agg,1) -------------------------------------
-  theta_rows <- DT[estimand %in% c("theta", "theta_pre")]
-
-  # Map method -> IF column for theta (theta_pre for TD_PR)
-  theta_if_map <- c(
-    DID_Female = "if_theta_f",
-    DID_Male   = "if_theta_m",
-    NTD_Conv   = "if_ntd_conv",
-    TD_PR      = "if_td_pr"
+  # ---- 1. weighted_avg: sum_d w_d B_d ----------------------------------------
+  # theta_Agg,1 (DID), the conventional gap, rho_Agg (NTD, TD_E_LOGS), the TD gap
+  # in levels and the TD_PR gap; one cell per (event_time, method).
+  # (method, estimand) -> person-level IF column in if_data
+  avg_spec <- data.table::data.table(
+    method   = c("DID_Female", "DID_Male", "TD", "Conventional", "NTD", "TD_E_LOGS", "TD_PR",
+                 "NTD", "NTD", "NTD", "TD_E_LOGS", "TD_E_LOGS", "TD_E_LOGS"),
+    estimand = c("theta", "theta", "gap_ATE", "gap_theta", "rho_effect", "rho_effect",
+                 "gap_theta_pre",
+                 "rho_obs", "rho_cf", "share_parenthood", "rho_obs", "rho_cf", "share_parenthood"),
+    if_col   = c("if_theta_f", "if_theta_m", "if_td", "if_ntd_conv", "if_ntd_new", "if_td_e_logs",
+                 "if_td_pr",
+                 "if_rho_obs", "if_rho_cf_ntd", "if_share_ntd",
+                 "if_rho_obs", "if_rho_cf_e_logs", "if_share_e_logs"),
+    sign     = 1
   )
+  # share_other = 1 - share_parenthood: same IF with the opposite sign
+  avg_spec <- rbind(avg_spec, data.table::data.table(
+    method = c("NTD", "TD_E_LOGS"), estimand = "share_other",
+    if_col = c("if_share_ntd", "if_share_e_logs"), sign = -1))
+  avg_rows <- merge(DT, avg_spec, by = c("method", "estimand"))
 
   agg1_list <- list()
-  if (nrow(theta_rows) > 0L) {
-    cells <- unique(theta_rows[, .(event_time, method)])
+  if (nrow(avg_rows) > 0L) {
+    cells <- unique(avg_rows[, .(event_time, method, estimand)])
 
     for (i in seq_len(nrow(cells))) {
       et  <- cells$event_time[i]
       mth <- cells$method[i]
+      est_name <- cells$estimand[i]
 
-      sub <- theta_rows[event_time == et & method == mth]
+      sub <- avg_rows[event_time == et & method == mth & estimand == est_name]
       wt  <- .weight_type(mth)
       w   <- .get_weights(sub$d, wt)
+      if_col <- sub$if_col[1]; sgn <- sub$sign[1]
 
       est_agg <- sum(w * sub$est)
 
-      if (has_ifs && mth %in% names(theta_if_map) &&
-          theta_if_map[[mth]] %in% names(if_data)) {
-        se_agg <- .agg_se_from_ifs(theta_if_map[[mth]], sub$d, et, w,
-                                   B_vals = sub$est, A_est = est_agg,
+      if (has_ifs && if_col %in% names(if_data)) {
+        # the SE of sum_d w_d B_d with IF sign * psi: the sign does not change the variance,
+        # but the weight-estimation term uses B_d, so pass B_d = sign * est to keep it consistent
+        se_agg <- .agg_se_from_ifs(if_col, sub$d, et, w,
+                                   B_vals = sgn * sub$est, A_est = sgn * est_agg,
                                    weight_type = wt)
       } else {
         se_agg <- .agg_se_indep(w, sub$se)
@@ -364,12 +359,12 @@ aggregate_estimands <- function(results,
 
       agg1_list[[length(agg1_list) + 1L]] <- data.table(
         event_time = et,
-        estimand   = sub$estimand[1],
+        estimand   = est_name,
         method     = mth,
-        agg_type   = "avg_of_ratios",
+        agg_type   = "weighted_avg",
         est        = est_agg,
         se         = se_agg,
-        n_groups   = nrow(sub)
+        n_groups   = sum(w > 0)
       )
     }
   }
@@ -377,8 +372,8 @@ aggregate_estimands <- function(results,
   # ---- 2. ratio_of_avgs (theta_Agg,2) ------------------------------------
   agg2_list <- list()
 
-  ate_rows <- DT[estimand == "ATE"]
-  apo_rows <- DT[estimand == "APO"]
+  ate_rows <- DT[estimand == "ATE" & method %in% c("DID_Female", "DID_Male")]
+  apo_rows <- DT[estimand == "APO" & method %in% c("DID_Female", "DID_Male")]
 
   ate_if_map <- c(DID_Female = "if_ate_f", DID_Male = "if_ate_m")
   apo_if_map <- c(DID_Female = "if_apo_f", DID_Male = "if_apo_m")
@@ -450,65 +445,27 @@ aggregate_estimands <- function(results,
           agg_type   = "ratio_of_avgs",
           est        = est_agg,
           se         = se_agg,
-          n_groups   = nrow(sub)
+          n_groups   = sum(w > 0)
         )
       }
     }
   }
 
-  # ---- 3. gender_ineq (Delta_rho_Agg) -------------------------------------
-  # Delta_rho is identified by NTD_New (additive imputation) and by TD_E_LOGS
-  # (multiplicative imputation); each is aggregated separately.
-  rho_if_map <- c(NTD_New = "if_ntd_new", TD_E_LOGS = "if_td_e_logs")
-  rho_rows <- DT[estimand == "Delta_rho" & method %in% names(rho_if_map)]
-
-  agg3_list <- list()
-  if (nrow(rho_rows) > 0L) {
-    cells3 <- unique(rho_rows[, .(event_time, method)])
-
-    for (i in seq_len(nrow(cells3))) {
-      et  <- cells3$event_time[i]
-      mth <- cells3$method[i]
-
-      sub <- rho_rows[event_time == et & method == mth]
-      w   <- .get_weights(sub$d, "cross")
-
-      est_agg <- sum(w * sub$est)
-
-      if (has_ifs && rho_if_map[[mth]] %in% names(if_data)) {
-        se_agg <- .agg_se_from_ifs(rho_if_map[[mth]], sub$d, et, w,
-                                   B_vals = sub$est, A_est = est_agg,
-                                   weight_type = "cross")
-      } else {
-        se_agg <- .agg_se_indep(w, sub$se)
-      }
-
-      agg3_list[[length(agg3_list) + 1L]] <- data.table(
-        event_time = et,
-        estimand   = "Delta_rho",
-        method     = mth,
-        agg_type   = "gender_ineq",
-        est        = est_agg,
-        se         = se_agg,
-        n_groups   = nrow(sub)
-      )
-    }
-  }
-
   # ---- Combine and compute inferential columns ----------------------------
-  all_parts <- c(agg1_list, agg2_list, agg3_list)
+  all_parts <- c(agg1_list, agg2_list)
 
   if (length(all_parts) == 0L) {
-    warning("No aggregate estimands could be computed. Returning empty data.frame.")
-    return(data.frame())
+    stop("No aggregate could be computed for the requested `methods`.", call. = FALSE)
   }
 
   out <- data.table::rbindlist(all_parts, use.names = TRUE, fill = TRUE)
 
   out[, ci_l := est - 1.96 * se]
   out[, ci_h := est + 1.96 * se]
+  out[, t := est / se]
+  out[, p := 2 * stats::pnorm(-abs(est / se))]
 
-  data.table::setorderv(out, c("agg_type", "method", "event_time"))
+  data.table::setorderv(out, c("method", "agg_type", "event_time"))
 
   return(as.data.frame(out))
 }

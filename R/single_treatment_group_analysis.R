@@ -1,81 +1,102 @@
-#' Unconditional estimands for a single treatment group
+#' Child-penalty estimates for one 2x2 comparison
 #'
-#' Estimates 17 descriptive estimands for triplet (treatment group, control group and target age). SEs are calculated using influence-function (IF) calculations with clustering within \code{id}.
+#' For one treatment group \eqn{d} (age at first birth), control group \eqn{d'}
+#' and target age \eqn{a}, estimates the descriptive estimands of Leventer (2025):
+#' within-gender DID, the gender gaps under TD, the conventional estimator, the
+#' effect of parenthood on the gender earnings ratio (NTD and proportional TD),
+#' and the accounting of the gender gap. Returns 19 rows with standard errors
+#' clustered by person.
 #'
-#' @param data A \code{data.table} with columns:
-#'   \itemize{
-#'     \item \code{id} — cluster identifier (i.e., person)
-#'     \item \code{age} — integer age
-#'     \item \code{female} — 0/1 indicator (1 = females)
-#'     \item \code{D} — treatment group
-#'     \item \code{Y} — numeric outcome
-#'   }
-#' @param d Integer. Treatment group (age at first childbirth)
-#' @param dp Integer. Control group (closest not-yet-treated group)
-#' @param a Integer. Target age.
-#' @param pre Integer, default \code{1}. Offset used for the pre-treatment anchor.
-#' @param Y_name,age_name,D_name,id_name,female_name Column name mappings passed to \code{prep_data_table()}.
+#' @param data A data.frame (or data.table) in long format: one row per person
+#'   and age, with the person id, age, age at first birth, a female indicator and
+#'   earnings. The panel need not be balanced. Each person's female indicator and
+#'   age at first birth must be constant; a missing age at first birth means the
+#'   person never has a child. Rows with missing earnings are dropped (with a
+#'   message). Earnings may be zero, but the ratio rows need positive cell means.
+#'   \code{data} is not modified.
+#' @param d Whole number. Treatment group: age at first birth.
+#' @param dp Whole number. Control group \eqn{d'}: an age at first birth that is
+#'   not yet treated at the target age, \code{dp > a} (and \code{dp > d}). The
+#'   paper uses the closest not-yet-treated group, \code{dp = a + 1} (Section
+#'   1.3), as \code{\link{multiple_treatment_group_analysis}} does.
+#' @param a Whole number. Target age; event time is \eqn{e = a - d}. With
+#'   \code{a >= d} the rows are post-birth estimates; with \code{a < d - pre} they
+#'   are pre-treatment validation (placebo) estimates (Sections 2.3, 4.2).
+#' @param pre Whole number \eqn{\ge 1} (default 1). The baseline age is
+#'   \eqn{d - pre}. The default, \eqn{d - 1}, is the paper's choice; larger values
+#'   move the baseline earlier in case earnings at \eqn{d - 1} reflect
+#'   anticipation (Section 3.1).
+#' @param Y_name,age_name,D_name,id_name,female_name Names of the columns holding
+#'   earnings, age, age at first birth, the person id (clustering unit) and the
+#'   female indicator (1 / \code{TRUE} = female; also accepted: labels such as
+#'   "female"/"male", "f"/"m", "woman"/"man"; any other label is an error).
 #'
 #' @details
-#' Let \eqn{Y(a, g, d^\star)} denote the mean outcome at age \eqn{a} for gender
-#' \eqn{g \in \{0,1\}} (1 = female) when assigned to group \eqn{d^\star}.
-#' The core components are:
-#' \itemize{
-#'   \item \strong{APO}(g; d, d', a) \eqn{= Y(d-\mathrm{pre}, g, d) + Y(a, g, d') - Y(d-\mathrm{pre}, g, d')}
-#'   \item \strong{ATE}(g; d, d', a) \eqn{= Y(a, g, d) - \mathrm{APO}(g; d, d', a)}
-#'   \item \strong{\eqn{\theta}(g)} \eqn{= \mathrm{ATE}(g) / \mathrm{APO}(g)}
+#' Let \eqn{\mu(g, k, t)} be the mean earnings of gender \eqn{g \in \{f, m\}}
+#' with age at first birth \eqn{k} at age \eqn{t}, estimated by the cell mean,
+#' and \eqn{b = d - pre} the baseline age. The additive (DID) and multiplicative
+#' imputations of counterfactual earnings at age \eqn{a} are
+#' \deqn{\delta_{APO}(g) = \mu(g,d,b) + \mu(g,d',a) - \mu(g,d',b), \qquad
+#'   \delta^{\times}_{APO}(g) = \mu(g,d,b)\,\mu(g,d',a) / \mu(g,d',b).}{
+#'   delta_APO(g) = mu(g,d,b) + mu(g,d',a) - mu(g,d',b),
+#'   delta_APO_x(g) = mu(g,d,b) mu(g,d',a) / mu(g,d',b).}
+#' The rows, with the assumption under which each identifies its target
+#' (all also need no anticipation):
+#' \tabular{lll}{
+#'   \strong{method} \tab \strong{estimand} \tab \strong{estimator; target} \cr
+#'   DID_Female, DID_Male \tab APO \tab \eqn{\delta_{APO}(g)}; \eqn{APO(g, \infty)} under DID-PT \cr
+#'   DID_Female, DID_Male \tab ATE \tab \eqn{\mu(g,d,a) - \delta_{APO}(g)}; \eqn{ATE(g)} under DID-PT \cr
+#'   DID_Female, DID_Male \tab theta \tab ATE row / APO row; \eqn{\theta(g)} under DID-PT \cr
+#'   TD \tab gap_ATE \tab ATE row f minus m; \eqn{ATE(f) - ATE(m)} under TD-PT \cr
+#'   Conventional \tab gap_theta \tab theta row f minus m; \eqn{\theta(f) - \theta(m)} under DID-PT only (under NTD-PT it is biased, Theorem 1) \cr
+#'   NTD \tab rho_effect \tab \eqn{\mu(f,d,a)/\mu(m,d,a) - \delta_{APO}(f)/\delta_{APO}(m)}; \eqn{\rho(d) - \rho(\infty)} under NTD-PT (Theorem 2) \cr
+#'   TD_E_LOGS \tab rho_effect \tab as NTD with \eqn{\delta^{\times}_{APO}}; \eqn{\rho(d) - \rho(\infty)} under TD-E-LOGS (proposition in the online appendix on proportional DID and TD) \cr
+#'   TD_PR \tab gap_theta_pre \tab \eqn{[\mu(g,d,a) - \delta^{\times}_{APO}(g)] / \mu(g,d,b)}, f minus m; \eqn{ATE(g)/APO(g,d,\infty,b)}, f minus m, under TD-PR (same proposition) \cr
+#'   NTD, TD_E_LOGS \tab rho_obs \tab \eqn{\mu(f,d,a)/\mu(m,d,a)}; the observed gender earnings ratio \eqn{\rho(d)} \cr
+#'   NTD, TD_E_LOGS \tab rho_cf \tab \eqn{\delta_{APO}(f)/\delta_{APO}(m)} (NTD) or with \eqn{\delta^{\times}_{APO}} (TD_E_LOGS); \eqn{\rho(\infty)} under NTD-PT (NTD) or TD-E-LOGS (TD_E_LOGS) \cr
+#'   NTD, TD_E_LOGS \tab share_parenthood \tab \eqn{(\rho_{cf} - \rho_{obs}) / (1 - \rho_{obs})}; parenthood's share of the observed gender gap (Section 4.2), under the same assumption as rho_cf \cr
+#'   NTD, TD_E_LOGS \tab share_other \tab \eqn{1 -} share_parenthood; the share of other factors
 #' }
-#' From these, the cross-gender contrasts are formed:
-#' \itemize{
-#'   \item \strong{TD} \eqn{= \mathrm{ATE}(F) - \mathrm{ATE}(M)}
-#'   \item \strong{NTD_Conv} \eqn{= \theta(F) - \theta(M)}
-#'   \item \strong{NTD_New} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}(F)}{\mathrm{APO}(M)}}
-#'   \item \strong{TD Null} and \strong{NTD_Conv_Null} variants are defined analogously
-#'         under a null-effect-for-fathers bias-correction.
-#' }
-#' The proportional triple-differences estimators (Leventer 2025, online appendix
-#' "Proportional DID and TD") use the multiplicative imputation of the counterfactual
-#' \deqn{\mathrm{APO}^{\times}(g) = Y(d-\mathrm{pre}, g, d)\,\frac{Y(a, g, d')}{Y(d-\mathrm{pre}, g, d')}:}
-#' \itemize{
-#'   \item \strong{TD_E_LOGS} \eqn{= \frac{Y(a,F,d)}{Y(a,M,d)} - \frac{\mathrm{APO}^{\times}(F)}{\mathrm{APO}^{\times}(M)}}.
-#'         Under TD-E-LOGS (equal gender trend gaps in logs of means) it identifies
-#'         the same estimand as \code{NTD_New}, the effect of parenthood on the
-#'         gender earnings ratio (\code{estimand = "Delta_rho"}).
-#'   \item \strong{TD_PR} \eqn{= \theta_{pre}(F) - \theta_{pre}(M)}, with
-#'         \eqn{\theta_{pre}(g) = (Y(a,g,d) - \mathrm{APO}^{\times}(g)) / Y(d-\mathrm{pre}, g, d)}.
-#'         Under TD-PR (equal gender gaps in proportional trends) it identifies the
-#'         gender gap in effects relative to pre-birth earnings,
-#'         \eqn{\mathrm{ATE}(F)/\mathrm{APO}(F,\infty,d-1) - \mathrm{ATE}(M)/\mathrm{APO}(M,\infty,d-1)}
-#'         (\code{estimand = "theta_pre"}).
-#' }
-#' Both require positive cell means.
+#' Gaps are female minus male. The conventional estimator is the 2x2 version of
+#' the normalized event-study child penalty; under NTD it equals the target gap
+#' times a gender-invariant bias factor (Theorem 1), see \code{\link{bias_bounds}}
+#' for the paper's bias-bounding exercise. The accounting rows and their
+#' standard errors are an extension of the paper's Section 4.2 accounting
+#' exercise.
 #'
-#' Internally, influence functions for all pieces are written into temporary
-#' columns of a \code{data.table} via \code{compute_mean_if()}, and cluster-robust
-#' standard errors are computed by summing the IFs at the \code{id} level via \code{se_cluster()}.
+#' \strong{Standard errors.} Each row is a smooth function of the eight cell
+#' means; its influence function follows by the chain rule from those of the cell
+#' means, \eqn{\psi_{\mu} = S (Y - \mu) / P(S)} with \eqn{S} the cell indicator
+#' (the appendix on estimation and inference). The variance is \eqn{n^{-2} \sum_c (\sum_{i \in c} \psi_i)^2 \,
+#' G / (G - 1)}, clustering by person (\eqn{n} person-age rows, \eqn{G} persons).
+#' \code{vignette("estimators")} writes out every estimator and influence
+#' function.
 #'
-#' @return A \code{data.frame} with one row per estimand/method combination:
-#' \itemize{
-#'   \item \code{estimand} — one of \code{"APO"}, \code{"ATE"}, \code{"theta"}, \code{"Delta_rho"},
-#'         \code{"theta_pre"}
-#'   \item \code{method} — one of \code{"DID_Female"}, \code{"DID_Male"}, \code{"TD"},
-#'         \code{"NTD_Conv"}, \code{"NTD_New"}, \code{"TD_Null"}, \code{"NTD_Conv_Null"},
-#'         \code{"TD_E_LOGS"}, \code{"TD_PR"}
-#'   \item \code{est} — estimate
-#'   \item \code{se} — cluster-robust standard error
-#'   \item \code{n_female_treat}, \code{n_female_control},
-#'         \code{n_male_treat}, \code{n_male_control} — sample counts
-#' }
+#' @return A data.frame with 19 rows and columns \code{d}, \code{dp}, \code{a},
+#'   \code{event_time} (\eqn{a - d}), \code{control_offset} (\eqn{d' - d}),
+#'   \code{estimand}, \code{method}, \code{est}, \code{se}, \code{ci_l},
+#'   \code{ci_h} (est -/+ 1.96 se), \code{t}, \code{p} (two-sided, normal), and
+#'   \code{n_female_treat}, \code{n_female_control}, \code{n_male_treat},
+#'   \code{n_male_control} (persons with \eqn{D = d} and \eqn{D = d'}). Attribute
+#'   \code{"if_scores"}: person-level sums of the influence functions, used by
+#'   \code{\link{aggregate_estimands}} and \code{\link{bias_bounds}}.
 #'
-#' @note Requires helper functions \code{compute_mean_if()} and \code{se_cluster()}.
+#' @seealso \code{\link{multiple_treatment_group_analysis}} for the grid of
+#'   comparisons the paper uses, \code{\link{aggregate_estimands}},
+#'   \code{\link{bias_bounds}}, \code{vignette("estimators")}
 #' @import data.table
 #'
 #' @examples
 #' \donttest{
-#' set.seed(1)
-#' sim <- simulate_data(n_individuals = 500)
-#' res <- single_treatment_group_analysis(sim, d = 25, dp = 26, a = 26, pre = 1)
-#' head(res)
+#' sim <- simulate_data(n_individuals = 2000)
+#' # Treatment group d = 25 one year after first birth (a = 26),
+#' # closest not-yet-treated control group d' = a + 1 = 27
+#' res <- single_treatment_group_analysis(sim, d = 25, dp = 27, a = 26)
+#' res[res$method %in% c("Conventional", "NTD"), c("method", "estimand", "est", "se")]
+#' # Pre-treatment validation (placebo) test: a < d - 1
+#' val <- single_treatment_group_analysis(sim, d = 25, dp = 27, a = 22)
+#' val[val$method %in% c("Conventional", "NTD") & val$estimand %in% c("gap_theta", "rho_effect"),
+#'     c("method", "estimand", "est", "se")]
 #' }
 #' @export
 single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
@@ -85,7 +106,31 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
                                             id_name = "id",
                                             female_name = "female") {
 
-  DT <- if (inherits(data, "data.table")) data else
+  # ---- argument checks -------------------------------------------------------
+  for (arg in c("d", "dp", "a", "pre")) {
+    v <- get(arg)
+    if (!is.numeric(v) || length(v) != 1L || !is.finite(v) || v != round(v)) {
+      stop(sprintf("`%s` must be a single whole number.", arg), call. = FALSE)
+    }
+  }
+  if (pre < 1) stop("`pre` must be at least 1 (the baseline age is d - pre).", call. = FALSE)
+  if (dp <= d) {
+    stop(sprintf("The control group must have its first birth after the treatment group: dp = %d <= d = %d.",
+                 dp, d), call. = FALSE)
+  }
+  if (dp <= a) {
+    stop(sprintf(paste0("The control group must not yet be treated at the target age: dp = %d <= a = %d. ",
+                        "The paper uses the closest not-yet-treated group, dp = a + 1."), dp, a),
+         call. = FALSE)
+  }
+  if (a == d - pre) {
+    stop(sprintf("The target age a = %d is the baseline age d - pre; choose a different `a`.", a),
+         call. = FALSE)
+  }
+
+  # Data prepared by prep_data_table() (e.g. inside multiple_treatment_group_analysis())
+  # is used as is; anything else is validated and copied first.
+  DT <- if (isTRUE(attr(data, "childpen_prepared"))) data else
     prep_data_table(data, Y_name, age_name, D_name, id_name, female_name)
 
   # Compute all 8 base means we need
@@ -126,11 +171,11 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
   DT[, if_td := if_ate_f - if_ate_m]
   td <- ate_f - ate_m
 
-  # NTD_Conv: Theta(f) - Theta(m)
+  # Conventional estimator: theta(f) - theta(m)
   DT[, if_ntd_conv := if_theta_f - if_theta_m]
   ntd_conv <- theta_f - theta_m
 
-  # NTD_New: Y(f)/Y(m) - APO(f)/APO(m)
+  # NTD (new estimand): Y(f)/Y(m) - APO(f)/APO(m)
   DT[, if_ratio_y := (1/means$y_a_m_d) * if_y_a_f_d - (means$y_a_f_d/means$y_a_m_d^2) * if_y_a_m_d]
   DT[, if_ratio_apo := (1/apo_m) * if_apo_f - (apo_f/apo_m^2) * if_apo_m]
   DT[, if_ntd_new := if_ratio_y - if_ratio_apo]
@@ -149,7 +194,7 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
                                       if_y_a_m_dp / means$y_a_m_dp -
                                       if_y_d_minus_1_m_dp / means$y_d_minus_1_m_dp)]
 
-  # TD_E_LOGS: Y(a,F,d)/Y(a,M,d) - APO_mult(F)/APO_mult(M)  (same estimand as NTD_New)
+  # TD_E_LOGS: Y(a,F,d)/Y(a,M,d) - APO_mult(F)/APO_mult(M)  (same estimand as NTD)
   DT[, if_ratio_apo_mult := (1/apo_mult_m) * if_apo_mult_f - (apo_mult_f/apo_mult_m^2) * if_apo_mult_m]
   DT[, if_td_e_logs := if_ratio_y - if_ratio_apo_mult]
   td_e_logs <- (means$y_a_f_d / means$y_a_m_d) - (apo_mult_f / apo_mult_m)
@@ -165,27 +210,22 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
   DT[, if_td_pr := if_theta_pre_f - if_theta_pre_m]
   td_pr <- theta_pre_f - theta_pre_m
 
-  # TD Null estimands
-  DT[, if_td_null_apo := if_apo_f + if_ate_m]
-  td_null_apo <- apo_f + ate_m
+  # Accounting for the gender gap (Leventer 2025, Section 4.2): observed gap 1 - rho_obs =
+  # parenthood (rho_cf - rho_obs) + other factors (1 - rho_cf). The shares' influence functions
+  # are not in the paper; they are written out in vignette("estimators").
+  rho_obs  <- means$y_a_f_d / means$y_a_m_d
+  rho_cf   <- apo_f / apo_m
+  rho_cf_x <- apo_mult_f / apo_mult_m
+  share_ntd   <- (rho_cf - rho_obs) / (1 - rho_obs)
+  share_elogs <- (rho_cf_x - rho_obs) / (1 - rho_obs)
+  DT[, if_share_ntd := (if_ratio_apo - if_ratio_y) / (1 - rho_obs) +
+       (rho_cf - rho_obs) * if_ratio_y / (1 - rho_obs)^2]
+  DT[, if_share_elogs := (if_ratio_apo_mult - if_ratio_y) / (1 - rho_obs) +
+       (rho_cf_x - rho_obs) * if_ratio_y / (1 - rho_obs)^2]
 
-  DT[, if_td_null_ate := if_td]  # Same as TD
-  td_null_ate <- td
-
-  DT[, if_td_null_theta := (1/td_null_apo) * if_td_null_ate - (td_null_ate/td_null_apo^2) * if_td_null_apo]
-  td_null_theta <- td_null_ate / td_null_apo
-
-  # NTD_Conv_Null estimands
-  ntd_conv_null_apo <- (apo_f * means$y_a_m_d) / apo_m
-  DT[, if_ntd_conv_null_apo := (means$y_a_m_d/apo_m) * if_apo_f +
-       (apo_f/apo_m) * if_y_a_m_d -
-       (ntd_conv_null_apo/apo_m) * if_apo_m]
-
-  DT[, if_ntd_conv_null_ate := if_y_a_f_d - if_ntd_conv_null_apo]
-  ntd_conv_null_ate <- means$y_a_f_d - ntd_conv_null_apo
-
-  DT[, if_ntd_conv_null_theta := (1/ntd_conv_null_apo) * if_ntd_conv_null_ate - (ntd_conv_null_ate/ntd_conv_null_apo^2) * if_ntd_conv_null_apo]
-  ntd_conv_null_theta <- ntd_conv_null_ate / ntd_conv_null_apo
+  if (any(!is.finite(c(ntd_new, td_e_logs, td_pr)))) {
+    warning("Some ratio estimates are not finite: a cell mean of the outcome is zero.", call. = FALSE)
+  }
 
   # Compute all SEs upfront
   ses <- c(
@@ -193,24 +233,23 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
     se_cluster(DT, "if_ate_f"), se_cluster(DT, "if_ate_m"),
     se_cluster(DT, "if_theta_f"), se_cluster(DT, "if_theta_m"),
     se_cluster(DT, "if_td"), se_cluster(DT, "if_ntd_conv"), se_cluster(DT, "if_ntd_new"),
-    se_cluster(DT, "if_td_null_apo"), se_cluster(DT, "if_td_null_ate"),
-    se_cluster(DT, "if_td_null_theta"),
-    se_cluster(DT, "if_ntd_conv_null_apo"), se_cluster(DT, "if_ntd_conv_null_ate"),
-    se_cluster(DT, "if_ntd_conv_null_theta"),
-    se_cluster(DT, "if_td_e_logs"), se_cluster(DT, "if_td_pr")
+    se_cluster(DT, "if_td_e_logs"), se_cluster(DT, "if_td_pr"),
+    se_cluster(DT, "if_ratio_y"), se_cluster(DT, "if_ratio_apo"),
+    se_cluster(DT, "if_share_ntd"), se_cluster(DT, "if_share_ntd"),
+    se_cluster(DT, "if_ratio_y"), se_cluster(DT, "if_ratio_apo_mult"),
+    se_cluster(DT, "if_share_elogs"), se_cluster(DT, "if_share_elogs")
   )
 
-  # Compute sample sizes
-  n_female_d <- DT[female == 1 & D == d, uniqueN(id)]
+  # Compute sample sizes (persons in each group, over all ages)
+  n_female_d  <- DT[female == 1 & D == d,  uniqueN(id)]
   n_female_dp <- DT[female == 1 & D == dp, uniqueN(id)]
-  n_male_d <- DT[female == 0 & D == d, uniqueN(id)]
-  n_male_dp <- DT[female == 0 & D == dp, uniqueN(id)]
+  n_male_d    <- DT[female == 0 & D == d,  uniqueN(id)]
+  n_male_dp   <- DT[female == 0 & D == dp, uniqueN(id)]
 
   # ---- Extract id-level IF scores for aggregation ---------------------------
   # These are the cluster-summed influence functions per individual. Needed by
-
-  # aggregate_estimands() to compute SEs that account for shared control groups
-  # across treatment groups.
+  # aggregate_estimands() and bias_bounds() to compute SEs that account for
+  # shared control groups across treatment groups.
   if_scores <- DT[, .(
     if_apo_f    = sum(if_apo_f),
     if_apo_m    = sum(if_apo_m),
@@ -222,34 +261,42 @@ single_treatment_group_analysis <- function(data, d, dp, a, pre = 1,
     if_ntd_conv = sum(if_ntd_conv),
     if_ntd_new  = sum(if_ntd_new),
     if_td_e_logs = sum(if_td_e_logs),
-    if_td_pr     = sum(if_td_pr)
+    if_td_pr     = sum(if_td_pr),
+    if_rho_obs        = sum(if_ratio_y),
+    if_rho_cf_ntd     = sum(if_ratio_apo),
+    if_share_ntd      = sum(if_share_ntd),
+    if_rho_cf_e_logs  = sum(if_ratio_apo_mult),
+    if_share_e_logs   = sum(if_share_elogs)
   ), by = id]
 
-  # Create result data.frame (fast!)
   estimates <- c(apo_f, apo_m, ate_f, ate_m, theta_f, theta_m,
-                 td, ntd_conv, ntd_new,
-                 td_null_apo, td_null_ate, td_null_theta,
-                 ntd_conv_null_apo, ntd_conv_null_ate, ntd_conv_null_theta,
-                 td_e_logs, td_pr)
+                 td, ntd_conv, ntd_new, td_e_logs, td_pr,
+                 rho_obs, rho_cf, share_ntd, 1 - share_ntd,
+                 rho_obs, rho_cf_x, share_elogs, 1 - share_elogs)
 
   result <- data.frame(
+    d = as.integer(d), dp = as.integer(dp), a = as.integer(a),
+    event_time = as.integer(a - d), control_offset = as.integer(dp - d),
     estimand = c("APO", "APO", "ATE", "ATE", "theta", "theta",
-                 "ATE", "theta", "Delta_rho",
-                 "APO", "ATE", "theta",
-                 "APO", "ATE", "theta",
-                 "Delta_rho", "theta_pre"),
+                 "gap_ATE", "gap_theta", "rho_effect", "rho_effect", "gap_theta_pre",
+                 "rho_obs", "rho_cf", "share_parenthood", "share_other",
+                 "rho_obs", "rho_cf", "share_parenthood", "share_other"),
     method = c("DID_Female", "DID_Male", "DID_Female", "DID_Male", "DID_Female", "DID_Male",
-               "TD", "NTD_Conv", "NTD_New",
-               "TD_Null", "TD_Null", "TD_Null",
-               "NTD_Conv_Null", "NTD_Conv_Null", "NTD_Conv_Null",
-               "TD_E_LOGS", "TD_PR"),
+               "TD", "Conventional", "NTD", "TD_E_LOGS", "TD_PR",
+               "NTD", "NTD", "NTD", "NTD",
+               "TD_E_LOGS", "TD_E_LOGS", "TD_E_LOGS", "TD_E_LOGS"),
     est = estimates,
     se = ses,
-    n_female_treat = n_female_d,
-    n_female_control = n_female_dp,
-    n_male_treat = n_male_d,
-    n_male_control = n_male_dp
+    stringsAsFactors = FALSE
   )
+  result$ci_l <- result$est - 1.96 * result$se
+  result$ci_h <- result$est + 1.96 * result$se
+  result$t    <- result$est / result$se
+  result$p    <- 2 * stats::pnorm(-abs(result$est / result$se))
+  result$n_female_treat   <- n_female_d
+  result$n_female_control <- n_female_dp
+  result$n_male_treat     <- n_male_d
+  result$n_male_control   <- n_male_dp
 
   attr(result, "if_scores") <- if_scores
   return(result)

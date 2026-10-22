@@ -41,6 +41,21 @@ articles:
       - NTD-identification
       - validation_tests
       - aggregate-estimands
+      - estimators
+
+reference:
+  - title: "Estimation"
+    contents:
+      - multiple_treatment_group_analysis
+      - single_treatment_group_analysis
+      - aggregate_estimands
+      - bias_bounds
+  - title: "Simulated data"
+    contents:
+      - simulate_data
+  - title: "Package"
+    contents:
+      - childpen-package
 
 authors:
   Dor Leventer:
