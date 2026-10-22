@@ -170,21 +170,27 @@ prep_data_table <- function(data,
   DT[, obs_id := paste0(id, "@", age)]
   data.table::setkey(DT, obs_id)
   data.table::setattr(DT, "childpen_prepared", TRUE)
+  # Totals the influence functions and the clustered variance are scaled by
+  # (rows n and persons G of the full data, also when a 2x2 uses a subset)
+  data.table::setattr(DT, "n_obs", nrow(DT))
+  data.table::setattr(DT, "n_ids", data.table::uniqueN(DT$id))
 
   DT
 }
 
 #' @keywords internal
-compute_mean_if <- function(DT, age_val, gender, D_val, col_name) {
-  # !is.na(D) first: persons who never have a child (D missing) are in no group
+compute_mean_if <- function(DT, age_val, gender, D_val, col_name, n_total = nrow(DT)) {
+  # !is.na(D) first: persons who never have a child (D missing) are in no group.
+  # DT may be a subset of the data that contains the cell; p is the cell's share of
+  # all n_total person-age rows, so psi is on the same scale as with the full data.
   S <- as.numeric(DT$age == age_val & DT$female == gender & !is.na(DT$D) & DT$D == D_val)
-  p <- mean(S)
+  p <- sum(S) / n_total
   if (p <= 0) {
     stop(sprintf("No %s with age at first birth %d observed at age %d.",
                  if (gender == 1) "women" else "men", D_val, age_val), call. = FALSE)
   }
 
-  Y_bar <- mean(S * DT$Y) / p
+  Y_bar <- sum(S * DT$Y) / n_total / p
   psi   <- (S / p) * (DT$Y - Y_bar)
 
   DT[, (col_name) := psi]
@@ -192,11 +198,11 @@ compute_mean_if <- function(DT, age_val, gender, D_val, col_name) {
 }
 
 #' @keywords internal
-se_cluster <- function(DT, if_col) {
-  # cluster sums of the IF
+se_cluster <- function(DT, if_col, n_total = nrow(DT), G_total = data.table::uniqueN(DT$id)) {
+  # cluster sums of the IF; rows outside DT have psi = 0 and add nothing
   cluster_scores <- DT[, list(score = sum(get(if_col))), by = id]
-  n <- nrow(DT)                 # total observations contributing ψ_i
-  G <- nrow(cluster_scores)     # number of clusters
+  n <- n_total                  # person-age rows of the full data
+  G <- G_total                  # persons (clusters) in the full data
   v_hat <- (sum(cluster_scores$score^2) / (n^2)) * (G / (G - 1))
   sqrt(v_hat)
 }

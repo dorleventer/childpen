@@ -66,6 +66,17 @@ of rows that exist in both versions are unchanged (checked with
 * Row order: `multiple_treatment_group_analysis()` sorts by `d`, `event_time`,
   `dp`; `aggregate_estimands()` by `method`, `agg_type`, `event_time`.
 
+## Speed and memory
+
+* Each 2x2 comparison now uses only the rows of its two groups at the baseline
+  and target ages, and stores influence functions only for the persons in them;
+  the influence functions and variances are still scaled by the full data's
+  number of rows and persons. In a 280,000-row test,
+  `multiple_treatment_group_analysis()` runs about 6 times faster (191 s to 33 s)
+  and the stored influence functions take about 5 times less memory (418 MB to
+  76 MB). Results are unchanged up to floating-point rounding
+  (`dev/perf_check.R`).
+
 ## Bug fixes (standard errors change)
 
 * `aggregate_estimands()` with `weights = "sample"` (the default): the term for
