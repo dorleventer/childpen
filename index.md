@@ -42,9 +42,9 @@ remotes::install_github("dorleventer/childpen")
 
 ## Example
 
-The effect of parenthood on the gender earnings ratio and the
-conventional estimator, by treatment group and event time (the paper’s
-Figure 6b), on simulated data:
+The effect of parenthood on the gender earnings ratio, by treatment
+group and event time (the NTD estimates of the paper’s Figure 6b), on
+simulated data:
 
 ``` r
 
@@ -53,11 +53,12 @@ library(ggplot2)
 sim <- simulate_data(n_individuals = 20000, treatment_groups = 24:32)
 res <- multiple_treatment_group_analysis(sim, treatment_groups = 25:28, periods_post = 3,
                                          periods_pre = NULL, verbose = FALSE)
-est <- subset(res, (method == "NTD" & estimand == "rho_effect") |
-                   (method == "Conventional" & estimand == "gap_theta"))
-ggplot(est, aes(event_time, est, ymin = ci_l, ymax = ci_h, colour = method, fill = method)) +
-  geom_ribbon(alpha = 0.2, colour = NA) + geom_line() + geom_point() +
-  facet_wrap(~ d, nrow = 1) + labs(x = "Event time", y = "Estimate (95% CI)")
+est <- subset(res, method == "NTD" & estimand == "rho_effect")
+ggplot(est, aes(event_time, est, ymin = ci_l, ymax = ci_h)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_ribbon(alpha = 0.2) + geom_line() + geom_point() +
+  facet_wrap(~ d, nrow = 1, labeller = label_both) +
+  labs(x = "Event time", y = "Effect on gender earnings ratio (95% CI)")
 ```
 
 ![](reference/figures/README-example-1.png)
