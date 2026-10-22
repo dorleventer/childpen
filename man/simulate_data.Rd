@@ -23,43 +23,66 @@ effect unless \code{seed = NULL}, which draws from the current RNG state.}
 A balanced long panel (data.frame), \code{n_individuals} x
 (\code{max(treatment_groups)} - 20) rows sorted by id and age, with columns
 \code{id}, \code{female} (1 = female), \code{age}, \code{D} (age at first
-birth) and \code{Y} (earnings, positive).
+birth) and \code{Y} (earnings, positive). Attribute \code{"truth"}: the
+population values for every treatment group \code{d} and age
+\code{a >= d} (\code{event_time} = a - d): \code{APO_f}, \code{APO_m}
+(mean earnings absent children), \code{ATE_f}, \code{ATE_m},
+\code{theta_f}, \code{theta_m}, \code{gap_theta}, \code{rho_cf}
+(\eqn{\rho(\infty)}), \code{rho_obs} (\eqn{\rho(d)}), \code{rho_effect}
+(\eqn{\rho(d) - \rho(\infty)}), \code{share_parenthood}. Attribute
+\code{"params"}: the parameter values.
 }
 \description{
-Generates a balanced panel of annual earnings with life-cycle growth, a gender
-gap, selection on the timing of first birth, and gendered effects of
-parenthood, for trying out the estimators.
+Generates a balanced panel of annual earnings designed to show the patterns
+the paper discusses: selection on the timing of first birth that makes
+parallel trends fail in the paper's direction, effects of parenthood that
+differ by age at first birth and fade with time since birth, and a gender
+earnings ratio that falls with age. The true values are attached, so
+estimates can be compared with them.
 }
 \details{
-Earnings of person \eqn{i} at age \eqn{a} are
-\deqn{\log Y_{i,a} = \mu_0 + \lambda D_i + \alpha_i + \beta_1 (a - 20) +
-  \beta_2 (a - 20)^2 + \kappa F_i + \tau_f F_i 1\{a \ge D_i\} +
-  \tau_m (1 - F_i) 1\{a \ge D_i\} + \varepsilon_{i,a},}{
-  log Y = mu_0 + lambda D + alpha + beta_1 (a - 20) + beta_2 (a - 20)^2 +
-  kappa F + tau_f F 1{a >= D} + tau_m (1 - F) 1{a >= D} + eps,}
-with \eqn{F_i = 1} for women, \eqn{\mu_0 = 10}, \eqn{\lambda = 0.03},
-\eqn{\beta_1 = 0.08}, \eqn{\beta_2 = -0.003}, \eqn{\kappa = -0.10},
-\eqn{\tau_f = -0.30}, \eqn{\tau_m = -0.05}, a permanent effect
-\eqn{\alpha_i \sim N(0, 0.20^2)} and a transitory shock
-\eqn{\varepsilon_{i,a} \sim N(0, 0.15^2)}. The age at first birth \eqn{D_i} is
-drawn uniformly from \code{treatment_groups}, independently of gender and
-\eqn{\alpha_i}; \eqn{\lambda D_i} makes later first births earn more at every
-age (selection on timing).
-
-True values, the same for every treatment group and age after first birth:
-\eqn{\theta(f) = e^{-0.30} - 1 = -0.259}, \eqn{\theta(m) = e^{-0.05} - 1 =
--0.049}, gap \eqn{-0.210}; counterfactual gender earnings ratio
-\eqn{\rho(\infty) = e^{-0.10} = 0.905}, observed ratio \eqn{\rho(d) = 0.705},
-effect of parenthood on the ratio \eqn{\rho(d) - \rho(\infty) = -0.200};
-parenthood's share of the gender gap 0.678. Because \eqn{\lambda D_i} scales
-earnings levels by group, parallel trends in levels (DID-PT) and TD-PT fail,
-while NTD-PT, TD-PR and TD-E-LOGS hold.
+Earnings of person \eqn{i} with age at first birth \eqn{D_i} at age \eqn{a} are
+\deqn{\log Y_{i,a} = h_{D_i}(a) + \kappa(a) F_i + \tau_{F_i}(D_i, a - D_i)\,1\{a \ge D_i\}
+  + \alpha_i + \varepsilon_{i,a},}{
+  log Y = h_D(a) + kappa(a) F + tau_F(D, a - D) 1{a >= D} + alpha + eps,}
+with \eqn{F_i = 1} for women and:
+\itemize{
+\item \strong{Career entry and growth} (selection on timing):
+\eqn{h_D(a) = 9.6 + 0.02 (a - 20) + \beta(D) x - 0.0015 x^2}, with
+experience \eqn{x = \max(a - s(D), 0)}, entry age
+\eqn{s(D) = 20 + 0.7 (D - 24)} and slope \eqn{\beta(D) = 0.09 + 0.008 (D - 28)}.
+Later first births enter the labor market later (more schooling) and then
+grow faster. Before treatment, later groups grow more slowly (they are not
+yet working), so pre-treatment DID estimates are negative and grow with the
+distance to the control group; after treatment, the later control groups
+grow faster, so parallel trends fails with a negative violation for earlier
+treatment groups.
+\item \strong{Gender gap by age}: \eqn{\kappa(a) = -0.04 - 0.015 \max(a - 25, 0)},
+so the female/male ratio absent children is \eqn{e^{\kappa(a)}}: 0.96 up to
+age 25, then falling.
+\item \strong{Effects of parenthood}: mothers
+\eqn{\tau_f(D, e) = -0.45 + 0.02 (D - 24) + 0.04 \min(e, 5)} (smaller for later
+first births, fading with event time \eqn{e}); fathers
+\eqn{\tau_m = -0.02}. In normalized terms \eqn{\theta(g) = e^{\tau_g} - 1}.
+\item \strong{Noise}: \eqn{\alpha_i \sim N(0, 0.20^2)} (permanent),
+\eqn{\varepsilon_{i,a} \sim N(0, 0.15^2)} (transitory), independent of
+everything else.
+\item \strong{Age at first birth}: drawn from \code{treatment_groups} with
+probabilities proportional to a normal density with mean 29 and standard
+deviation 4, independently of gender.
+}
+Under this design DID-PT and TD-PT fail; TD-E-LOGS holds exactly (the gender
+terms cancel in log means); NTD-PT and TD-PR hold only approximately, because
+the gender ratio changes with age between the baseline and the target age.
+The NTD estimator therefore differs slightly from the true effect on the gender
+earnings ratio (by up to about 0.01 in this design); the attached true values
+show by how much.
 }
 \examples{
 \donttest{
 sim <- simulate_data(n_individuals = 2000)
 head(sim)
-range(sim$age)
+head(attr(sim, "truth"))
 }
 
 }
