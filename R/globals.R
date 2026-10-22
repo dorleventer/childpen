@@ -4,7 +4,8 @@ utils::globalVariables(c(
   "if_y_a_f_dp","if_y_a_m_dp","if_y_d_minus_1_f_dp","if_y_d_minus_1_m_dp",
   "if_apo_f","if_apo_m","if_ate_f","if_ate_m","if_theta_f","if_theta_m",
   "if_td","if_ntd_conv","if_ratio_y","if_ratio_apo","if_ntd_new",
-  "nf", "nd", "control_offset", "if_share_ntd", "if_share_elogs", "if_col", "t", "p", "a", "dp", "bc_score", "rho", "apo_f", "apo_m",
+  "nf", "nd", "control_offset", "if_share_ntd", "if_share_elogs", "if_col",
+  "agg_score_num", "agg_score_den", "t", "p", "a", "dp", "bc_score", "rho", "apo_f", "apo_m",
   "if_apo_mult_f","if_apo_mult_m","if_ratio_apo_mult","if_td_e_logs",
   "if_theta_pre_f","if_theta_pre_m","if_td_pr",
   # aggregate_estimands() columns

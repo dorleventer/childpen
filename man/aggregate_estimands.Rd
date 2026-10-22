@@ -40,14 +40,18 @@ and of the accounting rows \code{rho_obs}, \code{rho_cf},
 \code{weighted_avg} of \code{gap_theta_pre}.}
 
 \item{include_pre}{Logical (default \code{FALSE}). Also aggregate
-pre-treatment event times.}
+pre-treatment event times. A pre-treatment event time has one cell per
+control group (\code{control_offset} = \eqn{d' - d}), and each offset is
+aggregated separately, so each row is the validation test of one
+treatment-control distance.}
 }
 \value{
 A data.frame with one row per event time, estimand, method and
-aggregation type: \code{event_time}, \code{estimand}, \code{method},
-\code{agg_type}, \code{est}, \code{se}, \code{n_groups} (treatment groups
-with positive weight), \code{ci_l}, \code{ci_h} (est -/+ 1.96 se),
-\code{t}, \code{p}.
+aggregation type: \code{event_time}, \code{control_offset} (\eqn{d' - d};
+after treatment it is \code{event_time} + 1), \code{estimand},
+\code{method}, \code{agg_type}, \code{est}, \code{se}, \code{n_groups}
+(treatment groups with positive weight), \code{ci_l}, \code{ci_h} (est -/+
+1.96 se), \code{t}, \code{p}.
 }
 \description{
 Averages the treatment-group-specific estimates from
@@ -72,10 +76,14 @@ why the paper prefers \eqn{\theta_{Agg,1}} (Section 5.1).
 estimator section of the appendix on estimation and inference) sums the treatment-group influence functions with the weights; with
 \code{weights = "sample"} it adds the term for the estimated shares,
 \eqn{\psi_{A(e)} = P_e^{-1}\sum_d [(B_d - A(e))\psi_{p_d} + p_d\psi_{B_d}]},
-\eqn{\psi_{p_d} = 1\{D = d\} - p_d} (\eqn{1\{G = g, D = d\} - p_{g,d}} for
-within-gender shares). For \code{ratio_of_avgs} the chain rule is applied to
-the ratio, with the weights treated as fixed. Standard errors are clustered by
-person.
+\eqn{\psi_{p_d} = 1\{D = d\} - p_d}, where \eqn{p_d} is the share of persons
+in group \eqn{d} (\eqn{1\{G = g, D = d\} - p_{g,d}} with the joint share of
+gender \eqn{g} and group \eqn{d} for the within-gender DID rows) and
+\eqn{P_e} the summed share of the aggregated groups. For
+\code{ratio_of_avgs} the chain rule is applied to the ratio of the two
+weighted averages, each with its share term. Standard errors are clustered by
+person. The share term is put on the person-age scale with the average number
+of ages per person, exact for a balanced panel.
 
 Not every treatment group has an estimate at every event time; each event
 time uses the groups present, and \code{n_groups} reports how many.

@@ -30,13 +30,17 @@
 #'   \code{TD}: \code{weighted_avg} of \code{gap_ATE}; \code{TD_PR}:
 #'   \code{weighted_avg} of \code{gap_theta_pre}.
 #' @param include_pre Logical (default \code{FALSE}). Also aggregate
-#'   pre-treatment event times.
+#'   pre-treatment event times. A pre-treatment event time has one cell per
+#'   control group (\code{control_offset} = \eqn{d' - d}), and each offset is
+#'   aggregated separately, so each row is the validation test of one
+#'   treatment-control distance.
 #'
 #' @return A data.frame with one row per event time, estimand, method and
-#'   aggregation type: \code{event_time}, \code{estimand}, \code{method},
-#'   \code{agg_type}, \code{est}, \code{se}, \code{n_groups} (treatment groups
-#'   with positive weight), \code{ci_l}, \code{ci_h} (est -/+ 1.96 se),
-#'   \code{t}, \code{p}.
+#'   aggregation type: \code{event_time}, \code{control_offset} (\eqn{d' - d};
+#'   after treatment it is \code{event_time} + 1), \code{estimand},
+#'   \code{method}, \code{agg_type}, \code{est}, \code{se}, \code{n_groups}
+#'   (treatment groups with positive weight), \code{ci_l}, \code{ci_h} (est -/+
+#'   1.96 se), \code{t}, \code{p}.
 #'
 #' @details
 #' \code{agg_type = "weighted_avg"} is \eqn{\sum_d w_d B_d} over the
@@ -54,10 +58,14 @@
 #' estimator section of the appendix on estimation and inference) sums the treatment-group influence functions with the weights; with
 #' \code{weights = "sample"} it adds the term for the estimated shares,
 #' \eqn{\psi_{A(e)} = P_e^{-1}\sum_d [(B_d - A(e))\psi_{p_d} + p_d\psi_{B_d}]},
-#' \eqn{\psi_{p_d} = 1\{D = d\} - p_d} (\eqn{1\{G = g, D = d\} - p_{g,d}} for
-#' within-gender shares). For \code{ratio_of_avgs} the chain rule is applied to
-#' the ratio, with the weights treated as fixed. Standard errors are clustered by
-#' person.
+#' \eqn{\psi_{p_d} = 1\{D = d\} - p_d}, where \eqn{p_d} is the share of persons
+#' in group \eqn{d} (\eqn{1\{G = g, D = d\} - p_{g,d}} with the joint share of
+#' gender \eqn{g} and group \eqn{d} for the within-gender DID rows) and
+#' \eqn{P_e} the summed share of the aggregated groups. For
+#' \code{ratio_of_avgs} the chain rule is applied to the ratio of the two
+#' weighted averages, each with its share term. Standard errors are clustered by
+#' person. The share term is put on the person-age scale with the average number
+#' of ages per person, exact for a balanced panel.
 #'
 #' Not every treatment group has an estimate at every event time; each event
 #' time uses the groups present, and \code{n_groups} reports how many.
@@ -227,81 +235,76 @@ aggregate_estimands <- function(results,
     return("cross")  # TD, Conventional, NTD, TD_E_LOGS, TD_PR
   }
 
-  # ---- Helper: SE from aggregate IFs (cluster-robust) ----------------------
-  # Computes the SE of a weighted aggregate, optionally including the
-  # proportion-IF correction term from the paper.
+  # ---- Helper: person-level IF of a weighted aggregate (cluster-robust) ------
+  # psi_A = sum_d w_d psi_{B_d}  +  (with sample weights) the term for the estimated
+  # shares, (B_{D_i} - A) / P_e for persons i in the aggregated groups (estimation appendix):
+  #   psi_A(e) = P_e^{-1} sum_d [ (B_d - A) psi_{p_d} + p_d psi_{B_d} ],
+  #   psi_{p_d} = 1{D = d} - p_d,  P_e = sum_d p_d  (shares of persons, not counts).
+  # if_data is person-level and on the person-age scale (sums of observation IFs), so the
+  # share term is multiplied by T = n_obs / n_ids to put it on the same scale.
   #
   # if_col:      name of the IF column in if_data
-  # d_vals:      vector of d values being aggregated
-  # et:          event time
-  # w_vec:       normalised weight vector (same order as d_vals)
-  # B_vals:      single-group estimate values (same order as d_vals)
-  # A_est:       aggregate point estimate
+  # d_vals:      treatment groups aggregated
+  # et, offset:  event time and control offset (dp - d) of the cell
+  # w_vec:       normalised weights (same order as d_vals)
+  # B_vals:      group estimates (same order as d_vals); A_est: the aggregate
   # weight_type: "within_female", "within_male", or "cross" (for sample weights)
-  .agg_se_from_ifs <- function(if_col, d_vals, et, w_vec, B_vals, A_est,
-                               weight_type = NULL) {
+  .agg_if_scores <- function(if_col, d_vals, et, offset, w_vec, B_vals, A_est,
+                             weight_type = NULL) {
     w_named <- stats::setNames(w_vec, as.character(d_vals))
 
     # Term 1: weighted sum of single-group IFs
-    sub <- if_data[event_time == et & d %in% d_vals]
+    sub <- if_data[event_time == et & d %in% d_vals & (dp - d) == offset]
     sub[, wt := w_named[as.character(d)]]
     sub[, weighted_score := wt * get(if_col)]
 
     id_scores <- sub[, .(term1 = sum(weighted_score)), by = id]
 
-    # Term 2: proportion-IF correction (only for sample weights)
+    # Term 2: estimated shares (only for sample weights)
     if (use_sample_weights && !is.null(weight_type)) {
-      # M = sum of proportions for groups in this cell
+      # P_e: share of persons in the aggregated groups (within gender: joint share of
+      # gender g and the group)
       if (weight_type == "within_female") {
-        M_total <- sum(n_female_by_d[D %in% d_vals, n_gd])
+        P_e <- sum(n_female_by_d[D %in% d_vals, n_gd]) / n_ids
       } else if (weight_type == "within_male") {
-        M_total <- sum(n_male_by_d[D %in% d_vals, n_gd])
+        P_e <- sum(n_male_by_d[D %in% d_vals, n_gd]) / n_ids
       } else {
-        M_total <- sum(n_by_d[D %in% d_vals, n_d])
+        P_e <- sum(n_by_d[D %in% d_vals, n_d]) / n_ids
       }
 
-      # For each individual: (B_{D_c} - A) / M, with gender filter
-      # Map B values by d
       B_named <- stats::setNames(B_vals, as.character(d_vals))
-
-      # Get each individual's D and compute their proportion-IF contribution
       id_D <- id_info[, .(id, female, D)]
-
-      # Only individuals whose D is in d_vals contribute a non-zero proportion IF
-      # (for others, B_{D_c} is undefined but the proportion IF simplifies to
-      #  -(B_{D_c} - A)/M * p_d which sums to zero across d anyway)
-      #
-      # Using the simplification from the appendix derivation:
-      # Sum_d (B_d - A)/M * psi_{p_d,c} = (B_{D_c} - A)/M * gender_match
-      # where gender_match = 1 for cross-gender, 1{g_c = g} for within-gender
-
       id_D[, B_own := B_named[as.character(D)]]
       id_D[, prop_contrib := 0.0]
-
+      # sum_d (B_d - A) (1{D_i = d} - p_d) / P_e = (B_{D_i} - A) / P_e for persons in the
+      # groups, since sum_d p_d (B_d - A) / P_e = sum_d w_d B_d - A = 0
       if (weight_type == "within_female") {
-        id_D[female == 1 & D %in% d_vals,
-             prop_contrib := T_ages * (B_own - A_est) / M_total]
+        id_D[female == 1 & D %in% d_vals, prop_contrib := T_ages * (B_own - A_est) / P_e]
       } else if (weight_type == "within_male") {
-        id_D[female == 0 & D %in% d_vals,
-             prop_contrib := T_ages * (B_own - A_est) / M_total]
+        id_D[female == 0 & D %in% d_vals, prop_contrib := T_ages * (B_own - A_est) / P_e]
       } else {
-        id_D[D %in% d_vals,
-             prop_contrib := T_ages * (B_own - A_est) / M_total]
+        id_D[D %in% d_vals, prop_contrib := T_ages * (B_own - A_est) / P_e]
       }
 
-      # Merge with term1 scores
-      id_scores <- merge(id_scores, id_D[, .(id, prop_contrib)],
-                         by = "id", all = TRUE)
+      id_scores <- merge(id_scores, id_D[, .(id, prop_contrib)], by = "id", all = TRUE)
       id_scores[is.na(term1), term1 := 0]
       id_scores[is.na(prop_contrib), prop_contrib := 0]
       id_scores[, agg_score := term1 + prop_contrib]
     } else {
       id_scores[, agg_score := term1]
     }
+    id_scores[, .(id, agg_score)]
+  }
 
+  .se_from_scores <- function(scores) {
     G <- n_ids
-    v_hat <- (sum(id_scores$agg_score^2) / (n_obs^2)) * (G / (G - 1))
-    sqrt(v_hat)
+    sqrt((sum(scores^2) / (n_obs^2)) * (G / (G - 1)))
+  }
+
+  .agg_se_from_ifs <- function(if_col, d_vals, et, offset, w_vec, B_vals, A_est,
+                               weight_type = NULL) {
+    .se_from_scores(.agg_if_scores(if_col, d_vals, et, offset, w_vec, B_vals, A_est,
+                                   weight_type)$agg_score)
   }
 
   # ---- Helper: SE under independence (fallback) ----------------------------
@@ -333,14 +336,17 @@ aggregate_estimands <- function(results,
 
   agg1_list <- list()
   if (nrow(avg_rows) > 0L) {
-    cells <- unique(avg_rows[, .(event_time, method, estimand)])
+    # Pre-treatment cells have several control groups per (d, event_time): one aggregate per
+    # control offset dp - d (post-treatment cells have one, offset = event_time + 1).
+    cells <- unique(avg_rows[, .(event_time, control_offset, method, estimand)])
 
     for (i in seq_len(nrow(cells))) {
       et  <- cells$event_time[i]
+      off <- cells$control_offset[i]
       mth <- cells$method[i]
       est_name <- cells$estimand[i]
 
-      sub <- avg_rows[event_time == et & method == mth & estimand == est_name]
+      sub <- avg_rows[event_time == et & control_offset == off & method == mth & estimand == est_name]
       wt  <- .weight_type(mth)
       w   <- .get_weights(sub$d, wt)
       if_col <- sub$if_col[1]; sgn <- sub$sign[1]
@@ -350,7 +356,7 @@ aggregate_estimands <- function(results,
       if (has_ifs && if_col %in% names(if_data)) {
         # the SE of sum_d w_d B_d with IF sign * psi: the sign does not change the variance,
         # but the weight-estimation term uses B_d, so pass B_d = sign * est to keep it consistent
-        se_agg <- .agg_se_from_ifs(if_col, sub$d, et, w,
+        se_agg <- .agg_se_from_ifs(if_col, sub$d, et, off, w,
                                    B_vals = sgn * sub$est, A_est = sgn * est_agg,
                                    weight_type = wt)
       } else {
@@ -359,6 +365,7 @@ aggregate_estimands <- function(results,
 
       agg1_list[[length(agg1_list) + 1L]] <- data.table(
         event_time = et,
+        control_offset = off,
         estimand   = est_name,
         method     = mth,
         agg_type   = "weighted_avg",
@@ -379,24 +386,20 @@ aggregate_estimands <- function(results,
   apo_if_map <- c(DID_Female = "if_apo_f", DID_Male = "if_apo_m")
 
   if (nrow(ate_rows) > 0L && nrow(apo_rows) > 0L) {
-    ate_cells <- unique(ate_rows[, .(d, event_time, method)])
-    apo_cells <- unique(apo_rows[, .(d, event_time, method)])
+    keys <- c("d", "event_time", "control_offset", "method")
+    both <- merge(ate_rows[, .(d, event_time, control_offset, method, est_ate = est, se_ate = se)],
+                  apo_rows[, .(d, event_time, control_offset, method, est_apo = est, se_apo = se)],
+                  by = keys)
 
-    joined <- merge(ate_cells, apo_cells, by = c("d", "event_time", "method"))
-
-    if (nrow(joined) > 0L) {
-      ate_m_dt <- merge(joined, ate_rows[, .(d, event_time, method, est_ate = est, se_ate = se)],
-                     by = c("d", "event_time", "method"))
-      both  <- merge(ate_m_dt, apo_rows[, .(d, event_time, method, est_apo = est, se_apo = se)],
-                     by = c("d", "event_time", "method"))
-
-      cells2 <- unique(both[, .(event_time, method)])
+    if (nrow(both) > 0L) {
+      cells2 <- unique(both[, .(event_time, control_offset, method)])
 
       for (i in seq_len(nrow(cells2))) {
         et  <- cells2$event_time[i]
+        off <- cells2$control_offset[i]
         mth <- cells2$method[i]
 
-        sub <- both[event_time == et & method == mth]
+        sub <- both[event_time == et & control_offset == off & method == mth]
         wt  <- .weight_type(mth)
         w   <- .get_weights(sub$d, wt)
 
@@ -410,26 +413,16 @@ aggregate_estimands <- function(results,
           est_agg <- mu_ate / mu_apo
 
           if (has_ifs && mth %in% names(ate_if_map)) {
-            # Delta method on aggregate IFs for numerator and denominator
-            w_named <- stats::setNames(w, as.character(sub$d))
-            sub_if <- if_data[event_time == et & d %in% sub$d]
-            sub_if[, wt_col := w_named[as.character(d)]]
-
-            ate_col <- ate_if_map[[mth]]
-            apo_col <- apo_if_map[[mth]]
-
-            id_scores <- sub_if[, .(
-              agg_ate = sum(wt_col * get(ate_col)),
-              agg_apo = sum(wt_col * get(apo_col))
-            ), by = id]
-
-            # Apply delta method: IF(ratio) per id
-            id_scores[, ratio_if := (1 / mu_apo) * agg_ate -
-                                    (mu_ate / mu_apo^2) * agg_apo]
-
-            G <- n_ids
-            v_hat <- (sum(id_scores$ratio_if^2) / (n_obs^2)) * (G / (G - 1))
-            se_agg <- sqrt(v_hat)
+            # Chain rule on the IFs of the two weighted averages (each with its
+            # estimated-share term under sample weights)
+            num <- .agg_if_scores(ate_if_map[[mth]], sub$d, et, off, w,
+                                  B_vals = sub$est_ate, A_est = mu_ate, weight_type = wt)
+            den <- .agg_if_scores(apo_if_map[[mth]], sub$d, et, off, w,
+                                  B_vals = sub$est_apo, A_est = mu_apo, weight_type = wt)
+            id_scores <- merge(num, den, by = "id", suffixes = c("_num", "_den"))
+            id_scores[, ratio_if := (1 / mu_apo) * agg_score_num -
+                                    (mu_ate / mu_apo^2) * agg_score_den]
+            se_agg <- .se_from_scores(id_scores$ratio_if)
           } else {
             var_mu_ate <- sum(w^2 * sub$se_ate^2)
             var_mu_apo <- sum(w^2 * sub$se_apo^2)
@@ -440,6 +433,7 @@ aggregate_estimands <- function(results,
 
         agg2_list[[length(agg2_list) + 1L]] <- data.table(
           event_time = et,
+          control_offset = off,
           estimand   = "theta",
           method     = mth,
           agg_type   = "ratio_of_avgs",
@@ -465,7 +459,7 @@ aggregate_estimands <- function(results,
   out[, t := est / se]
   out[, p := 2 * stats::pnorm(-abs(est / se))]
 
-  data.table::setorderv(out, c("method", "agg_type", "event_time"))
+  data.table::setorderv(out, c("method", "agg_type", "event_time", "control_offset"))
 
   return(as.data.frame(out))
 }
