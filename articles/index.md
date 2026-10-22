@@ -1,14 +1,11 @@
 # Articles
 
-### Guides
+### Articles
 
-The following vignettes show how to use the code in the package, as well
-as the main take-aways from the paper.
-
-- [Notation](https://dorleventer.github.io/childpen/articles/notation.md):
-- [Estimation](https://dorleventer.github.io/childpen/articles/estimation.md):
-- [NTD-identification](https://dorleventer.github.io/childpen/articles/NTD-identification.md):
-- [validation_tests](https://dorleventer.github.io/childpen/articles/validation_tests.md):
-- [aggregate-estimands](https://dorleventer.github.io/childpen/articles/aggregate-estimands.md):
-- [Estimators and standard
-  errors](https://dorleventer.github.io/childpen/articles/estimators.md):
+- [Notation and
+  output](https://dorleventer.github.io/childpen/articles/notation.md):
+- [Identification](https://dorleventer.github.io/childpen/articles/identification.md):
+- [Estimation](https://dorleventer.github.io/childpen/articles/estimators.md):
+- [Aggregation](https://dorleventer.github.io/childpen/articles/aggregation.md):
+- [Replicating the
+  paper](https://dorleventer.github.io/childpen/articles/replication.md):

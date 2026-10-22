@@ -31,8 +31,16 @@ attached."><meta property="og:image" content="https://dorleventer.github.io/chil
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/notation.html">Notation and output</a></li>
+    <li><a class="dropdown-item" href="../articles/identification.html">Identification</a></li>
+    <li><a class="dropdown-item" href="../articles/estimators.html">Estimation</a></li>
+    <li><a class="dropdown-item" href="../articles/aggregation.html">Aggregation</a></li>
+    <li><a class="dropdown-item" href="../articles/replication.html">Replicating the paper</a></li>
+  </ul></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/dorleventer/childpen" aria-label="GitHub repository"><span class="fa fa-github"></span></a></li>
       </ul></div>
 
@@ -160,28 +168,28 @@ unmodified.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD"</span> <span class="op">&amp;</span> <span class="va">estimand</span> <span class="op">==</span> <span class="st">"rho_effect"</span> <span class="op">&amp;</span> <span class="va">event_time</span> <span class="op">&gt;=</span> <span class="fl">0</span>,</span></span>
 <span class="r-in"><span>       <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">dp</span>, <span class="va">est</span>, <span class="va">se</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      d event_time dp        est         se</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 85  24          0 25 -0.2155028 0.02448841</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 104 24          1 26 -0.1942861 0.02646790</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 199 25          0 26 -0.2330218 0.02663998</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 218 25          1 27 -0.2506474 0.02690808</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 313 26          0 27 -0.2304474 0.02872262</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 332 26          1 28 -0.2202934 0.02769264</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 85  24          0 25 -0.3488283 0.03273725</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104 24          1 26 -0.3312687 0.02878966</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 199 25          0 26 -0.3474838 0.02865365</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 218 25          1 27 -0.2493495 0.02378134</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 313 26          0 27 -0.3369988 0.02773765</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 332 26          1 28 -0.3083804 0.02364997</span>
 <span class="r-in"><span><span class="co"># Pre-treatment validation tests of NTD, one row per control group</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"Conventional"</span> <span class="op">&amp;</span> <span class="va">event_time</span> <span class="op">&lt;</span> <span class="fl">0</span>,</span></span>
 <span class="r-in"><span>       <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">control_offset</span>, <span class="va">est</span>, <span class="va">se</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      d event_time control_offset         est         se</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   24         -3              1  0.01921502 0.03283876</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27  24         -3              2  0.06301764 0.03668203</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46  24         -2              1  0.01213057 0.03044800</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65  24         -2              2  0.01019054 0.03274121</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 122 25         -3              1 -0.04214755 0.03294678</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 141 25         -3              2 -0.09041602 0.03431302</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 160 25         -2              1 -0.03554836 0.02992490</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 179 25         -2              2 -0.04118812 0.03240116</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 236 26         -3              1 -0.01839902 0.03515728</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 255 26         -3              2 -0.02436191 0.03434374</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 274 26         -2              1 -0.01240937 0.03185278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 293 26         -2              2 -0.04130854 0.03336731</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   24         -3              1 -0.01457375 0.04330571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27  24         -3              2  0.01314518 0.03743401</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46  24         -2              1 -0.03754368 0.03958102</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65  24         -2              2  0.03862179 0.03559579</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 122 25         -3              1  0.06846944 0.03595722</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 141 25         -3              2  0.04753514 0.03251608</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 160 25         -2              1 -0.00211053 0.03565733</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179 25         -2              2  0.01133560 0.03342872</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 236 26         -3              1 -0.04052352 0.03803836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 255 26         -3              2 -0.06175024 0.03378960</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 274 26         -2              1 -0.05097870 0.03568219</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 293 26         -2              2 -0.07219692 0.03168115</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

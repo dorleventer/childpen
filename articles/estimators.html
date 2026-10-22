@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Estimators and standard errors • childpen</title>
+<title>Estimation • childpen</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,7 +15,7 @@
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Estimators and standard errors">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Estimation">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,8 +34,18 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
-<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="active nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/notation.html">Notation and output</a></li>
+    <li><a class="dropdown-item" href="../articles/identification.html">Identification</a></li>
+    <li><a class="dropdown-item" href="../articles/estimators.html">Estimation</a></li>
+    <li><a class="dropdown-item" href="../articles/aggregation.html">Aggregation</a></li>
+    <li><a class="dropdown-item" href="../articles/replication.html">Replicating the paper</a></li>
+  </ul>
+</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/dorleventer/childpen" aria-label="GitHub repository"><span class="fa fa-github"></span></a></li>
@@ -51,7 +61,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Estimators and standard errors</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Estimation</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/dorleventer/childpen/blob/main/vignettes/estimators.Rmd" class="external-link"><code>vignettes/estimators.Rmd</code></a></small>
@@ -60,15 +70,56 @@
 
     
     
-<p>This page writes out every estimator the package returns and the
-influence function its standard error is built from. Section, theorem
-and appendix numbers refer to Leventer (2025), <em>Identification of
-Child Penalties</em>; appendices are referred to by name, because their
-letters differ between the arXiv and journal versions: <em>Estimation
-appendix</em> is the appendix on estimation and inference,
-<em>Proportional appendix</em> the online appendix on proportional DID
-and TD. Formulas that are not in the paper are marked <strong>not in the
-paper</strong>.</p>
+<p>This page describes how the package runs the paper’s 2x2 comparisons,
+then writes out every estimator it returns and the influence function
+its standard error is built from. Notation follows <a href="notation.html">Notation and output</a>; the identification results
+behind each row are in <a href="identification.html">Identification</a>.
+Section, theorem and appendix numbers refer to Leventer (2025),
+<em>Identification of Child Penalties</em>; appendices are referred to
+by name, because their letters differ between the arXiv and journal
+versions: <em>Estimation appendix</em> is the appendix on estimation and
+inference, <em>Proportional appendix</em> the online appendix on
+proportional DID and TD. Formulas that are not in the paper are marked
+<strong>not in the paper</strong>.</p>
+<div class="section level2">
+<h2 id="running-the-comparisons">Running the comparisons<a class="anchor" aria-label="anchor" href="#running-the-comparisons"></a>
+</h2>
+<p><code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> runs the grid of 2x2
+comparisons that the paper’s figures use. For each treatment group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+in <code>treatment_groups</code> and event time
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>=</mo><mn>0</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>H</mi></mrow><annotation encoding="application/x-tex">e = 0, \dots, H</annotation></semantics></math>
+(<code>periods_post = H</code>), the target age is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mi>d</mi><mo>+</mo><mi>e</mi></mrow><annotation encoding="application/x-tex">a = d + e</annotation></semantics></math>
+and the control group is the closest not-yet-treated group,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mi>a</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d' = a + 1</annotation></semantics></math>
+(Section 1.3). Pre-treatment event times
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>=</mo><mi>−</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">pre</mtext><mo>+</mo><mi>K</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mi>…</mi><mo>,</mo><mi>−</mi><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">pre</mtext><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">e = -(\text{pre} + K), \dots, -(\text{pre} + 1)</annotation></semantics></math>
+(<code>periods_pre = K</code>) are estimated against every control group
+used after treatment,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mi>d</mi><mo>+</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>H</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d' = d + 1, \dots, d + H + 1</annotation></semantics></math>:
+the identifying assumptions are about each treatment-control pair, so
+each pair has its own validation test (Section 2.3). The column
+<code>control_offset</code>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><msup><mi>d</mi><mo>′</mo></msup><mo>−</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">= d' - d</annotation></semantics></math>
+identifies the pair. <code>max_control_group</code> is the largest age
+at first birth used as a control (the paper’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub><annotation encoding="application/x-tex">D_{max}</annotation></semantics></math>).
+<code><a href="../reference/single_treatment_group_analysis.html">single_treatment_group_analysis()</a></code> runs one comparison.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis</a></span><span class="op">(</span><span class="va">data</span>, treatment_groups <span class="op">=</span> <span class="fl">24</span><span class="op">:</span><span class="fl">34</span>,</span>
+<span>                                         periods_post <span class="op">=</span> <span class="fl">5</span>, periods_pre <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>                                         max_control_group <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span></code></pre></div>
+<p>With the paper’s sample this grid is the one behind its figures:
+treatment groups 24 to 34, event times 0 to 5, pre-treatment event times
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>4</mn></mrow><annotation encoding="application/x-tex">-4</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">-2</annotation></semantics></math>
+(baseline
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d - 1</annotation></semantics></math>),
+and controls up to 40 (<a href="replication.html">Replicating the
+paper</a>).</p>
+</div>
 <div class="section level2">
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
@@ -283,8 +334,22 @@ the <code>share_parenthood</code> row of <code>TD_E_LOGS</code> uses
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>c</mi><mi>f</mi></mrow><mo>×</mo></msubsup><annotation encoding="application/x-tex">\hat\rho^{\times}_{cf}</annotation></semantics></math>
 in place of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>c</mi><mi>f</mi></mrow></msub><annotation encoding="application/x-tex">\hat\rho_{cf}</annotation></semantics></math>.</p>
-<p><strong>Accounting (not in the paper).</strong> The paper splits the
-observed gender gap
+<p><strong>Rows behind the paper’s figures.</strong> Pre-treatment
+<code>DID_Female</code> / <code>DID_Male</code> <code>ATE</code> rows:
+the DID validation tests (Figure 3). <code>Conventional</code>
+<code>gap_theta</code>: the conventional estimator (Figure 6b), its
+pre-treatment rows the NTD validation tests (Figure 5), and with
+<code><a href="../reference/bias_bounds.html">bias_bounds()</a></code> the bias-bounding exercise (Figure 4).
+<code>NTD</code> <code>rho_obs</code> and <code>rho_cf</code>: the two
+ratios (Figure 6a); <code>NTD</code> <code>rho_effect</code>: the new
+estimator (Figure 6b); the two ratios, or <code>share_parenthood</code>
+and <code>share_other</code>, give the accounting (Figure 6c).
+<code>TD_E_LOGS</code> and <code>TD_PR</code>: the Proportional
+appendix’s validation and estimate figures. Aggregates: <a href="aggregation.html">Aggregation</a>. Each figure is reproduced on
+simulated data in <a href="replication.html">Replicating the
+paper</a>.</p>
+<p><strong>Accounting (standard errors not in the paper).</strong> The
+paper splits the observed gender gap
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \rho(d)</annotation></semantics></math>
 into parenthood,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(\infty) - \rho(d)</annotation></semantics></math>,

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Notation • childpen</title>
+<title>Notation and output • childpen</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -15,7 +15,7 @@
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Notation">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Notation and output">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,8 +34,18 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
-<li class="active nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+<li class="active nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/notation.html">Notation and output</a></li>
+    <li><a class="dropdown-item" href="../articles/identification.html">Identification</a></li>
+    <li><a class="dropdown-item" href="../articles/estimators.html">Estimation</a></li>
+    <li><a class="dropdown-item" href="../articles/aggregation.html">Aggregation</a></li>
+    <li><a class="dropdown-item" href="../articles/replication.html">Replicating the paper</a></li>
+  </ul>
+</li>
+<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/dorleventer/childpen" aria-label="GitHub repository"><span class="fa fa-github"></span></a></li>
@@ -51,7 +61,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Notation</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Notation and output</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/dorleventer/childpen/blob/main/vignettes/notation.Rmd" class="external-link"><code>vignettes/notation.Rmd</code></a></small>
@@ -60,62 +70,857 @@
 
     
     
-<p>Symbols used throughout the package vignettes (see <a href="https://arxiv.org/abs/2602.07486" class="external-link">Leventer 2025, §2–3</a> for
-formal definitions):</p>
+<p>This page maps the notation of Leventer (2025), <a href="https://arxiv.org/abs/2602.07486" class="external-link"><em>Identification of Child
+Penalties</em></a>, to the rows and columns the package returns.
+Section, theorem, proposition and equation numbers refer to the main
+text; appendices are referred to by name. The articles that follow are
+<a href="identification.html">Identification</a>, <a href="estimators.html">Estimation</a>, <a href="aggregation.html">Aggregation</a> and <a href="replication.html">Replicating the paper</a>.</p>
+<div class="section level2">
+<h2 id="the-2x2">1. The 2x2<a class="anchor" aria-label="anchor" href="#the-2x2"></a>
+</h2>
+<p>A single comparison involves a gender
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mi>f</mi><mo>,</mo><mi>m</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">g \in \{f, m\}</annotation></semantics></math>,
+a treatment group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>,
+a control group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mo>′</mo></msup><annotation encoding="application/x-tex">d'</annotation></semantics></math>,
+a target age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+and a baseline age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>.</p>
 <table class="table">
 <colgroup>
-<col width="42%">
-<col width="57%">
+<col width="33%">
+<col width="33%">
+<col width="33%">
 </colgroup>
 <thead><tr class="header">
-<th>Symbol</th>
-<th>Definition</th>
+<th>symbol</th>
+<th>meaning</th>
+<th>in the package</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mi>f</mi><mo>,</mo><mi>m</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">G \in \{f,m\}</annotation></semantics></math></td>
-<td>Gender (female, male)</td>
-</tr>
-<tr class="even">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math></td>
-<td>Age at first childbirth (treatment timing)</td>
-</tr>
-<tr class="odd">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_{i,a}(d)</annotation></semantics></math></td>
-<td>Potential earnings of individual
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-at age
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
-if first birth occurs at age
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math></td>
+<td>treatment group: age at first birth</td>
+<td>
+<code>d</code>, <code>treatment_groups</code>
 </td>
 </tr>
 <tr class="even">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_{i,a}(\infty)</annotation></semantics></math></td>
-<td>Potential earnings under never having a child</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mo>′</mo></msup><annotation encoding="application/x-tex">d'</annotation></semantics></math></td>
+<td>control group: an age at first birth not yet reached at the target
+age,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>&gt;</mo><mi>a</mi></mrow><annotation encoding="application/x-tex">d' &gt; a</annotation></semantics></math>.
+Here the closest not-yet-treated group,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mi>a</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d' = a + 1</annotation></semantics></math>
+(Section 1.3)</td>
+<td><code>dp</code></td>
 </tr>
 <tr class="odd">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\text{APO}(g,d,a) = \mathbb{E}[Y_a(\infty) \mid G=g, D=d]</annotation></semantics></math></td>
-<td>Average counterfactual earnings</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></td>
+<td>target age</td>
+<td><code>a</code></td>
 </tr>
 <tr class="even">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">ATE</mtext><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>Y</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\text{ATE}(g,d,a) = \mathbb{E}[Y_a(d) - Y_a(\infty) \mid G=g, D=d]</annotation></semantics></math></td>
-<td>Average treatment effect of parenthood</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mi>d</mi><mo>−</mo><mtext mathvariant="normal">pre</mtext></mrow><annotation encoding="application/x-tex">b = d - \text{pre}</annotation></semantics></math></td>
+<td>baseline age;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mi>d</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">b = d - 1</annotation></semantics></math>
+by default</td>
+<td><code>pre</code></td>
 </tr>
 <tr class="odd">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mtext mathvariant="normal">ATE</mtext><mi>/</mi><mtext mathvariant="normal">APO</mtext></mrow><annotation encoding="application/x-tex">\theta(g,d,a) = \text{ATE}/\text{APO}</annotation></semantics></math></td>
-<td>Normalised effect (proportional earnings change)</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>=</mo><mi>a</mi><mo>−</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">e = a - d</annotation></semantics></math></td>
+<td>event time</td>
+<td><code>event_time</code></td>
 </tr>
 <tr class="even">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mtext mathvariant="normal">APO</mtext><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d,a) = \text{APO}(f,d,a) / \text{APO}(m,d,a)</annotation></semantics></math></td>
-<td>Gender earnings ratio (counterfactual)</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>−</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">d' - d</annotation></semantics></math></td>
+<td>control offset</td>
+<td><code>control_offset</code></td>
 </tr>
 <tr class="odd">
-<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Delta\rho(d,a)</annotation></semantics></math></td>
-<td>Effect of parenthood on the gender earnings ratio</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mi mathvariant="normal">max</mi></msub><annotation encoding="application/x-tex">D_{\max}</annotation></semantics></math></td>
+<td>largest age at first birth allowed as a control group</td>
+<td><code>max_control_group</code></td>
 </tr>
 </tbody>
-</table></main>
+</table>
+<p>With
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mi>a</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d' = a + 1</annotation></semantics></math>,
+a post-treatment cell at event time
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>e</mi><annotation encoding="application/x-tex">e</annotation></semantics></math>
+has control offset
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">e + 1</annotation></semantics></math>.
+For
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mn>26</mn></mrow><annotation encoding="application/x-tex">d = 26</annotation></semantics></math>:</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>event time
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>e</mi><annotation encoding="application/x-tex">e</annotation></semantics></math>
+</th>
+<th>target age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+</th>
+<th>control group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mo>′</mo></msup><annotation encoding="application/x-tex">d'</annotation></semantics></math>
+</th>
+<th>control offset
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>−</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">d' - d</annotation></semantics></math>
+</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>26</td>
+<td>27</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>27</td>
+<td>28</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>28</td>
+<td>29</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p><code><a href="../reference/single_treatment_group_analysis.html">single_treatment_group_analysis()</a></code> accepts any
+<code>dp</code> with <code>dp &gt; a</code> and <code>dp &gt; d</code>;
+<code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> uses
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mi>a</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d' = a + 1</annotation></semantics></math>.
+A pre-treatment cell has a target age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>&lt;</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a &lt; b</annotation></semantics></math>.
+The assumptions concern each treatment-control pair separately (Section
+2.3), so <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> estimates a
+pre-treatment cell for each control group used after treatment,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mi>d</mi><mo>+</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>H</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d' = d + 1, \dots, d + H + 1</annotation></semantics></math>,
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>H</mi><annotation encoding="application/x-tex">H</annotation></semantics></math>
+is <code>periods_post</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="potential-outcomes-and-causal-estimands">2. Potential outcomes and causal estimands<a class="anchor" aria-label="anchor" href="#potential-outcomes-and-causal-estimands"></a>
+</h2>
+<p>Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_{i,a}(d)</annotation></semantics></math>
+be the potential earnings of person
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+at age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+if the first birth occurs at age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>,
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_{i,a}(\infty)</annotation></semantics></math>
+the potential earnings if
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
+never has a child. Observed earnings are
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mo>=</mo><msub><mi>Y</mi><mrow><mi>i</mi><mo>,</mo><mi>a</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>D</mi><mi>i</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Y_{i,a} = Y_{i,a}(D_i)</annotation></semantics></math>
+(consistency). The average potential outcome (APO) is
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>𝔼</mi><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>d</mi><mo>′</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mspace width="0.167em"></mspace><mi>D</mi><mo>=</mo><mi>d</mi><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">]</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\mathrm{APO}(g, d, d', a) = \mathbb{E}\big[Y_a(d') \mid G = g,\, D = d\big],
+</annotation></semantics></math> the mean earnings at age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+of gender
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
+and treatment group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+had the first birth been at age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mo>′</mo></msup><annotation encoding="application/x-tex">d'</annotation></semantics></math>
+(here
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mo>′</mo></msup><annotation encoding="application/x-tex">d'</annotation></semantics></math>
+is a counterfactual birth age, not the control group of Section 1). For
+a single
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(d, a)</annotation></semantics></math>
+the paper writes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>≡</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{APO}(g, d) \equiv \mathrm{APO}(g, d, d, a)</annotation></semantics></math>,
+the mean observed earnings
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi></mrow></msub><mo>=</mo><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>a</mi></msub><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\mu_{g,d,a} = \mathbb{E}[Y_a \mid G = g, D = d]</annotation></semantics></math>,
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>≡</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>∞</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{APO}(g, \infty) \equiv \mathrm{APO}(g, d, \infty, a)</annotation></semantics></math>.
+The causal estimands of Section 1.3 are</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>estimand</th>
+<th>definition</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{ATE}(g)</annotation></semantics></math></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{APO}(g, d) - \mathrm{APO}(g, \infty)</annotation></semantics></math></td>
+</tr>
+<tr class="even">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(g)</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{ATE}(g) / \mathrm{APO}(g, \infty)</annotation></semantics></math>:
+the effect relative to counterfactual earnings</td>
+</tr>
+<tr class="odd">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(f) - \theta(m)</annotation></semantics></math></td>
+<td>gender gap in normalized effects, the target of normalized event
+studies</td>
+</tr>
+<tr class="even">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>d</mi><mo>′</mo></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d')</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{APO}(f, d, d', a) / \mathrm{APO}(m, d, d', a)</annotation></semantics></math>:
+the gender earnings ratio;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d)</annotation></semantics></math>
+is the realized ratio and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(\infty)</annotation></semantics></math>
+the counterfactual ratio absent a child</td>
+</tr>
+<tr class="odd">
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d) - \rho(\infty)</annotation></semantics></math></td>
+<td>effect of parenthood on the gender earnings ratio</td>
+</tr>
+</tbody>
+</table>
+<p>The two gender-gap estimands are related by (eq. (9))
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mn>1</mn><mo>+</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mspace width="0.167em"></mspace><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">[</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">]</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\rho(d) - \rho(\infty) = \frac{\rho(\infty)}{1 + \theta(m)}\,\big[\theta(f) - \theta(m)\big].
+</annotation></semantics></math> The observed gender gap splits as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo stretchy="false" form="prefix">[</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo><mo>+</mo><mo stretchy="false" form="prefix">[</mo><mn>1</mn><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">1 - \rho(d) = [\rho(\infty) - \rho(d)] + [1 - \rho(\infty)]</annotation></semantics></math>,
+parenthood and other factors (Section 4.2).</p>
+</div>
+<div class="section level2">
+<h2 id="descriptive-estimands">3. Descriptive estimands<a class="anchor" aria-label="anchor" href="#descriptive-estimands"></a>
+</h2>
+<p>The descriptive estimands are functions of observed means,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><mi>k</mi><mo>,</mo><mi>t</mi></mrow></msub><mo>=</mo><mi>𝔼</mi><mo stretchy="false" form="prefix">[</mo><msub><mi>Y</mi><mi>t</mi></msub><mo>∣</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>k</mi><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\mu_{g,k,t} = \mathbb{E}[Y_t \mid G = g, D = k]</annotation></semantics></math>.
+With baseline age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+(the paper uses
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mi>d</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">b = d - 1</annotation></semantics></math>),
+eq. (3) reads
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>b</mi></mrow></msub><mo>+</mo><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi></mrow></msub><mo>−</mo><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>b</mi></mrow></msub><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi></mrow></msub><mo>−</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mfrac><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\delta_{\mathrm{APO}}(g) = \mu_{g,d,b} + \mu_{g,d',a} - \mu_{g,d',b}, \qquad
+\delta_{\mathrm{ATE}}(g) = \mu_{g,d,a} - \delta_{\mathrm{APO}}(g), \qquad
+\delta_\theta(g) = \frac{\delta_{\mathrm{ATE}}(g)}{\delta_{\mathrm{APO}}(g)}.
+</annotation></semantics></math> The multiplicative counterpart of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\mathrm{APO}}(g)</annotation></semantics></math>
+(the online appendix on proportional DID and TD) is
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo>×</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>b</mi></mrow></msub><mspace width="0.167em"></mspace><mfrac><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi></mrow></msub><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>b</mi></mrow></msub></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\delta^{\times}_{\mathrm{APO}}(g) = \mu_{g,d,b}\,\frac{\mu_{g,d',a}}{\mu_{g,d',b}}.
+</annotation></semantics></math> The gender gaps of the appendix on
+estimation and inference are
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">Δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></mrow></msub><mo>=</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\Delta\mathrm{ATE}} = \delta_{\mathrm{ATE}}(f) - \delta_{\mathrm{ATE}}(m)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">Δ</mi><mi>θ</mi></mrow></msub><mo>=</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\Delta\theta} = \delta_\theta(f) - \delta_\theta(m)</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi></mrow></msub><mo>=</mo><msub><mi>μ</mi><mrow><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi></mrow></msub><mi>/</mi><msub><mi>μ</mi><mrow><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi></mrow></msub><mo>−</mo><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\Delta\rho} = \mu_{f,d,a}/\mu_{m,d,a} - \delta_{\mathrm{APO}}(f)/\delta_{\mathrm{APO}}(m)</annotation></semantics></math>.
+The package returns their sample analogues.</p>
+<p>Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\gamma_{\mathrm{PT}}(g)</annotation></semantics></math>
+be the difference in counterfactual trends from age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+to age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+between the treatment group and the control group,
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">[</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>∞</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>∞</mi><mo>,</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">]</mo><mo>−</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">[</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>∞</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>∞</mi><mo>,</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">]</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\gamma_{\mathrm{PT}}(g) = \big[\mathrm{APO}(g, d, \infty, a) - \mathrm{APO}(g, d, \infty, b)\big] - \big[\mathrm{APO}(g, d', \infty, a) - \mathrm{APO}(g, d', \infty, b)\big].
+</annotation></semantics></math> Under no anticipation, Lemma 1 (eqs.
+(6)-(7)) gives
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\mathrm{APO}}(g) = \mathrm{APO}(g, \infty) - \gamma_{\mathrm{PT}}(g)</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\mathrm{ATE}}(g) = \mathrm{ATE}(g) + \gamma_{\mathrm{PT}}(g)</annotation></semantics></math>.
+The assumptions that appear below, each for a triplet
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(d, d', a)</annotation></semantics></math>
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>≤</mo><mi>a</mi><mo>&lt;</mo><msup><mi>d</mi><mo>′</mo></msup></mrow><annotation encoding="application/x-tex">d \le a &lt; d'</annotation></semantics></math>:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>label</th>
+<th>statement</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>NA</td>
+<td>no anticipation:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{APO}(g, d) = \mathrm{APO}(g, \infty)</annotation></semantics></math>
+at ages
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>&lt;</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">a &lt; d</annotation></semantics></math>
+</td>
+</tr>
+<tr class="even">
+<td>DID-PT</td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\gamma_{\mathrm{PT}}(g) = 0</annotation></semantics></math>
+for each
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
+</td>
+</tr>
+<tr class="odd">
+<td>TD-PT</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\gamma_{\mathrm{PT}}(f) = \gamma_{\mathrm{PT}}(m)</annotation></semantics></math></td>
+</tr>
+<tr class="even">
+<td>NTD-PT</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\gamma_{\mathrm{PT}}(f) / \mathrm{APO}(f, \infty) = \gamma_{\mathrm{PT}}(m) / \mathrm{APO}(m, \infty)</annotation></semantics></math></td>
+</tr>
+<tr class="odd">
+<td>TD-E-LOGS</td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><mspace width="-0.167em"></mspace><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">[</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msubsup><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo>×</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\log\!\big[\mathrm{APO}(g, \infty) / \delta^{\times}_{\mathrm{APO}}(g)\big]</annotation></semantics></math>
+is equal across genders</td>
+</tr>
+<tr class="even">
+<td>TD-PR</td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">[</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msubsup><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo>×</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">]</mo><mi>/</mi><msub><mi>μ</mi><mrow><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>b</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\big[\mathrm{APO}(g, \infty) - \delta^{\times}_{\mathrm{APO}}(g)\big] / \mu_{g,d,b}</annotation></semantics></math>
+is equal across genders</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="output-rows-of-single_treatment_group_analysis">4. Output rows of
+<code>single_treatment_group_analysis()</code><a class="anchor" aria-label="anchor" href="#output-rows-of-single_treatment_group_analysis"></a>
+</h2>
+<p>The function returns 19 rows for one cell
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(d, d', a)</annotation></semantics></math>:
+<code>d</code>, <code>dp</code>, <code>a</code>,
+<code>event_time</code>, <code>control_offset</code>,
+<code>estimand</code>, <code>method</code>, <code>est</code>,
+<code>se</code>, <code>ci_l</code>, <code>ci_h</code>
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">est</mtext><mo>∓</mo><mn>1.96</mn><mspace width="0.167em"></mspace><mtext mathvariant="normal">se</mtext></mrow><annotation encoding="application/x-tex">\text{est} \mp 1.96\,\text{se}</annotation></semantics></math>),
+<code>t</code>, <code>p</code> (two-sided, normal), and the number of
+persons in the treatment and control group by gender
+(<code>n_female_treat</code>, <code>n_female_control</code>,
+<code>n_male_treat</code>, <code>n_male_control</code>). Gaps are female
+minus male, and standard errors are clustered by person. Every row below
+also relies on NA. The figure column refers to the figures of the paper
+in which the row’s estimate is plotted.</p>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th><code>method</code></th>
+<th><code>estimand</code></th>
+<th>paper symbol</th>
+<th>what it estimates, and under which assumption</th>
+<th>paper figure</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<code>DID_Female</code>, <code>DID_Male</code>
+</td>
+<td><code>APO</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\mathrm{APO}}(g)</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{APO}(g, \infty)</annotation></semantics></math>
+under DID-PT</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>
+<code>DID_Female</code>, <code>DID_Male</code>
+</td>
+<td><code>ATE</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\mathrm{ATE}}(g)</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{ATE}(g)</annotation></semantics></math>
+under DID-PT</td>
+<td>Figure 3 (pre-treatment rows)</td>
+</tr>
+<tr class="odd">
+<td>
+<code>DID_Female</code>, <code>DID_Male</code>
+</td>
+<td><code>theta</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_\theta(g)</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(g)</annotation></semantics></math>
+under DID-PT</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>TD</code></td>
+<td><code>gap_ATE</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mrow><mi mathvariant="normal">Δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></mrow></msub><annotation encoding="application/x-tex">\delta_{\Delta\mathrm{ATE}}</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{ATE}(f) - \mathrm{ATE}(m)</annotation></semantics></math>
+under TD-PT</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>Conventional</code></td>
+<td><code>gap_theta</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mrow><mi mathvariant="normal">Δ</mi><mi>θ</mi></mrow></msub><annotation encoding="application/x-tex">\delta_{\Delta\theta}</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(f) - \theta(m)</annotation></semantics></math>
+under DID-PT for both genders; under NTD-PT it equals
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">s</mi></mrow><mo>×</mo><mo stretchy="false" form="prefix">[</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\mathrm{Bias} \times [\theta(f) - \theta(m)]</annotation></semantics></math>
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">s</mi></mrow><mo>=</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">[</mo><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\mathrm{Bias} = \mathrm{APO}(g, \infty) / [\mathrm{APO}(g, \infty) - \gamma_{\mathrm{PT}}(g)]</annotation></semantics></math>,
+equal across genders (Theorem 1)</td>
+<td>Figure 4 (with <code><a href="../reference/bias_bounds.html">bias_bounds()</a></code>), Figure 5 (pre-treatment
+rows), Figure 6b</td>
+</tr>
+<tr class="even">
+<td><code>NTD</code></td>
+<td><code>rho_effect</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi></mrow></msub><annotation encoding="application/x-tex">\delta_{\Delta\rho}</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d) - \rho(\infty)</annotation></semantics></math>
+under NTD-PT (Theorem 2)</td>
+<td>Figure 6b; the online appendix’s validation figure (pre-treatment
+rows)</td>
+</tr>
+<tr class="odd">
+<td><code>NTD</code></td>
+<td><code>rho_obs</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mrow><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi></mrow></msub><mi>/</mi><msub><mi>μ</mi><mrow><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\mu_{f,d,a} / \mu_{m,d,a}</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d)</annotation></semantics></math>,
+the observed gender earnings ratio (consistency)</td>
+<td>Figure 6a</td>
+</tr>
+<tr class="even">
+<td><code>NTD</code></td>
+<td><code>rho_cf</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\mathrm{APO}}(f) / \delta_{\mathrm{APO}}(m)</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(\infty)</annotation></semantics></math>
+under NTD-PT</td>
+<td>Figure 6a</td>
+</tr>
+<tr class="odd">
+<td><code>NTD</code></td>
+<td><code>share_parenthood</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\rho_{cf} - \rho_{obs}) / (1 - \rho_{obs})</annotation></semantics></math></td>
+<td>parenthood’s share of the observed gender gap
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \rho(d)</annotation></semantics></math>,
+under the assumption of <code>rho_cf</code> (Section 4.2)</td>
+<td>Figure 6c</td>
+</tr>
+<tr class="even">
+<td><code>NTD</code></td>
+<td><code>share_other</code></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo></mrow><annotation encoding="application/x-tex">1 -</annotation></semantics></math><code>share_parenthood</code>
+</td>
+<td>the share due to other factors</td>
+<td>Figure 6c</td>
+</tr>
+<tr class="odd">
+<td><code>TD_E_LOGS</code></td>
+<td><code>rho_effect</code></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi></mrow></msub><annotation encoding="application/x-tex">\delta_{\Delta\rho}</annotation></semantics></math>
+with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo>×</mo></msubsup><annotation encoding="application/x-tex">\delta^{\times}_{\mathrm{APO}}</annotation></semantics></math>
+in place of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow></msub><annotation encoding="application/x-tex">\delta_{\mathrm{APO}}</annotation></semantics></math>
+</td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d) - \rho(\infty)</annotation></semantics></math>
+under TD-E-LOGS (proposition in the online appendix on proportional DID
+and TD)</td>
+<td>the online appendix’s validation figure (pre-treatment rows) and
+estimate figure</td>
+</tr>
+<tr class="even">
+<td><code>TD_E_LOGS</code></td>
+<td>
+<code>rho_obs</code>, <code>rho_cf</code>,
+<code>share_parenthood</code>, <code>share_other</code>
+</td>
+<td>as for <code>NTD</code>, with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo>×</mo></msubsup><annotation encoding="application/x-tex">\delta^{\times}_{\mathrm{APO}}</annotation></semantics></math>
+in <code>rho_cf</code>
+</td>
+<td>as for <code>NTD</code>, with <code>rho_cf</code> identifying
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(\infty)</annotation></semantics></math>
+under TD-E-LOGS</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>TD_PR</code></td>
+<td><code>gap_theta_pre</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">[</mo><msub><mi>μ</mi><mrow><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi></mrow></msub><mo>−</mo><msubsup><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo>×</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">]</mo><mi>/</mi><msub><mi>μ</mi><mrow><mi>f</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>b</mi></mrow></msub><mo>−</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="prefix">[</mo><msub><mi>μ</mi><mrow><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>a</mi></mrow></msub><mo>−</mo><msubsup><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo>×</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mo minsize="120%" maxsize="120%" stretchy="true" form="postfix">]</mo><mi>/</mi><msub><mi>μ</mi><mrow><mi>m</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>b</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\big[\mu_{f,d,a} - \delta^{\times}_{\mathrm{APO}}(f)\big]/\mu_{f,d,b} - \big[\mu_{m,d,a} - \delta^{\times}_{\mathrm{APO}}(m)\big]/\mu_{m,d,b}</annotation></semantics></math></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>∞</mi><mo>,</mo><mi>b</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathrm{ATE}(g) / \mathrm{APO}(g, d, \infty, b)</annotation></semantics></math>,
+female minus male, under TD-PR (same proposition)</td>
+<td>the online appendix’s validation figure (pre-treatment rows)</td>
+</tr>
+</tbody>
+</table>
+<p>The conventional estimator is the 2x2 version of the normalized
+event-study child penalty. The accounting rows (<code>rho_obs</code>,
+<code>rho_cf</code>, <code>share_parenthood</code>,
+<code>share_other</code>) and their standard errors extend the
+accounting exercise of Section 4.2; <a href="estimators.html">Estimation</a> writes out the influence
+functions.</p>
+<p>A cell of simulated data, treatment group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>=</mo><mn>26</mn></mrow><annotation encoding="application/x-tex">d = 26</annotation></semantics></math>
+one year after the first birth
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mn>27</mn></mrow><annotation encoding="application/x-tex">a = 27</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">e = 1</annotation></semantics></math>)
+against the control group
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mn>28</mn></mrow><annotation encoding="application/x-tex">d' = 28</annotation></semantics></math>,
+with baseline age
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>25</mn></mrow><annotation encoding="application/x-tex">b = 25</annotation></semantics></math>:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dorleventer/childpen" class="external-link">childpen</a></span><span class="op">)</span></span>
+<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span><span class="fl">2000</span>, <span class="fl">24</span><span class="op">:</span><span class="fl">30</span><span class="op">)</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/single_treatment_group_analysis.html">single_treatment_group_analysis</a></span><span class="op">(</span><span class="va">sim</span>, d <span class="op">=</span> <span class="fl">26</span>, dp <span class="op">=</span> <span class="fl">28</span>, a <span class="op">=</span> <span class="fl">27</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "d"                "dp"               "a"                "event_time"      </span></span>
+<span><span class="co">#&gt;  [5] "control_offset"   "estimand"         "method"           "est"             </span></span>
+<span><span class="co">#&gt;  [9] "se"               "ci_l"             "ci_h"             "t"               </span></span>
+<span><span class="co">#&gt; [13] "p"                "n_female_treat"   "n_female_control" "n_male_treat"    </span></span>
+<span><span class="co">#&gt; [17] "n_male_control"</span></span>
+<span><span class="va">res</span><span class="op">[</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"d"</span>, <span class="st">"dp"</span>, <span class="st">"a"</span>, <span class="st">"event_time"</span>, <span class="st">"control_offset"</span>,</span>
+<span>         <span class="st">"n_female_treat"</span>, <span class="st">"n_female_control"</span>, <span class="st">"n_male_treat"</span>, <span class="st">"n_male_control"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;    d dp  a event_time control_offset n_female_treat n_female_control</span></span>
+<span><span class="co">#&gt; 1 26 28 27          1              2            125              169</span></span>
+<span><span class="co">#&gt;   n_male_treat n_male_control</span></span>
+<span><span class="co">#&gt; 1          138            159</span></span>
+<span><span class="va">shown</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">[</span><span class="va">res</span><span class="op">$</span><span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DID_Female"</span>, <span class="st">"Conventional"</span>, <span class="st">"NTD"</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"estimand"</span>, <span class="st">"est"</span>, <span class="st">"se"</span>, <span class="st">"ci_l"</span>, <span class="st">"ci_h"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">shown</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">shown</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">shown</span></span>
+<span><span class="co">#&gt;          method         estimand       est      se      ci_l      ci_h</span></span>
+<span><span class="co">#&gt; 1    DID_Female              APO 24627.903 592.097 23467.393 25788.413</span></span>
+<span><span class="co">#&gt; 3    DID_Female              ATE -8230.964 515.899 -9242.125 -7219.803</span></span>
+<span><span class="co">#&gt; 5    DID_Female            theta    -0.334   0.015    -0.364    -0.304</span></span>
+<span><span class="co">#&gt; 8  Conventional        gap_theta    -0.279   0.027    -0.332    -0.226</span></span>
+<span><span class="co">#&gt; 9           NTD       rho_effect    -0.284   0.029    -0.340    -0.228</span></span>
+<span><span class="co">#&gt; 12          NTD          rho_obs     0.676   0.022     0.634     0.719</span></span>
+<span><span class="co">#&gt; 13          NTD           rho_cf     0.960   0.032     0.897     1.023</span></span>
+<span><span class="co">#&gt; 14          NTD share_parenthood     0.876   0.096     0.688     1.065</span></span>
+<span><span class="co">#&gt; 15          NTD      share_other     0.124   0.096    -0.065     0.312</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="pre-treatment-rows">5. Pre-treatment rows<a class="anchor" aria-label="anchor" href="#pre-treatment-rows"></a>
+</h2>
+<p>At a pre-treatment target age the same 19 rows are returned, one set
+per control offset. Under NA,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\mathrm{ATE}(g) = 0</annotation></semantics></math>
+at such an age, so Lemma 1 gives
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">T</mi><mi mathvariant="normal">E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><msup><mi>d</mi><mo>′</mo></msup><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\delta_{\mathrm{ATE}}(g) = \gamma_{\mathrm{PT}}(g, d, d', a)</annotation></semantics></math>:
+the pre-treatment <code>ATE</code> row of <code>DID_Female</code> and
+<code>DID_Male</code> estimates the difference in counterfactual trends
+between
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>d</mi><annotation encoding="application/x-tex">d</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>d</mi><mo>′</mo></msup><annotation encoding="application/x-tex">d'</annotation></semantics></math>
+from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>
+(with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>
+in place of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d - 1</annotation></semantics></math>
+when <code>pre</code>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&gt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">&gt; 1</annotation></semantics></math>).
+These are the pre-trends of Figure 3, one per treatment-control
+pair.</p>
+<p>For the gender gap in normalized DID, Proposition 1 states that under
+NA
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mspace width="1.0em"></mspace><mo>⇔</mo><mspace width="1.0em"></mspace><mfrac><mrow><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>=</mo><mfrac><mrow><msub><mi>γ</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">T</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">P</mi><mi mathvariant="normal">O</mi></mrow><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\delta_\theta(f) = \delta_\theta(m) \quad\Longleftrightarrow\quad \frac{\gamma_{\mathrm{PT}}(f)}{\mathrm{APO}(f, \infty)} = \frac{\gamma_{\mathrm{PT}}(m)}{\mathrm{APO}(m, \infty)},
+</annotation></semantics></math> so a zero pre-treatment
+<code>Conventional</code> <code>gap_theta</code> is equivalent to the
+NTD-PT restriction at that age (Figure 5). A non-zero value is read as a
+failure of NA, of the restriction, or of both. The same algebra applies
+to the <code>NTD</code> <code>rho_effect</code> row: under NA the
+observed ratio at a pre-treatment age equals
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(\infty)</annotation></semantics></math>,
+and the row is zero exactly when the restriction holds. Likewise, the
+pre-treatment <code>TD_E_LOGS</code> and <code>TD_PR</code> rows are
+read against TD-E-LOGS and TD-PR. The pre-treatment <code>NTD</code>
+<code>rho_effect</code>, <code>TD_E_LOGS</code> <code>rho_effect</code>
+and <code>TD_PR</code> <code>gap_theta_pre</code> rows are the three
+validation tests of the online appendix on proportional DID and TD.</p>
+</div>
+<div class="section level2">
+<h2 id="aggregate-rows">6. Aggregate rows<a class="anchor" aria-label="anchor" href="#aggregate-rows"></a>
+</h2>
+<p><code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> averages the group-level rows over
+treatment groups by event time. Its <code>agg_type</code> column takes
+two values: <code>weighted_avg</code>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><msub><mi>B</mi><mi>d</mi></msub></mrow><annotation encoding="application/x-tex">\sum_d w_d B_d</annotation></semantics></math>
+for a group-level row
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>B</mi><mi>d</mi></msub><annotation encoding="application/x-tex">B_d</annotation></semantics></math>,
+and <code>ratio_of_avgs</code>, the ratio of the weighted average of the
+<code>ATE</code> rows to the weighted average of the <code>APO</code>
+rows.</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th><code>method</code></th>
+<th><code>estimand</code></th>
+<th><code>agg_type</code></th>
+<th>paper symbol</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<code>DID_Female</code>, <code>DID_Male</code>
+</td>
+<td><code>theta</code></td>
+<td><code>weighted_avg</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">g</mi></mrow><mo>,</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta_{\mathrm{Agg},1}(g, e)</annotation></semantics></math></td>
+</tr>
+<tr class="even">
+<td>
+<code>DID_Female</code>, <code>DID_Male</code>
+</td>
+<td><code>theta</code></td>
+<td><code>ratio_of_avgs</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mrow><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">g</mi></mrow><mo>,</mo><mn>2</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta_{\mathrm{Agg},2}(g, e)</annotation></semantics></math></td>
+</tr>
+<tr class="odd">
+<td><code>Conventional</code></td>
+<td><code>gap_theta</code></td>
+<td><code>weighted_avg</code></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>θ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Delta\theta_{\mathrm{Agg}}(e)</annotation></semantics></math>,
+eq. (11)</td>
+</tr>
+<tr class="even">
+<td><code>NTD</code></td>
+<td><code>rho_effect</code></td>
+<td><code>weighted_avg</code></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho_{\mathrm{Agg}}(e)</annotation></semantics></math>,
+eq. (10)</td>
+</tr>
+<tr class="odd">
+<td><code>TD_E_LOGS</code></td>
+<td><code>rho_effect</code></td>
+<td><code>weighted_avg</code></td>
+<td>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mrow><mi mathvariant="normal">A</mi><mi mathvariant="normal">g</mi><mi mathvariant="normal">g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho_{\mathrm{Agg}}(e)</annotation></semantics></math>
+under TD-E-LOGS</td>
+</tr>
+<tr class="even">
+<td>
+<code>TD</code>, <code>TD_PR</code>, accounting rows</td>
+<td>
+<code>gap_ATE</code>, <code>gap_theta_pre</code>,
+<code>rho_obs</code>, <code>rho_cf</code>,
+<code>share_parenthood</code>, <code>share_other</code>
+</td>
+<td><code>weighted_avg</code></td>
+<td>weighted average of the group-level row; no symbol in the paper</td>
+</tr>
+</tbody>
+</table>
+<p>Aggregate rows carry <code>event_time</code>,
+<code>control_offset</code> (the offset
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>−</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">d' - d</annotation></semantics></math>,
+equal to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">e + 1</annotation></semantics></math>
+after treatment), <code>n_groups</code> (treatment groups with positive
+weight), <code>est</code>, <code>se</code>, <code>ci_l</code>,
+<code>ci_h</code>, <code>t</code> and <code>p</code>. Weights, standard
+errors and pre-treatment aggregation are in <a href="aggregation.html">Aggregation</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="using-your-own-data">7. Using your own data<a class="anchor" aria-label="anchor" href="#using-your-own-data"></a>
+</h2>
+<p><code>data</code> is a data.frame or data.table in long format, one
+row per person and age; the panel need not be balanced. The columns are
+located by name:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>argument</th>
+<th>default</th>
+<th>content</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>id_name</code></td>
+<td><code>"id"</code></td>
+<td>person identifier (the clustering unit)</td>
+</tr>
+<tr class="even">
+<td><code>age_name</code></td>
+<td><code>"age"</code></td>
+<td>age, numeric</td>
+</tr>
+<tr class="odd">
+<td><code>D_name</code></td>
+<td><code>"D"</code></td>
+<td>age at first birth, constant within person; a missing (or infinite)
+value means the person never has a child</td>
+</tr>
+<tr class="even">
+<td><code>female_name</code></td>
+<td><code>"female"</code></td>
+<td>gender, constant within person; <code>1</code> / <code>TRUE</code>
+is female and <code>0</code> / <code>FALSE</code> male; labels such as
+<code>"female"</code> / <code>"male"</code>, <code>"f"</code> /
+<code>"m"</code>, <code>"woman"</code> / <code>"man"</code> are also
+accepted</td>
+</tr>
+<tr class="odd">
+<td><code>Y_name</code></td>
+<td><code>"Y"</code></td>
+<td>earnings, numeric; zeros are allowed, while the ratio rows need
+positive cell means</td>
+</tr>
+</tbody>
+</table>
+<p>Rows with a missing outcome are dropped with a message. The function
+stops with an error if a person-age pair is repeated, if
+<code>female</code> or <code>D</code> varies within a person, if a
+gender label is not recognised, or if only one gender is present.
+<code>data</code> is not modified. Persons with a missing <code>D</code>
+stay in the data and belong to no treatment or control group.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">own</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  person   <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span>,</span>
+<span>  years    <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">age</span>,</span>
+<span>  births   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">D</span> <span class="op">==</span> <span class="fl">30</span>, <span class="cn">NA</span>, <span class="va">sim</span><span class="op">$</span><span class="va">D</span><span class="op">)</span>,   <span class="co"># missing: never has a child</span></span>
+<span>  sex      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">female</span> <span class="op">==</span> <span class="fl">1</span>, <span class="st">"female"</span>, <span class="st">"male"</span><span class="op">)</span>,</span>
+<span>  earnings <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">Y</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">res_own</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/single_treatment_group_analysis.html">single_treatment_group_analysis</a></span><span class="op">(</span><span class="va">own</span>, d <span class="op">=</span> <span class="fl">26</span>, dp <span class="op">=</span> <span class="fl">28</span>, a <span class="op">=</span> <span class="fl">27</span>,</span>
+<span>  id_name <span class="op">=</span> <span class="st">"person"</span>, age_name <span class="op">=</span> <span class="st">"years"</span>, D_name <span class="op">=</span> <span class="st">"births"</span>,</span>
+<span>  female_name <span class="op">=</span> <span class="st">"sex"</span>, Y_name <span class="op">=</span> <span class="st">"earnings"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 338 persons have a missing or infinite `births`; they are treated as never having a child.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">res_own</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"est"</span>, <span class="st">"se"</span><span class="op">)</span><span class="op">]</span>, <span class="va">res</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"est"</span>, <span class="st">"se"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>The columns are only relabelled here, and persons of group 30 are
+neither in group 26 nor in group 28, so the estimates equal those of the
+previous example.</p>
+</div>
+<div class="section level2">
+<h2 id="label-map">8. Label map<a class="anchor" aria-label="anchor" href="#label-map"></a>
+</h2>
+<p>The paper’s replication files (the results file
+<code>unconditional_results.csv</code> computed on the CBS data) and
+<code>childpen</code> 0.2.x use older labels. In <code>childpen</code>
+0.3 the method and estimand follow the paper:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>replication files (<code>method</code> / <code>estimand</code>)</th>
+<th>
+<code>childpen</code> 0.2.x</th>
+<th>
+<code>childpen</code> 0.3</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>
+<code>NTD</code> / <code>theta</code>
+</td>
+<td>
+<code>NTD_Conv</code> / <code>theta</code>
+</td>
+<td>
+<code>Conventional</code> / <code>gap_theta</code>
+</td>
+</tr>
+<tr class="even">
+<td>
+<code>NTD_Alt</code> / <code>theta</code>
+</td>
+<td>
+<code>NTD_New</code> / <code>Delta_rho</code>
+</td>
+<td>
+<code>NTD</code> / <code>rho_effect</code>
+</td>
+</tr>
+<tr class="odd">
+<td>
+<code>TD</code> / <code>ATE</code>
+</td>
+<td>
+<code>TD</code> / <code>ATE</code>
+</td>
+<td>
+<code>TD</code> / <code>gap_ATE</code>
+</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>
+<code>TD_E_LOGS</code> / <code>Delta_rho</code>
+</td>
+<td>
+<code>TD_E_LOGS</code> / <code>rho_effect</code>
+</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>
+<code>TD_PR</code> / <code>theta_pre</code>
+</td>
+<td>
+<code>TD_PR</code> / <code>gap_theta_pre</code>
+</td>
+</tr>
+<tr class="even">
+<td>
+<code>TD_Null</code>, <code>NTD_Null</code>
+</td>
+<td>
+<code>TD_Null</code>, <code>NTD_Conv_Null</code>
+</td>
+<td>no rows; <code><a href="../reference/bias_bounds.html">bias_bounds()</a></code>
+</td>
+</tr>
+</tbody>
+</table>
+<p><code>TD_Null</code> and <code>NTD_Null</code> impose a null effect
+for fathers. <code><a href="../reference/bias_bounds.html">bias_bounds()</a></code> reports the bias-corrected
+conventional gap at any assumed value of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(m)</annotation></semantics></math>,
+a null effect
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\theta(m) = 0</annotation></semantics></math>)
+included. In <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code>, the 0.2.x
+<code>agg_type</code> values <code>avg_of_ratios</code> and
+<code>gender_ineq</code> are <code>weighted_avg</code> in 0.3.</p>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

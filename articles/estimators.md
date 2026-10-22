@@ -1,13 +1,48 @@
-# Estimators and standard errors
+# Estimation
 
-This page writes out every estimator the package returns and the
-influence function its standard error is built from. Section, theorem
-and appendix numbers refer to Leventer (2025), *Identification of Child
-Penalties*; appendices are referred to by name, because their letters
-differ between the arXiv and journal versions: *Estimation appendix* is
-the appendix on estimation and inference, *Proportional appendix* the
-online appendix on proportional DID and TD. Formulas that are not in the
-paper are marked **not in the paper**.
+This page describes how the package runs the paper’s 2x2 comparisons,
+then writes out every estimator it returns and the influence function
+its standard error is built from. Notation follows [Notation and
+output](https://dorleventer.github.io/childpen/articles/notation.md);
+the identification results behind each row are in
+[Identification](https://dorleventer.github.io/childpen/articles/identification.md).
+Section, theorem and appendix numbers refer to Leventer (2025),
+*Identification of Child Penalties*; appendices are referred to by name,
+because their letters differ between the arXiv and journal versions:
+*Estimation appendix* is the appendix on estimation and inference,
+*Proportional appendix* the online appendix on proportional DID and TD.
+Formulas that are not in the paper are marked **not in the paper**.
+
+## Running the comparisons
+
+[`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md)
+runs the grid of 2x2 comparisons that the paper’s figures use. For each
+treatment group $`d`$ in `treatment_groups` and event time
+$`e = 0, \dots, H`$ (`periods_post = H`), the target age is
+$`a = d + e`$ and the control group is the closest not-yet-treated
+group, $`d' = a + 1`$ (Section 1.3). Pre-treatment event times
+$`e = -(\text{pre} + K), \dots, -(\text{pre} + 1)`$ (`periods_pre = K`)
+are estimated against every control group used after treatment,
+$`d' = d + 1, \dots, d + H + 1`$: the identifying assumptions are about
+each treatment-control pair, so each pair has its own validation test
+(Section 2.3). The column `control_offset` $`= d' - d`$ identifies the
+pair. `max_control_group` is the largest age at first birth used as a
+control (the paper’s $`D_{max}`$).
+[`single_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/single_treatment_group_analysis.md)
+runs one comparison.
+
+``` r
+
+res <- multiple_treatment_group_analysis(data, treatment_groups = 24:34,
+                                         periods_post = 5, periods_pre = 3,
+                                         max_control_group = 40)
+```
+
+With the paper’s sample this grid is the one behind its figures:
+treatment groups 24 to 34, event times 0 to 5, pre-treatment event times
+$`-4`$ to $`-2`$ (baseline $`d - 1`$), and controls up to 40
+([Replicating the
+paper](https://dorleventer.github.io/childpen/articles/replication.md)).
 
 ## Setup
 
@@ -77,13 +112,28 @@ What each row identifies, and under which assumption, is in
 $`\hat\delta^{\times}_{APO}`$; the `share_parenthood` row of `TD_E_LOGS`
 uses $`\hat\rho^{\times}_{cf}`$ in place of $`\hat\rho_{cf}`$.
 
-**Accounting (not in the paper).** The paper splits the observed gender
-gap $`1 - \rho(d)`$ into parenthood, $`\rho(\infty) - \rho(d)`$, and
-other factors, $`1 - \rho(\infty)`$, and reports parenthood’s share
-(Section 4.2) as a point estimate. The package also reports its standard
-error, from the influence function above. Derivation: write $`s = N/M`$
-with $`N = \rho_{cf} - \rho_{obs}`$ and $`M = 1 - \rho_{obs}`$; then
-$`\psi_s = \psi_N/M - N\psi_M/M^2`$, with $`\psi_N = \psi_{\rho_{cf}} -
+**Rows behind the paper’s figures.** Pre-treatment `DID_Female` /
+`DID_Male` `ATE` rows: the DID validation tests (Figure 3).
+`Conventional` `gap_theta`: the conventional estimator (Figure 6b), its
+pre-treatment rows the NTD validation tests (Figure 5), and with
+[`bias_bounds()`](https://dorleventer.github.io/childpen/reference/bias_bounds.md)
+the bias-bounding exercise (Figure 4). `NTD` `rho_obs` and `rho_cf`: the
+two ratios (Figure 6a); `NTD` `rho_effect`: the new estimator (Figure
+6b); the two ratios, or `share_parenthood` and `share_other`, give the
+accounting (Figure 6c). `TD_E_LOGS` and `TD_PR`: the Proportional
+appendix’s validation and estimate figures. Aggregates:
+[Aggregation](https://dorleventer.github.io/childpen/articles/aggregation.md).
+Each figure is reproduced on simulated data in [Replicating the
+paper](https://dorleventer.github.io/childpen/articles/replication.md).
+
+**Accounting (standard errors not in the paper).** The paper splits the
+observed gender gap $`1 - \rho(d)`$ into parenthood,
+$`\rho(\infty) - \rho(d)`$, and other factors, $`1 - \rho(\infty)`$, and
+reports parenthood’s share (Section 4.2) as a point estimate. The
+package also reports its standard error, from the influence function
+above. Derivation: write $`s = N/M`$ with $`N = \rho_{cf} - \rho_{obs}`$
+and $`M = 1 - \rho_{obs}`$; then $`\psi_s = \psi_N/M - N\psi_M/M^2`$,
+with $`\psi_N = \psi_{\rho_{cf}} -
 \psi_{\rho_{obs}}`$ and $`\psi_M = -\psi_{\rho_{obs}}`$, which gives the
 formula in the table.
 

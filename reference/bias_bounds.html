@@ -31,8 +31,16 @@ bounds the bias."><meta property="og:image" content="https://dorleventer.github.
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
-<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/notation.html">Notation and output</a></li>
+    <li><a class="dropdown-item" href="../articles/identification.html">Identification</a></li>
+    <li><a class="dropdown-item" href="../articles/estimators.html">Estimation</a></li>
+    <li><a class="dropdown-item" href="../articles/aggregation.html">Aggregation</a></li>
+    <li><a class="dropdown-item" href="../articles/replication.html">Replicating the paper</a></li>
+  </ul></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/dorleventer/childpen" aria-label="GitHub repository"><span class="fa fa-github"></span></a></li>
       </ul></div>
 
@@ -112,17 +120,17 @@ the stored person-level influence functions, clustered by person.</p>
 <span class="r-in"><span><span class="co"># Conventional estimate and the bias-corrected band, d = 25</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"Conventional"</span> <span class="op">&amp;</span> <span class="va">d</span> <span class="op">==</span> <span class="fl">25</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">est</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     event_time        est</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65           0 -0.2353818</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 84           1 -0.2537118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 103          2 -0.1751310</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65           0 -0.3594221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 84           1 -0.2410713</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 103          2 -0.2355921</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">bb</span>, <span class="va">d</span> <span class="op">==</span> <span class="fl">25</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">theta_m</span>, <span class="va">est</span>, <span class="va">se</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    event_time theta_m        est         se</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7           0    -0.1 -0.2213561 0.01992504</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8           0     0.1 -0.2705464 0.02435282</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9           1    -0.1 -0.2375861 0.02011756</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10          1     0.1 -0.2903831 0.02458813</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11          2    -0.1 -0.1726159 0.02246570</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12          2     0.1 -0.2109750 0.02745808</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7           0    -0.1 -0.3267637 0.01833033</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8           0     0.1 -0.3993778 0.02240374</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9           1    -0.1 -0.2419381 0.01831832</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10          1     0.1 -0.2957022 0.02238905</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11          2    -0.1 -0.2329846 0.01721372</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12          2     0.1 -0.2847590 0.02103900</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

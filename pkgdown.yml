@@ -2,13 +2,12 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
-  aggregate-estimands: aggregate-estimands.html
-  estimation: estimation.html
+  aggregation: aggregation.html
   estimators: estimators.html
+  identification: identification.html
   notation: notation.html
-  NTD-identification: NTD-identification.html
-  validation_tests: validation_tests.html
-last_built: 2026-10-22T08:13Z
+  articles/replication: replication.html
+last_built: 2026-10-22T14:52Z
 urls:
   reference: https://dorleventer.github.io/childpen/reference
   article: https://dorleventer.github.io/childpen/articles

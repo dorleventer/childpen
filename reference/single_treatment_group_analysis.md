@@ -142,18 +142,18 @@ sim <- simulate_data(n_individuals = 2000)
 res <- single_treatment_group_analysis(sim, d = 25, dp = 27, a = 26)
 res[res$method %in% c("Conventional", "NTD"), c("method", "estimand", "est", "se")]
 #>          method         estimand        est         se
-#> 8  Conventional        gap_theta -0.2537118 0.02607871
-#> 9           NTD       rho_effect -0.2506474 0.02690808
-#> 12          NTD          rho_obs  0.6988298 0.01846319
-#> 13          NTD           rho_cf  0.9494772 0.02979282
-#> 14          NTD share_parenthood  0.8322449 0.09465011
-#> 15          NTD      share_other  0.1677551 0.09465011
+#> 8  Conventional        gap_theta -0.2410713 0.02185681
+#> 9           NTD       rho_effect -0.2493495 0.02378134
+#> 12          NTD          rho_obs  0.6782204 0.01755007
+#> 13          NTD           rho_cf  0.9275699 0.02667726
+#> 14          NTD share_parenthood  0.7749077 0.07769671
+#> 15          NTD      share_other  0.2250923 0.07769671
 # Pre-treatment validation (placebo) test: a < d - 1
 val <- single_treatment_group_analysis(sim, d = 25, dp = 27, a = 22)
 val[val$method %in% c("Conventional", "NTD") & val$estimand %in% c("gap_theta", "rho_effect"),
     c("method", "estimand", "est", "se")]
-#>         method   estimand         est         se
-#> 8 Conventional  gap_theta -0.09041602 0.03431302
-#> 9          NTD rho_effect -0.08514425 0.03320915
+#>         method   estimand        est         se
+#> 8 Conventional  gap_theta 0.04753514 0.03251608
+#> 9          NTD rho_effect 0.04567309 0.03071295
 # }
 ```

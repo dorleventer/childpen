@@ -47,8 +47,11 @@ unchanged (checked with `dev/snapshot_compare.R` against v0.2.3 output).
   `p`); results carry `control_offset` (= dp - d), and
   [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md)
   attaches `attr(, "skipped")`.
-- [`vignette("estimators")`](https://dorleventer.github.io/childpen/articles/estimators.md):
-  every estimator and its influence function.
+- Articles follow the paper, in order: Notation and output,
+  Identification, Estimation (every estimator and its influence
+  function), Aggregation, and Replicating the paper (the paper’s main
+  figures, including the accounting exercise, on simulated data; on the
+  site only).
 
 ### Input checks and messages
 
@@ -76,8 +79,16 @@ unchanged (checked with `dev/snapshot_compare.R` against v0.2.3 output).
   groups without a weight; `n_groups` counts groups with positive
   weight.
 - [`simulate_data()`](https://dorleventer.github.io/childpen/reference/simulate_data.md)
-  works with a single treatment group and checks its inputs; its help
-  page lists the true parameter values.
+  has a new design that shows the paper’s patterns: career entry later
+  and growth steeper for later first births (parallel trends fails in
+  the paper’s direction; pre-treatment DID estimates grow in magnitude
+  with the distance to the control group), effects of parenthood that
+  differ by age at first birth and fade with event time, and a gender
+  earnings ratio that falls with age (so NTD holds approximately,
+  TD-E-LOGS exactly). The true values for every treatment group and age
+  are attached (`attr(, "truth")`). The simulated data differ from
+  earlier versions. It also works with a single treatment group and
+  checks its inputs.
 - [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md)
   stops when no cell can be estimated, and
   [`aggregate_estimands()`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md)
