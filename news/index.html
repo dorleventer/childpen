@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,6 +29,52 @@
       <small>Source: <a href="https://github.com/dorleventer/childpen/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="childpen-030">childpen 0.3.0<a class="anchor" aria-label="anchor" href="#childpen-030"></a></h2>
+<p>Labels, arguments and help pages now follow the paper. This release changes the output format; there are no deprecated aliases. All estimates and standard errors of rows that exist in both versions are unchanged (checked with <code>dev/snapshot_compare.R</code> against v0.2.3 output).</p>
+<div class="section level3">
+<h3 id="breaking-changes-0-3-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-3-0"></a></h3>
+<ul><li>Method and estimand labels: <code>NTD_Conv</code> / <code>theta</code> is now <code>Conventional</code> / <code>gap_theta</code>; <code>NTD_New</code> / <code>Delta_rho</code> is now <code>NTD</code> / <code>rho_effect</code>; <code>TD</code> / <code>ATE</code> is now <code>TD</code> / <code>gap_ATE</code>; <code>TD_E_LOGS</code> / <code>Delta_rho</code> is now <code>TD_E_LOGS</code> / <code>rho_effect</code>; <code>TD_PR</code> / <code>theta_pre</code> is now <code>TD_PR</code> / <code>gap_theta_pre</code>.</li>
+<li>The fathers’-null rows <code>TD_Null</code> and <code>NTD_Conv_Null</code> are removed; see <code><a href="../reference/bias_bounds.html">bias_bounds()</a></code>.</li>
+<li>
+<code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code>: <code>max_age</code> is now <code>max_control_group</code> (it bounds the control group d’, the paper’s D_max) and <code>min_age</code> is now <code>min_pre_age</code> (it bounds the target age of pre-treatment cells). <code>periods_post</code> must be one number H (event times 0..H); <code>periods_pre = 0</code> now means no pre-treatment cells (it used to run e = -1 and -2).</li>
+<li>
+<code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code>: <code>agg_type</code> is <code>"weighted_avg"</code> (was <code>"avg_of_ratios"</code> and <code>"gender_ineq"</code>) or <code>"ratio_of_avgs"</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-0-3-0">New<a class="anchor" aria-label="anchor" href="#new-0-3-0"></a></h3>
+<ul><li>
+<code><a href="../reference/bias_bounds.html">bias_bounds()</a></code>: the paper’s bias-bounding exercise (Proposition 2), the bias-corrected conventional gap at assumed fathers’ effects (default <code>theta_m = c(-0.1, 0.1)</code>) for every post-treatment cell, with influence-function standard errors.</li>
+<li>Accounting rows for <code>NTD</code> and <code>TD_E_LOGS</code>: <code>rho_obs</code>, <code>rho_cf</code>, <code>share_parenthood</code> (parenthood’s share of the gender gap) and <code>share_other</code>, with standard errors; also aggregated by <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code>.</li>
+<li>
+<code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> aggregates the <code>TD</code> gap (<code>gap_ATE</code>), accepts <code>weights = "uniform"</code>, and reports <code>t</code> and <code>p</code>.</li>
+<li>
+<code><a href="../reference/single_treatment_group_analysis.html">single_treatment_group_analysis()</a></code> returns the same columns as <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> (<code>d</code>, <code>dp</code>, <code>a</code>, <code>event_time</code>, <code>control_offset</code>, <code>ci_l</code>, <code>ci_h</code>, <code>t</code>, <code>p</code>); results carry <code>control_offset</code> (= dp - d), and <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> attaches <code>attr(, "skipped")</code>.</li>
+<li>
+<code><a href="../articles/estimators.html">vignette("estimators")</a></code>: every estimator and its influence function.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="input-checks-and-messages-0-3-0">Input checks and messages<a class="anchor" aria-label="anchor" href="#input-checks-and-messages-0-3-0"></a></h3>
+<ul><li>Gender labels outside a recognised set (“1”/“0”, “female”/“male”, “f”/“m”, …) are an error; before, text codes such as “1”/“2” silently swapped genders.</li>
+<li>Rows with missing earnings are dropped with a message (before, one missing value made every estimate <code>NA</code>); a missing or infinite age at first birth marks a person who never has a child.</li>
+<li>Duplicate (id, age) rows, gender or age at first birth varying within a person, and missing ids are errors; messages name the argument to fix.</li>
+<li>A data.table input is no longer modified in place, and the column-name arguments now work for data.table input in <code><a href="../reference/single_treatment_group_analysis.html">single_treatment_group_analysis()</a></code>.</li>
+<li>Invalid comparisons are errors: a control group already treated at the target age (<code>dp &lt;= a</code>), <code>dp &lt;= d</code>, <code>pre &lt; 1</code>, or a target age equal to the baseline.</li>
+<li>Progress is reported with <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message()</a></code>, one line per treatment group; cells that cannot be estimated are summarised in one message.</li>
+<li>
+<code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> stops when no weight name matches a treatment group and warns about groups without a weight; <code>n_groups</code> counts groups with positive weight.</li>
+<li>
+<code><a href="../reference/simulate_data.html">simulate_data()</a></code> works with a single treatment group and checks its inputs; its help page lists the true parameter values.</li>
+<li>
+<code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> stops when no cell can be estimated, and <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> stops when no requested method is in <code>results</code> or nothing can be aggregated (both used to return an empty data.frame).</li>
+<li>A non-numeric outcome column is an error (it used to be coerced).</li>
+<li>Row order: <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> sorts by <code>d</code>, <code>event_time</code>, <code>dp</code>; <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> by <code>method</code>, <code>agg_type</code>, <code>event_time</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="proportional-triple-differences-0-3-0">Proportional triple differences<a class="anchor" aria-label="anchor" href="#proportional-triple-differences-0-3-0"></a></h3>
+<ul><li>Two estimators from the paper’s online appendix “Proportional DID and TD”, built on the multiplicative imputation of counterfactual earnings, with cluster-robust influence-function standard errors: <code>TD_E_LOGS</code> (estimand <code>rho_effect</code>, the effect of parenthood on the gender earnings ratio, as identified under TD-E-LOGS) and <code>TD_PR</code> (estimand <code>gap_theta_pre</code>, the gender gap in effects relative to pre-birth earnings, as identified under TD-PR). Both are carried by <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> and aggregated by <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code>; their standard errors are validated by Monte Carlo (<code>dev/sims/td_sim_results.md</code> in the source repository).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.3" id="childpen-023">childpen 0.2.3<a class="anchor" aria-label="anchor" href="#childpen-023"></a></h2><p class="text-muted">CRAN release: 2026-06-02</p>
 <ul><li>Replaced <code>T</code> with <code>TRUE</code> in <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> default for <code>verbose</code> parameter, as flagged by CRAN review.</li>
@@ -74,7 +120,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

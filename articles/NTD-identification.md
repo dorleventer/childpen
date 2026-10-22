@@ -14,9 +14,10 @@
 
 The aim of this vignette is to create intuition on the normalized triple
 differences (NTD) identification framework discussed in the paper.
-Specifically, it analyzes the `NTD_Conv` (conventional) estimand — the
-gender gap in normalised effects, $`\theta(f) - \theta(m)`$. For the
-alternative `NTD_New` estimand ($`\Delta\rho`$), see the [estimation
+Specifically, it analyzes the conventional estimand (method
+`Conventional`, estimand `gap_theta`) — the gender gap in normalised
+effects, $`\theta(f) - \theta(m)`$. For the alternative `NTD` estimand
+($`\Delta\rho`$, `rho_effect`), see the [estimation
 vignette](https://dorleventer.github.io/childpen/articles/estimation.md).
 NTD is the underlying identification framework for normalized event
 studies, a common empirical strategy in the child penalty literature.

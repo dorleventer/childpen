@@ -6,7 +6,7 @@
 ## Overview
 
 `childpen` provides five estimators for the child penalty in earnings:
-**DID_Female**, **DID_Male**, **TD**, **NTD_Conv**, and **NTD_New**. All
+**DID_Female**, **DID_Male**, **TD**, **Conventional**, and **NTD**. All
 five are computed jointly by a single call to
 [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md),
 which returns one row per treatment group $`\times`$ event time
@@ -18,9 +18,9 @@ The estimators differ in what they target:
   using the closest not-yet-treated group as a control.
 - **TD** — the gender *gap* in treatment effects (levels),
   i.e. ATE(female) − ATE(male).
-- **NTD_Conv** — the conventional child penalty: the gender gap in
+- **Conventional** — the conventional child penalty: the gender gap in
   *normalised* effects, $`\theta_f - \theta_m`$.
-- **NTD_New** — the effect of parenthood on the gender earnings *ratio*
+- **NTD** — the effect of parenthood on the gender earnings *ratio*
   $`\rho`$, denoted $`\Delta\rho`$.
 
 ## Simulate data and run estimation
@@ -116,6 +116,7 @@ male earnings.
 
 res |>
   filter(method == "TD",
+         estimand == "gap_ATE",
          d %in% 24:25,
          event_time %in% 0:2) |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h)) +
@@ -134,33 +135,34 @@ res |>
 NTD produces two estimands that measure the gender gap in *normalised*
 terms.
 
-**NTD_Conv** is the gap in normalised effects — the conventional child
-penalty:
+**Conventional** is the gap in normalised effects — the conventional
+child penalty:
 
 ``` math
-\mathrm{NTD\_Conv}(d, d^\prime, a) = \delta_{\theta}(f, d, d^\prime, a) - \delta_{\theta}(m, d, d^\prime, a).
+\mathrm{Conventional}(d, d^\prime, a) = \delta_{\theta}(f, d, d^\prime, a) - \delta_{\theta}(m, d, d^\prime, a).
 ```
 
-**NTD_New** measures the effect of parenthood on the gender earnings
-ratio $`\rho`$:
+**NTD** measures the effect of parenthood on the gender earnings ratio
+$`\rho`$:
 
 ``` math
-\mathrm{NTD\_New}(d, d^\prime, a) = \frac{\mathbb{E}[Y_a \mid f, D=d]}{\mathbb{E}[Y_a \mid m, D=d]} - \frac{\delta_{\mathrm{APO}}(f, d, d^\prime, a)}{\delta_{\mathrm{APO}}(m, d, d^\prime, a)} = \Delta\rho.
+\mathrm{NTD}(d, d^\prime, a) = \frac{\mathbb{E}[Y_a \mid f, D=d]}{\mathbb{E}[Y_a \mid m, D=d]} - \frac{\delta_{\mathrm{APO}}(f, d, d^\prime, a)}{\delta_{\mathrm{APO}}(m, d, d^\prime, a)} = \Delta\rho.
 ```
 
-**When to use NTD_Conv vs NTD_New:** NTD_Conv normalises each gender’s
-ATE by its own pre-birth earnings level, so it is comparable across
-groups with different baseline earnings. NTD_New instead asks how much
-the *ratio* of female-to-male earnings changes because of parenthood,
-making it directly interpretable as a change in the gender earnings
-ratio.
+**When to use Conventional vs NTD:** Conventional normalises each
+gender’s ATE by its own pre-birth earnings level, so it is comparable
+across groups with different baseline earnings. NTD instead asks how
+much the *ratio* of female-to-male earnings changes because of
+parenthood, making it directly interpretable as a change in the gender
+earnings ratio.
 
-### NTD_Conv
+### Conventional
 
 ``` r
 
 res |>
-  filter(method == "NTD_Conv",
+  filter(method == "Conventional",
+         estimand == "gap_theta",
          d %in% 24:25,
          event_time %in% 0:2) |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h)) +
@@ -168,18 +170,19 @@ res |>
   geom_point(color = "darkorange") + geom_line(color = "darkorange") +
   facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") +
   labs(x = "Event Time", y = "Estimate +/- 95% CI",
-       title = expression(paste("NTD_Conv: ", theta[f], " - ", theta[m]))) +
+       title = expression(paste("Conventional: ", theta[f], " - ", theta[m]))) +
   theme(legend.position = "bottom")
 ```
 
 ![](estimation_files/figure-html/ntd_conv_plot-1.png)
 
-### NTD_New
+### NTD
 
 ``` r
 
 res |>
-  filter(method == "NTD_New",
+  filter(method == "NTD",
+         estimand == "rho_effect",
          d %in% 24:25,
          event_time %in% 0:2) |>
   ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h)) +
@@ -187,7 +190,7 @@ res |>
   geom_point(color = "darkgreen") + geom_line(color = "darkgreen") +
   facet_grid(cols = vars(d), rows = vars(estimand), scales = "free") +
   labs(x = "Event Time", y = "Estimate +/- 95% CI",
-       title = expression(paste("NTD_New: ", Delta, rho,
+       title = expression(paste("NTD: ", Delta, rho,
                                 " (effect on gender earnings ratio)"))) +
   theme(legend.position = "bottom")
 ```

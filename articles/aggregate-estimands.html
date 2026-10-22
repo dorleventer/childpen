@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">childpen</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@ distribution of first-birth ages?</em></p>
 <p>Three aggregate estimands are available:</p>
 <ul>
 <li>
-<strong>avg_of_ratios</strong>
+<strong>weighted_avg</strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mrow><mtext mathvariant="normal">Agg</mtext><mo>,</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\theta_{\text{Agg},1}</annotation></semantics></math>):
 weighted average of each group’s normalized effect
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo>,</mo><mi>d</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(g,d,d+e)</annotation></semantics></math>.
@@ -100,11 +100,12 @@ differs from
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mrow><mtext mathvariant="normal">Agg</mtext><mo>,</mo><mn>1</mn></mrow></msub><annotation encoding="application/x-tex">\theta_{\text{Agg},1}</annotation></semantics></math>
 when earnings vary across groups.</li>
 <li>
-<strong>gender_ineq</strong>
+<strong>weighted_avg of <code>rho_effect</code></strong>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>ρ</mi><mtext mathvariant="normal">Agg</mtext></msub></mrow><annotation encoding="application/x-tex">\Delta\rho_{\text{Agg}}</annotation></semantics></math>):
-weighted average of <code>NTD_New</code>
+weighted average of <code>NTD</code>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi></mrow><annotation encoding="application/x-tex">\Delta\rho</annotation></semantics></math>
-estimates — the aggregate gender-inequality penalty. Formally,
+(<code>rho_effect</code>) estimates — the aggregate gender-inequality
+penalty. Formally,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>ρ</mi><mtext mathvariant="normal">Agg</mtext></msub><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><mo>⋅</mo><mi mathvariant="normal">Δ</mi><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Delta\rho_{\text{Agg}}(e) = \sum_d w_d \cdot \Delta\rho(d,d+e)</annotation></semantics></math>.</li>
 </ul>
 </div>
@@ -135,39 +136,48 @@ applies sample-proportion weights (<code>weights = "sample"</code>),
 where each treatment group is weighted by its share of the sample, as in
 Leventer (2025). Standard errors account for the estimation of these
 weights via the influence-function formula in the paper’s Appendix G.
-Pass <code>weights = NULL</code> for uniform weights.</p>
+Pass <code>weights = "uniform"</code> (or <code>NULL</code>) for uniform
+weights.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_estimands.html">aggregate_estimands</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">agg</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   event_time estimand     method      agg_type       est        se n_groups</span></span>
-<span><span class="co">#&gt; 1          0    theta DID_Female avg_of_ratios -0.246280 0.0110061        4</span></span>
-<span><span class="co">#&gt; 2          1    theta DID_Female avg_of_ratios -0.283778 0.0100062        4</span></span>
-<span><span class="co">#&gt; 3          2    theta DID_Female avg_of_ratios -0.274356 0.0098125        4</span></span>
-<span><span class="co">#&gt; 4          0    theta   DID_Male avg_of_ratios -0.049832 0.0150746        4</span></span>
-<span><span class="co">#&gt; 5          1    theta   DID_Male avg_of_ratios -0.046805 0.0137026        4</span></span>
-<span><span class="co">#&gt; 6          2    theta   DID_Male avg_of_ratios -0.052369 0.0128336        4</span></span>
-<span><span class="co">#&gt;        ci_l      ci_h</span></span>
-<span><span class="co">#&gt; 1 -0.267851 -0.224708</span></span>
-<span><span class="co">#&gt; 2 -0.303390 -0.264166</span></span>
-<span><span class="co">#&gt; 3 -0.293589 -0.255124</span></span>
-<span><span class="co">#&gt; 4 -0.079378 -0.020285</span></span>
-<span><span class="co">#&gt; 5 -0.073662 -0.019947</span></span>
-<span><span class="co">#&gt; 6 -0.077523 -0.027215</span></span></code></pre></div>
+<span><span class="co">#&gt;   event_time  estimand       method      agg_type      est        se n_groups</span></span>
+<span><span class="co">#&gt; 1          0 gap_theta Conventional  weighted_avg -0.19863 0.0186503        4</span></span>
+<span><span class="co">#&gt; 2          1 gap_theta Conventional  weighted_avg -0.23738 0.0168712        4</span></span>
+<span><span class="co">#&gt; 3          2 gap_theta Conventional  weighted_avg -0.22217 0.0161315        4</span></span>
+<span><span class="co">#&gt; 4          0     theta   DID_Female ratio_of_avgs -0.25017 0.0109377        4</span></span>
+<span><span class="co">#&gt; 5          1     theta   DID_Female ratio_of_avgs -0.28547 0.0100193        4</span></span>
+<span><span class="co">#&gt; 6          2     theta   DID_Female ratio_of_avgs -0.27479 0.0098381        4</span></span>
+<span><span class="co">#&gt;       ci_l     ci_h       t</span></span>
+<span><span class="co">#&gt; 1 -0.23518 -0.16207 -10.650</span></span>
+<span><span class="co">#&gt; 2 -0.27045 -0.20431 -14.070</span></span>
+<span><span class="co">#&gt; 3 -0.25378 -0.19055 -13.772</span></span>
+<span><span class="co">#&gt; 4 -0.27161 -0.22873 -22.872</span></span>
+<span><span class="co">#&gt; 5 -0.30511 -0.26584 -28.492</span></span>
+<span><span class="co">#&gt; 6 -0.29407 -0.25551 -27.931</span></span>
+<span><span class="co">#&gt;                                                                                                                                                                                          p</span></span>
+<span><span class="co">#&gt; 1 0.00000000000000000000000001741792931789258406764263261791868310968670157358502935106626010504653374877381821761446190066635608673095703125000000000000000000000000000000000000000000000</span></span>
+<span><span class="co">#&gt; 2 0.00000000000000000000000000000000000000000000578860193086585259221252156430448219550584442784223215202558675876870164484031885091426825816896102771046734474565814698721055719943251461</span></span>
+<span><span class="co">#&gt; 3 0.00000000000000000000000000000000000000000037517998610558247012333830012507161780281976444790549586389320481079720562754405304985739447621758470256819609570109186336139828199520707130</span></span>
+<span><span class="co">#&gt; 4 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008762326849895803243864384457156786769408393629942849363854699769935</span></span>
+<span><span class="co">#&gt; 5 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000014582</span></span>
+<span><span class="co">#&gt; 6 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000110826037094</span></span></code></pre></div>
 <p>The output has one row per
 <code>event_time × estimand × method × agg_type</code> combination. The
 <code>n_groups</code> column records how many treatment groups
 contributed — useful for spotting cells where edge-of-sample groups drop
-out due to <code>max_age</code>/<code>min_age</code> bounds.</p>
+out due to <code>max_control_group</code>/<code>min_pre_age</code>
+bounds.</p>
 </div>
 <div class="section level2">
 <h2 id="plot-aggregate-results">Plot aggregate results<a class="anchor" aria-label="anchor" href="#plot-aggregate-results"></a>
 </h2>
-<p>Plot the <code>avg_of_ratios</code> aggregate for the
-<code>NTD_Conv</code> method across event times, with 95% confidence
+<p>Plot the <code>weighted_avg</code> aggregate for the
+<code>Conventional</code> method across event times, with 95% confidence
 ribbons.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"avg_of_ratios"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_Conv"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"weighted_avg"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"Conventional"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"gap_theta"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_ribbon</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"steelblue"</span>, alpha <span class="op">=</span> <span class="fl">0.25</span>, color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -175,15 +185,15 @@ ribbons.</p>
 <span>  <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color <span class="op">=</span> <span class="st">"grey40"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
 <span>    x     <span class="op">=</span> <span class="st">"Event time"</span>,</span>
-<span>    y     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">theta</span><span class="op">[</span><span class="va">Agg</span> <span class="op">*</span> <span class="st">","</span> <span class="op">*</span> <span class="fl">1</span><span class="op">]</span> <span class="op">~</span> <span class="st">"(avg of ratios)"</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"NTD_Conv aggregate: avg_of_ratios"</span></span>
+<span>    y     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">theta</span><span class="op">[</span><span class="va">Agg</span> <span class="op">*</span> <span class="st">","</span> <span class="op">*</span> <span class="fl">1</span><span class="op">]</span> <span class="op">~</span> <span class="st">"(weighted avg)"</span><span class="op">)</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Conventional aggregate: weighted_avg"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="aggregate-estimands_files/figure-html/plot_avg_of_ratios-1.png" class="r-plt" alt="" width="768"></p>
+<p><img src="aggregate-estimands_files/figure-html/plot_weighted_avg-1.png" class="r-plt" alt="" width="768"></p>
 </div>
 <div class="section level2">
 <h2 id="compare-aggregation-types">Compare aggregation types<a class="anchor" aria-label="anchor" href="#compare-aggregation-types"></a>
 </h2>
-<p><code>avg_of_ratios</code> and <code>ratio_of_avgs</code> answer the
+<p><code>weighted_avg</code> and <code>ratio_of_avgs</code> answer the
 same underlying question but weight groups differently. When high
 first-birth-age groups have higher counterfactual earnings than low
 first-birth-age groups, <code>ratio_of_avgs</code> assigns them more
@@ -193,7 +203,7 @@ earnings are heterogeneous across groups.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>    <span class="va">agg_type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"avg_of_ratios"</span>, <span class="st">"ratio_of_avgs"</span><span class="op">)</span>,</span>
+<span>    <span class="va">agg_type</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weighted_avg"</span>, <span class="st">"ratio_of_avgs"</span><span class="op">)</span>,</span>
 <span>    <span class="va">method</span>   <span class="op">==</span> <span class="st">"DID_Female"</span>,</span>
 <span>    <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -212,7 +222,7 @@ earnings are heterogeneous across groups.</p>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
 <span>    x     <span class="op">=</span> <span class="st">"Event time"</span>,</span>
 <span>    y     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">theta</span> <span class="op">~</span> <span class="st">"estimate"</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"DID_Female: avg_of_ratios vs ratio_of_avgs"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"DID_Female: weighted_avg vs ratio_of_avgs"</span>,</span>
 <span>    color <span class="op">=</span> <span class="st">"Aggregation type"</span>,</span>
 <span>    fill  <span class="op">=</span> <span class="st">"Aggregation type"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -255,9 +265,9 @@ births concentrate at older ages.</li>
 <span>  <span class="fu">mutate</span><span class="op">(</span><span class="va">agg_se</span>, population <span class="op">=</span> <span class="st">"Southern Europe (left-skewed)"</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
-<span>    <span class="va">agg_type</span> <span class="op">==</span> <span class="st">"avg_of_ratios"</span>,</span>
-<span>    <span class="va">method</span>   <span class="op">==</span> <span class="st">"NTD_Conv"</span>,</span>
-<span>    <span class="va">estimand</span> <span class="op">==</span> <span class="st">"theta"</span></span>
+<span>    <span class="va">agg_type</span> <span class="op">==</span> <span class="st">"weighted_avg"</span>,</span>
+<span>    <span class="va">method</span>   <span class="op">==</span> <span class="st">"Conventional"</span>,</span>
+<span>    <span class="va">estimand</span> <span class="op">==</span> <span class="st">"gap_theta"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span></span>
 <span>    x     <span class="op">=</span> <span class="va">event_time</span>,</span>
@@ -274,7 +284,7 @@ births concentrate at older ages.</li>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
 <span>    x     <span class="op">=</span> <span class="st">"Event time"</span>,</span>
 <span>    y     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">theta</span><span class="op">[</span><span class="va">Agg</span> <span class="op">*</span> <span class="st">","</span> <span class="op">*</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"Aggregate NTD_Conv estimate under different first-birth distributions"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"Aggregate Conventional estimate under different first-birth distributions"</span>,</span>
 <span>    color <span class="op">=</span> <span class="st">"Population weights"</span>,</span>
 <span>    fill  <span class="op">=</span> <span class="st">"Population weights"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
@@ -288,9 +298,10 @@ depends on the first-birth distribution.</p>
 <div class="section level2">
 <h2 id="gender-inequality-aggregate">Gender inequality aggregate<a class="anchor" aria-label="anchor" href="#gender-inequality-aggregate"></a>
 </h2>
-<p>The <code>gender_ineq</code> aggregate
+<p>The <code>weighted_avg</code> aggregate of <code>NTD</code>
+<code>rho_effect</code>
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>ρ</mi><mtext mathvariant="normal">Agg</mtext></msub></mrow><annotation encoding="application/x-tex">\Delta\rho_{\text{Agg}}</annotation></semantics></math>)
-is the weighted average of <code>NTD_New</code>
+is the weighted average of <code>NTD</code>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>ρ</mi></mrow><annotation encoding="application/x-tex">\Delta\rho</annotation></semantics></math>
 estimates across treatment groups. It measures how parenthood affects
 the female-to-male earnings ratio: negative values indicate that mothers
@@ -298,7 +309,7 @@ bear a larger proportional penalty — the female-to-male earnings ratio
 is lower post-birth than the counterfactual ratio.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">agg</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"gender_ineq"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"Delta_rho"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD_New"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">agg_type</span> <span class="op">==</span> <span class="st">"weighted_avg"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"rho_effect"</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">event_time</span>, y <span class="op">=</span> <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_ribbon</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"tomato"</span>, alpha <span class="op">=</span> <span class="fl">0.25</span>, color <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"tomato"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -307,9 +318,9 @@ is lower post-birth than the counterfactual ratio.</p>
 <span>  <span class="fu">labs</span><span class="op">(</span></span>
 <span>    x     <span class="op">=</span> <span class="st">"Event time"</span>,</span>
 <span>    y     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">Delta</span> <span class="op">*</span> <span class="va">rho</span><span class="op">[</span><span class="va">Agg</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"Gender inequality aggregate (NTD_New, avg of ratios)"</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Gender inequality aggregate (NTD, weighted_avg)"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="aggregate-estimands_files/figure-html/gender_ineq-1.png" class="r-plt" alt="" width="768"></p>
+<p><img src="aggregate-estimands_files/figure-html/rho_agg-1.png" class="r-plt" alt="" width="768"></p>
 <p>A flat, negative profile indicates a persistent parenthood-driven
 gender gap; values closer to zero at later event times suggest the gap
 narrows as parents age away from the birth event.</p>
@@ -325,7 +336,7 @@ narrows as parents age away from the birth event.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

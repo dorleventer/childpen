@@ -1,6 +1,18 @@
-# Child penalty analysis over multiple treatment groups
+# Child-penalty estimates for many treatment groups and event times
 
-Child penalty analysis over multiple treatment groups
+Runs
+[`single_treatment_group_analysis`](https://dorleventer.github.io/childpen/reference/single_treatment_group_analysis.md)
+over a grid of 2x2 comparisons. For each treatment group \\d\\ (age at
+first birth) and event time \\e = 0, \dots, H\\, the target age \\a =
+d + e\\ is compared with the closest not-yet-treated group \\d' = a +
+1\\ (Leventer 2025, Section 1.3). Pre-treatment event times are
+estimated against every control group used after treatment, because the
+identifying assumptions must hold pair by pair (Section 2.3). Results
+are stacked, and the person-level influence functions that
+[`aggregate_estimands`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md)
+and
+[`bias_bounds`](https://dorleventer.github.io/childpen/reference/bias_bounds.md)
+need are attached.
 
 ## Usage
 
@@ -10,8 +22,8 @@ multiple_treatment_group_analysis(
   treatment_groups,
   periods_post,
   periods_pre = 4,
-  max_age = 999,
-  min_age = 0,
+  max_control_group = Inf,
+  min_pre_age = 0,
   pre = 1,
   Y_name = "Y",
   age_name = "age",
@@ -26,81 +38,107 @@ multiple_treatment_group_analysis(
 
 - data:
 
-  A data.frame or data.table with the needed columns. Names can be
-  mapped via `Y_name`, `age_name`, `D_name`, `id_name`, `female_name`.
+  A data.frame or data.table in long format, one row per person and age;
+  see
+  [`single_treatment_group_analysis`](https://dorleventer.github.io/childpen/reference/single_treatment_group_analysis.md)
+  for the requirements. It is not modified.
 
 - treatment_groups:
 
-  Integer vector of treatment groups (e.g., 24:34).
+  Integer vector of ages at first birth \\d\\ to estimate (the paper
+  uses 24:34). Groups \\d + 1, \dots, d + H + 1\\ must be in `data` to
+  serve as controls.
 
 - periods_post:
 
-  Integer H \>= 0. Post-treatment horizons; evaluates event times e = 0,
-  1, ..., H with target age a = d + e and control dp = a + 1.
+  Whole number \\H \ge 0\\: post-treatment event times \\e = 0, \dots,
+  H\\ (the paper uses 5).
 
 - periods_pre:
 
-  Integer K \>= 0 (default 4). Number of pre-treatment horizons.
-  Evaluates e = -K, ..., -pre with a = d + e. For each pre period, tests
-  the same control offsets used post, i.e., dp = d + 1, 2, ..., H + 1.
-  Set `NULL` to skip pre-trends.
+  Whole number \\K \ge 0\\ (default 4), or `NULL`: number of
+  pre-treatment event times for validation tests, \\e = -(pre + K),
+  \dots, -(pre + 1)\\ (with the defaults \\-5, \dots, -2\\; \\e = -pre\\
+  is the baseline). `0` or `NULL` skips them.
 
-- max_age:
+- max_control_group:
 
-  Integer (default 999). Upper bound; cells with dp \> max_age are
-  skipped.
+  Largest age at first birth allowed as a control group (the paper's
+  \\D\_{max}\\; default `Inf`, no bound). Cells whose control group is
+  above it are not estimated.
 
-- min_age:
+- min_pre_age:
 
-  Integer (default 0). Lower bound; cells with a \< min_age are skipped.
+  Smallest target age for pre-treatment cells (default 0, no bound).
+  Post-treatment cells are not affected.
 
 - pre:
 
-  Integer (default 1). Pre-treatment anchor used in APO (uses d - pre).
+  Whole number \\\ge 1\\ (default 1): the baseline age is \\d - pre\\.
 
 - Y_name, age_name, D_name, id_name, female_name:
 
-  Column name mappings passed to
-  [`prep_data_table()`](https://dorleventer.github.io/childpen/reference/prep_data_table.md).
+  Names of the columns holding earnings, age, age at first birth, the
+  person id and the female indicator.
 
 - verbose:
 
-  Logical (default `TRUE`). Print progress messages.
+  Logical (default `TRUE`). Report progress, one line per treatment
+  group.
 
 ## Value
 
-A `data.frame` stacking results from
-[`single_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/single_treatment_group_analysis.md).
+A data.frame with one block of rows per estimated cell (`d`, `dp`, `a`),
+sorted by `d`, `event_time` and `dp`; the columns are those of
+[`single_treatment_group_analysis`](https://dorleventer.github.io/childpen/reference/single_treatment_group_analysis.md).
+Attributes used by
+[`aggregate_estimands`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md)
+and
+[`bias_bounds`](https://dorleventer.github.io/childpen/reference/bias_bounds.md):
+`"if_data"` (person-level influence functions per cell), `"n_obs"` (rows
+of the prepared data), `"n_ids"` (persons), `"id_info"` (`id`, `female`,
+`D`). Attribute `"skipped"` lists cells that could not be estimated,
+with the reason (e.g. an empty gender x group x age cell). Pass the
+result to the aggregation functions unmodified.
+
+## See also
+
+[`single_treatment_group_analysis`](https://dorleventer.github.io/childpen/reference/single_treatment_group_analysis.md),
+[`aggregate_estimands`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md),
+[`bias_bounds`](https://dorleventer.github.io/childpen/reference/bias_bounds.md)
 
 ## Examples
 
 ``` r
 # \donttest{
-set.seed(1)
-sim <- simulate_data(n_individuals = 500)
-res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25, periods_post = 2,
-                                         verbose = FALSE)
-head(res)
-#>    d dp  a event_time estimand     method           est           se
-#> 1 24 25 24          0      APO DID_Female  5.463737e+04 2.307267e+03
-#> 2 24 25 24          0      APO   DID_Male  6.284255e+04 3.145783e+03
-#> 3 24 25 24          0      ATE DID_Female -1.642360e+04 2.166833e+03
-#> 4 24 25 24          0      ATE   DID_Male -2.242722e+03 2.907059e+03
-#> 5 24 25 24          0    theta DID_Female -3.005928e-01 2.908327e-02
-#> 6 24 25 24          0    theta   DID_Male -3.568795e-02 4.517505e-02
-#>            ci_l          ci_h           t             p n_female_treat
-#> 1  5.011513e+04  5.915962e+04  23.6805595 5.719504e-124             60
-#> 2  5.667682e+04  6.900829e+04  19.9767619  8.773309e-89             60
-#> 3 -2.067060e+04 -1.217661e+04  -7.5795413  3.467788e-14             60
-#> 4 -7.940557e+03  3.455113e+03  -0.7714747  4.404256e-01             60
-#> 5 -3.575961e-01 -2.435896e-01 -10.3355914  4.864022e-25             60
-#> 6 -1.242310e-01  5.285514e-02  -0.7899926  4.295321e-01             60
-#>   n_female_control n_male_treat n_male_control
-#> 1               58           40             59
-#> 2               58           40             59
-#> 3               58           40             59
-#> 4               58           40             59
-#> 5               58           40             59
-#> 6               58           40             59
+sim <- simulate_data(n_individuals = 2000)
+res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:26,
+  periods_post = 1, periods_pre = 2, verbose = FALSE)
+# The new estimand, by treatment group and event time
+subset(res, method == "NTD" & estimand == "rho_effect" & event_time >= 0,
+       c(d, event_time, dp, est, se))
+#>      d event_time dp        est         se
+#> 85  24          0 25 -0.2155028 0.02448841
+#> 104 24          1 26 -0.1942861 0.02646790
+#> 199 25          0 26 -0.2330218 0.02663998
+#> 218 25          1 27 -0.2506474 0.02690808
+#> 313 26          0 27 -0.2304474 0.02872262
+#> 332 26          1 28 -0.2202934 0.02769264
+# Pre-treatment validation tests of NTD, one row per control group
+subset(res, method == "Conventional" & event_time < 0,
+       c(d, event_time, control_offset, est, se))
+#>      d event_time control_offset         est         se
+#> 8   24         -3              1  0.01921502 0.03283876
+#> 27  24         -3              2  0.06301764 0.03668203
+#> 46  24         -2              1  0.01213057 0.03044800
+#> 65  24         -2              2  0.01019054 0.03274121
+#> 122 25         -3              1 -0.04214755 0.03294678
+#> 141 25         -3              2 -0.09041602 0.03431302
+#> 160 25         -2              1 -0.03554836 0.02992490
+#> 179 25         -2              2 -0.04118812 0.03240116
+#> 236 26         -3              1 -0.01839902 0.03515728
+#> 255 26         -3              2 -0.02436191 0.03434374
+#> 274 26         -2              1 -0.01240937 0.03185278
+#> 293 26         -2              2 -0.04130854 0.03336731
 # }
 ```

@@ -10,3 +10,5 @@ as the main take-aways from the paper.
 - [NTD-identification](https://dorleventer.github.io/childpen/articles/NTD-identification.md):
 - [validation_tests](https://dorleventer.github.io/childpen/articles/validation_tests.md):
 - [aggregate-estimands](https://dorleventer.github.io/childpen/articles/aggregate-estimands.md):
+- [Estimators and standard
+  errors](https://dorleventer.github.io/childpen/articles/estimators.md):
