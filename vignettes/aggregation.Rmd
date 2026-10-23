@@ -10,10 +10,9 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 8, fig.height = 5,
                       message = FALSE, warning = FALSE)
-library(ggplot2); library(dplyr); library(tidyr)
+library(dplyr)
 data.table::setDTthreads(1L)
-options(dplyr.summarise.inform = FALSE, scipen = 999, digits = 4)
-theme_set(theme_bw(base_size = 12))
+options(scipen = 999, digits = 4)
 ```
 
 `aggregate_estimands()` averages the treatment-group-specific estimates of `multiple_treatment_group_analysis()` across treatment groups, by event time (Section 5 of Leventer 2025, [*Identification of Child Penalties*](https://arxiv.org/abs/2602.07486)). Symbols and row labels are in [Notation and output](notation.html), the estimators and influence functions in [Estimation](estimators.html). Equation, section and theorem numbers refer to the main text; appendices are referred to by name.
@@ -67,20 +66,7 @@ agg |>
   select(method, estimand, agg_type, est, se, n_groups)
 ```
 
-**$\theta_{\mathrm{Agg},1}$ and $\theta_{\mathrm{Agg},2}$.** Writing $\mathrm{ATE}(g) = \theta(g)\,\mathrm{APO}(g, \infty)$, Section 5.1 shows that $\theta_{\mathrm{Agg},2}$ is also a weighted average of the $\theta(g, d, d + e)$, with weights
-$$
-w(g, d, e) = \frac{p(g, d, e)\,\mathrm{APO}(g, d, \infty, d + e)}{\sum_{k:\, k + e < D_{\max}} p(g, k, e)\,\mathrm{APO}(g, k, \infty, k + e)}, \qquad p(g, d, e) = \Pr(D = d \mid G = g,\, D + e < D_{\max}).
-$$
-Where $\theta_{\mathrm{Agg},1}$ weights by the treatment distribution, $\theta_{\mathrm{Agg},2}$ weights by the treatment distribution times the counterfactual APO, so treatment groups with higher counterfactual earnings receive more weight; the paper notes these are typically the later-treated groups. The paper takes $\theta_{\mathrm{Agg},1}$ as the preferable aggregate estimand for this reason (Section 5.1).
-
-```{r theta-agg}
-agg |>
-  filter(method == "DID_Female", estimand == "theta") |>
-  select(event_time, agg_type, est) |>
-  pivot_wider(names_from = agg_type, values_from = est)
-```
-
-**Aggregating before or after differencing.** For the gender gap, Section 5.1 aggregates the within-group difference, $\Delta\theta_{\mathrm{Agg}}(e)$, rather than differencing the two within-gender aggregates, $\theta_{\mathrm{Agg},1}(f, e) - \theta_{\mathrm{Agg},1}(m, e)$. The two coincide only when the male and female treatment distributions are identical, and the second confounds differences in group-specific effects with gender differences in the treatment distribution. Accordingly `Conventional` (like `NTD`) uses weights pooled over genders, while `DID_Female` and `DID_Male` use weights within gender.
+`ratio_of_avgs` divides the weighted average of the `ATE` rows by that of the `APO` rows. Section 5.1 shows that $\theta_{\mathrm{Agg},2}$ is also an average of the $\theta(g, d, d + e)$, with weights proportional to the treatment-group share times counterfactual earnings $\mathrm{APO}(g, d, \infty, d + e)$.
 
 ## 2. Weights
 
@@ -89,6 +75,8 @@ agg |>
 | `"sample"` (default) | the share of persons in the group: $w_d = n_d / \sum_{k \in \mathcal{D}(e)} n_k$, where $n_d$ counts persons of both genders with $D = d$. For `DID_Female` and `DID_Male`, shares within gender: $w_{g,d} = n_{g,d} / \sum_{k \in \mathcal{D}(e)} n_{g,k}$ |
 | `"uniform"` or `NULL` | $1/m_e$, with $m_e$ the number of groups in $\mathcal{D}(e)$ |
 | a named numeric vector | proportional to the entry named $d$, renormalized to sum to one over $\mathcal{D}(e)$. Groups missing from the vector get weight zero, with a warning |
+
+Gender gaps are aggregated as in eq. (11): the within-group gap is averaged with weights pooled over genders, rather than differencing two within-gender aggregates, which would also reflect gender differences in the treatment distribution (Section 5.1). Only `DID_Female` and `DID_Male` use within-gender weights.
 
 ```{r weights}
 w_named <- setNames(dnorm(24:30, mean = 27, sd = 3), 24:30)
@@ -101,6 +89,8 @@ bind_rows(
   filter(estimand == "rho_effect", event_time %in% c(0, 3)) |>
   select(weights, event_time, est, se, n_groups)
 ```
+
+A named vector aggregates the same treatment-group estimates under another treatment distribution, as in Figure 9 of the paper ([Replicating the paper](replication.html)).
 
 **Groups that drop out.** A treatment group has a cell at event time $e$ only if its control group $d + e + 1$ is at most `max_control_group` ($D_{\max}$ in the paper). Groups beyond the bound drop out at later event times, and `n_groups` records how many remain.
 
@@ -136,18 +126,7 @@ $$
 $$
 for $n$ person-age rows and $G$ persons. A person who serves as a control group member for several treatment groups therefore enters several terms of the same sum. The share term is put on the person-age scale with the average number of ages per person, which is exact for a balanced panel. The estimators and the influence functions of the group-level rows are in [Estimation](estimators.html).
 
-The table compares the `se` of `aggregate_estimands()` under uniform weights with $\sqrt{\sum_d w_d^2\,\mathrm{se}_d^2}$, the standard error if the group-level estimates were independent. The latter is also the calculation used, with a warning, when `results` has lost its influence-function attributes (for example a table read back from a file).
-
-```{r se}
-agg_u <- aggregate_estimands(res, weights = "uniform", methods = "NTD") |>
-  filter(estimand == "rho_effect") |>
-  select(event_time, est, se)
-indep <- res |>
-  filter(method == "NTD", estimand == "rho_effect") |>
-  group_by(event_time) |>
-  summarise(se_independent = sqrt(sum(se^2)) / n())
-left_join(agg_u, indep, by = "event_time")
-```
+When `results` has lost its influence-function attributes (for example a table read back from a file), `aggregate_estimands()` warns, computes standard errors as if the group-level estimates were independent ($\sqrt{\sum_d w_d^2\,\mathrm{se}_d^2}$ for `weighted_avg`), and uses uniform weights in place of `"sample"`.
 
 ## 4. Pre-treatment event times
 
@@ -157,52 +136,9 @@ With `include_pre = TRUE`, pre-treatment event times are aggregated as well. A p
 res_pre <- multiple_treatment_group_analysis(sim, 26:28, periods_post = 2, periods_pre = 2,
                                              verbose = FALSE)
 agg_pre <- aggregate_estimands(res_pre, include_pre = TRUE,
-                               methods = c("DID_Female", "Conventional"))
+                               methods = "Conventional")
 agg_pre |>
-  filter(event_time < 0, agg_type == "weighted_avg") |>
-  mutate(row = paste(method, estimand, sep = " / "),
-         control_offset = factor(control_offset)) |>
-  ggplot(aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h, color = control_offset)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
-  geom_pointrange(position = position_dodge(width = 0.3)) +
-  facet_wrap(~ row) +
-  scale_x_continuous(breaks = -3:-2) +
-  labs(x = "Event time", y = "Aggregate estimate", color = "Control offset") +
-  theme(legend.position = "bottom")
+  filter(event_time < 0, method == "Conventional") |>
+  select(event_time, control_offset, est, se, n_groups)
 ```
 
-Under no anticipation, a zero pre-treatment `DID_Female` or `DID_Male` `theta` corresponds to $\gamma_{\mathrm{PT}}(g) = 0$ and a zero `Conventional` `gap_theta` to the NTD-PT restriction at that age (Lemma 1 and Proposition 1 of the paper).
-
-## 5. Comparing aggregates across strata
-
-Studies compute aggregates within a stratum, such as a country or a parent type, and compare them across strata (Section 5.2). An aggregate depends on the treatment distribution: strata with different distributions of age at first birth give different aggregates even when the treatment-group-specific effects are the same, for example when parents have children earlier in one country than in another and early treatment groups receive more weight.
-
-Figure 9 of the paper illustrates this. It keeps the treatment-group-specific estimates of the effect of parenthood on the gender earnings ratio fixed, and aggregates them with three treatment distributions, normal densities with standard deviation 3 and means 26, 29 and 32 over the treatment groups $D \in [24, 34]$ (right-skewed, centered, left-skewed). The same exercise with the simulated group estimates `res`, with means 24, 27 and 30 over the treatment groups 24-30 (three years either side of the middle of the range, as in the paper):
-
-```{r strata-weights}
-groups <- 24:30
-means  <- c("Right-skewed" = 24, "Centered" = 27, "Left-skewed" = 30)
-W <- sapply(means, function(m) dnorm(groups, mean = m, sd = 3))
-rownames(W) <- groups
-round(prop.table(W, margin = 2), 3)   # weights after normalization
-```
-
-```{r strata}
-by_dist <- lapply(names(means), function(nm) {
-  w <- setNames(W[, nm], groups)
-  aggregate_estimands(res, weights = w, methods = "NTD") |>
-    filter(estimand == "rho_effect") |>
-    mutate(distribution = factor(nm, levels = names(means)))
-}) |>
-  bind_rows()
-
-ggplot(by_dist, aes(x = event_time, y = est, ymin = ci_l, ymax = ci_h)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
-  geom_ribbon(alpha = 0.25) +
-  geom_line() +
-  geom_point() +
-  facet_wrap(~ distribution) +
-  labs(x = "Event time", y = expression(rho[Agg](e)))
-```
-
-The three panels average the same treatment-group estimates; only the weights differ. Figure 9 and the cross-country figure of the appendix on aggregate estimates (Israel, the UK and Germany) are in [Replicating the paper](replication.html).
