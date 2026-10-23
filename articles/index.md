@@ -4,7 +4,6 @@
 
 - [Notation and
   output](https://dorleventer.github.io/childpen/articles/notation.md):
-- [Identification](https://dorleventer.github.io/childpen/articles/identification.md):
 - [Estimation](https://dorleventer.github.io/childpen/articles/estimators.md):
 - [Aggregation](https://dorleventer.github.io/childpen/articles/aggregation.md):
 - [Replicating the

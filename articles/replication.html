@@ -38,7 +38,6 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/notation.html">Notation and output</a></li>
-    <li><a class="dropdown-item" href="../articles/identification.html">Identification</a></li>
     <li><a class="dropdown-item" href="../articles/estimators.html">Estimation</a></li>
     <li><a class="dropdown-item" href="../articles/aggregation.html">Aggregation</a></li>
     <li><a class="dropdown-item" href="../articles/replication.html">Replicating the paper</a></li>
@@ -75,10 +74,9 @@
 simulated data: the Israeli administrative data are confidential. Each
 section gives the call, the rows of the output it uses, a short plot,
 and how the figure is read. It builds on the earlier articles: <a href="notation.html">Notation and output</a> for the symbols and rows,
-<a href="identification.html">Identification</a> for the assumptions and
-results, <a href="estimators.html">Estimation</a> for the estimators and
-standard errors, and <a href="aggregation.html">Aggregation</a> for the
-aggregate estimands.</p>
+<a href="estimators.html">Estimation</a> for the estimators and standard
+errors, and <a href="aggregation.html">Aggregation</a> for the aggregate
+estimands.</p>
 <p>The simulated data come from <code><a href="../reference/simulate_data.html">simulate_data()</a></code>, designed
 to show the paper’s patterns: later first births enter the labor market
 later and then have steeper earnings growth (so parallel trends fails in
@@ -175,9 +173,9 @@ trends between the two groups at that age, the parallel-trends violation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>γ</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">\gamma_{PT}</annotation></semantics></math>
 (Lemma 1). Lines away from zero are trend differences before treatment
 for that pair; here they grow with the distance to the control group, as
-selection on the timing of first birth implies (<a href="identification.html">Identification</a>). Parallel trends is an
-assumption about post-treatment ages, so these are suggestive checks,
-one per pair.</p>
+selection on the timing of first birth implies (Section 2). Parallel
+trends is an assumption about post-treatment ages, so these are
+suggestive checks, one per pair.</p>
 </div>
 <div class="section level2">
 <h2 id="figure-4-bias-bounding-of-the-conventional-estimator-section-3-3">Figure 4: bias bounding of the conventional estimator (Section
@@ -481,8 +479,6 @@ after birth</td>
 </tr>
 </tbody>
 </table>
-<p>The paper’s own scripts read the results with earlier labels; the map
-is in <a href="notation.html">Notation and output</a>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -7,8 +7,6 @@ call, the rows of the output it uses, a short plot, and how the figure
 is read. It builds on the earlier articles: [Notation and
 output](https://dorleventer.github.io/childpen/articles/notation.md) for
 the symbols and rows,
-[Identification](https://dorleventer.github.io/childpen/articles/identification.md)
-for the assumptions and results,
 [Estimation](https://dorleventer.github.io/childpen/articles/estimators.md)
 for the estimators and standard errors, and
 [Aggregation](https://dorleventer.github.io/childpen/articles/aggregation.md)
@@ -121,9 +119,8 @@ trends between the two groups at that age, the parallel-trends violation
 $`\gamma_{PT}`$ (Lemma 1). Lines away from zero are trend differences
 before treatment for that pair; here they grow with the distance to the
 control group, as selection on the timing of first birth implies
-([Identification](https://dorleventer.github.io/childpen/articles/identification.md)).
-Parallel trends is an assumption about post-treatment ages, so these are
-suggestive checks, one per pair.
+(Section 2). Parallel trends is an assumption about post-treatment ages,
+so these are suggestive checks, one per pair.
 
 ## Figure 4: bias bounding of the conventional estimator (Section 3.3)
 
@@ -411,7 +408,3 @@ data:
 | Section 4.2: counterfactual and observed ratio for $`D = 30`$ at birth, and parenthood’s share | `filter(res, method == "NTD", estimand %in% c("rho_cf", "rho_obs", "share_parenthood"), d == 30, event_time == 0)` |
 | Section 4.2: parenthood’s share at birth across $`D = 26, \dots, 30`$ | `filter(res, method == "NTD", estimand == "share_parenthood", event_time == 0, d %in% 26:30)` |
 | Online appendix: aggregate conventional and new estimates five years after birth | `filter(aggregate_estimands(res), method %in% c("Conventional", "NTD"), estimand %in% c("gap_theta", "rho_effect"), event_time == 5)` |
-
-The paper’s own scripts read the results with earlier labels; the map is
-in [Notation and
-output](https://dorleventer.github.io/childpen/articles/notation.md).

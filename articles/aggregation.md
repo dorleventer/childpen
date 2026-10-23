@@ -281,9 +281,8 @@ agg_pre |>
 
 Under no anticipation, a zero pre-treatment `DID_Female` or `DID_Male`
 `theta` corresponds to $`\gamma_{\mathrm{PT}}(g) = 0`$ and a zero
-`Conventional` `gap_theta` to the NTD-PT restriction at that age
-(Proposition 1; see [Notation and
-output](https://dorleventer.github.io/childpen/articles/notation.md)).
+`Conventional` `gap_theta` to the NTD-PT restriction at that age (Lemma
+1 and Proposition 1 of the paper).
 
 ## 5. Comparing aggregates across strata
 

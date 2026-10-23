@@ -68,15 +68,11 @@ ggplot(est, aes(event_time, est, ymin = ci_l, ymax = ci_h)) +
 1.  [Notation and
     output](https://dorleventer.github.io/childpen/articles/notation.html):
     the 2x2, the estimands, and what each output row is.
-2.  [Identification](https://dorleventer.github.io/childpen/articles/identification.html):
-    parallel trends, the validation test and NTD, the non-identification
-    of the conventional target, bias bounding, and the effect on the
-    gender earnings ratio.
-3.  [Estimation](https://dorleventer.github.io/childpen/articles/estimators.html):
+2.  [Estimation](https://dorleventer.github.io/childpen/articles/estimators.html):
     the grid of comparisons, every estimator and its influence function.
-4.  [Aggregation](https://dorleventer.github.io/childpen/articles/aggregation.html):
+3.  [Aggregation](https://dorleventer.github.io/childpen/articles/aggregation.html):
     estimands across treatment groups, weights and standard errors.
-5.  [Replicating the
+4.  [Replicating the
     paper](https://dorleventer.github.io/childpen/articles/replication.html):
     the paper’s figures, one by one, on simulated data.
 
@@ -110,7 +106,6 @@ ggplot(est, aes(event_time, est, ymin = ci_l, ymax = ci_h)) +
 
 - [Notation and
   output](https://dorleventer.github.io/childpen/articles/notation.md):
-- [Identification](https://dorleventer.github.io/childpen/articles/identification.md):
 - [Estimation](https://dorleventer.github.io/childpen/articles/estimators.md):
 - [Aggregation](https://dorleventer.github.io/childpen/articles/aggregation.md):
 - [Replicating the

@@ -47,9 +47,9 @@ unchanged (checked with `dev/snapshot_compare.R` against v0.2.3 output).
   `p`); results carry `control_offset` (= dp - d), and
   [`multiple_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md)
   attaches `attr(, "skipped")`.
-- Articles follow the paper, in order: Notation and output,
-  Identification, Estimation (every estimator and its influence
-  function), Aggregation, and Replicating the paper (the paper’s main
+- Articles follow the paper, in order: Notation and output, Estimation
+  (every estimator, its influence function, and the assumption behind
+  each row), Aggregation, and Replicating the paper (the paper’s main
   figures, including the accounting exercise, on simulated data; on the
   site only).
 

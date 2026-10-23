@@ -18,7 +18,6 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/notation.html">Notation and output</a></li>
-    <li><a class="dropdown-item" href="../articles/identification.html">Identification</a></li>
     <li><a class="dropdown-item" href="../articles/estimators.html">Estimation</a></li>
     <li><a class="dropdown-item" href="../articles/aggregation.html">Aggregation</a></li>
     <li><a class="dropdown-item" href="../articles/replication.html">Replicating the paper</a></li>
@@ -58,7 +57,7 @@
 <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> aggregates the <code>TD</code> gap (<code>gap_ATE</code>), accepts <code>weights = "uniform"</code>, and reports <code>t</code> and <code>p</code>.</li>
 <li>
 <code><a href="../reference/single_treatment_group_analysis.html">single_treatment_group_analysis()</a></code> returns the same columns as <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> (<code>d</code>, <code>dp</code>, <code>a</code>, <code>event_time</code>, <code>control_offset</code>, <code>ci_l</code>, <code>ci_h</code>, <code>t</code>, <code>p</code>); results carry <code>control_offset</code> (= dp - d), and <code><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis()</a></code> attaches <code>attr(, "skipped")</code>.</li>
-<li>Articles follow the paper, in order: Notation and output, Identification, Estimation (every estimator and its influence function), Aggregation, and Replicating the paper (the paper’s main figures, including the accounting exercise, on simulated data; on the site only).</li>
+<li>Articles follow the paper, in order: Notation and output, Estimation (every estimator, its influence function, and the assumption behind each row), Aggregation, and Replicating the paper (the paper’s main figures, including the accounting exercise, on simulated data; on the site only).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="input-checks-and-messages-0-3-0">Input checks and messages<a class="anchor" aria-label="anchor" href="#input-checks-and-messages-0-3-0"></a></h3>

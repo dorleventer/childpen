@@ -38,7 +38,6 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/notation.html">Notation and output</a></li>
-    <li><a class="dropdown-item" href="../articles/identification.html">Identification</a></li>
     <li><a class="dropdown-item" href="../articles/estimators.html">Estimation</a></li>
     <li><a class="dropdown-item" href="../articles/aggregation.html">Aggregation</a></li>
     <li><a class="dropdown-item" href="../articles/replication.html">Replicating the paper</a></li>
@@ -72,15 +71,14 @@
     
 <p>This page describes how the package runs the paper’s 2x2 comparisons,
 then writes out every estimator it returns and the influence function
-its standard error is built from. Notation follows <a href="notation.html">Notation and output</a>; the identification results
-behind each row are in <a href="identification.html">Identification</a>.
-Section, theorem and appendix numbers refer to Leventer (2025),
-<em>Identification of Child Penalties</em>; appendices are referred to
-by name, because their letters differ between the arXiv and journal
-versions: <em>Estimation appendix</em> is the appendix on estimation and
-inference, <em>Proportional appendix</em> the online appendix on
-proportional DID and TD. Formulas that are not in the paper are marked
-<strong>not in the paper</strong>.</p>
+its standard error is built from. Notation follows <a href="notation.html">Notation and output</a>. Section, theorem and
+appendix numbers refer to Leventer (2025), <em>Identification of Child
+Penalties</em>; appendices are referred to by name, because their
+letters differ between the arXiv and journal versions: <em>Estimation
+appendix</em> is the appendix on estimation and inference,
+<em>Proportional appendix</em> the online appendix on proportional DID
+and TD. Formulas that are not in the paper are marked <strong>not in the
+paper</strong>.</p>
 <div class="section level2">
 <h2 id="running-the-comparisons">Running the comparisons<a class="anchor" aria-label="anchor" href="#running-the-comparisons"></a>
 </h2>
@@ -119,6 +117,61 @@ to
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d - 1</annotation></semantics></math>),
 and controls up to 40 (<a href="replication.html">Replicating the
 paper</a>).</p>
+<p><strong>Input data.</strong> <code>data</code> is a data.frame or
+data.table in long format, one row per person and age; the panel need
+not be balanced. The columns are located by name:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>argument</th>
+<th>default</th>
+<th>content</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>id_name</code></td>
+<td><code>"id"</code></td>
+<td>person identifier (the clustering unit)</td>
+</tr>
+<tr class="even">
+<td><code>age_name</code></td>
+<td><code>"age"</code></td>
+<td>age, numeric</td>
+</tr>
+<tr class="odd">
+<td><code>D_name</code></td>
+<td><code>"D"</code></td>
+<td>age at first birth, constant within person; a missing (or infinite)
+value means the person never has a child</td>
+</tr>
+<tr class="even">
+<td><code>female_name</code></td>
+<td><code>"female"</code></td>
+<td>gender, constant within person; <code>1</code> / <code>TRUE</code>
+is female and <code>0</code> / <code>FALSE</code> male; labels such as
+<code>"female"</code> / <code>"male"</code>, <code>"f"</code> /
+<code>"m"</code>, <code>"woman"</code> / <code>"man"</code> are also
+accepted</td>
+</tr>
+<tr class="odd">
+<td><code>Y_name</code></td>
+<td><code>"Y"</code></td>
+<td>earnings, numeric; zeros are allowed, while the ratio rows need
+positive cell means</td>
+</tr>
+</tbody>
+</table>
+<p>Rows with a missing outcome are dropped with a message. The functions
+stop with an error if a person-age pair is repeated, if
+<code>female</code> or <code>D</code> varies within a person, if a
+gender label is not recognised, or if only one gender is present.
+<code>data</code> is not modified. Persons with a missing <code>D</code>
+stay in the data, belong to no treatment or control group, and count in
+the totals the standard errors are scaled by.</p>
 </div>
 <div class="section level2">
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
@@ -190,19 +243,21 @@ persons and clusters
 \qquad
 \psi_{\delta^{\times}_{APO}(g)} = \hat\delta^{\times}_{APO}(g)\Big(\frac{\psi_1}{\mu_1} + \frac{\psi_2}{\mu_2} - \frac{\psi_3}{\mu_3}\Big).
 </annotation></semantics></math></p>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="20%">
-<col width="20%">
-<col width="20%">
-<col width="20%">
-<col width="20%">
+<col width="16%">
+<col width="16%">
+<col width="16%">
+<col width="16%">
+<col width="16%">
+<col width="16%">
 </colgroup>
 <thead><tr class="header">
 <th>method</th>
 <th>estimand</th>
 <th>estimator</th>
 <th>influence function</th>
+<th>identifies its target under</th>
 <th>in the paper</th>
 </tr></thead>
 <tbody>
@@ -213,7 +268,8 @@ persons and clusters
 <td><code>APO</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat\delta_{APO}(g)</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ψ</mi><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><annotation encoding="application/x-tex">\psi_{\delta_{APO}(g)}</annotation></semantics></math></td>
-<td>eq. (3), Estimation app.</td>
+<td>NA, DID-PT</td>
+<td>Lemma 1; eq. (3), Estimation app.</td>
 </tr>
 <tr class="even">
 <td>
@@ -222,7 +278,8 @@ persons and clusters
 <td><code>ATE</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>T</mi><mi>E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>μ</mi><mn>4</mn></msub><mo>−</mo><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat\delta_{ATE}(g) = \mu_4 - \hat\delta_{APO}(g)</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mn>4</mn></msub><mo>−</mo><msub><mi>ψ</mi><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub></mrow><annotation encoding="application/x-tex">\psi_4 - \psi_{\delta_{APO}(g)}</annotation></semantics></math></td>
-<td>eq. (3), Estimation app.</td>
+<td>NA, DID-PT</td>
+<td>Lemma 1; eq. (3), Estimation app.</td>
 </tr>
 <tr class="odd">
 <td>
@@ -231,42 +288,50 @@ persons and clusters
 <td><code>theta</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>T</mi><mi>E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat\delta_\theta(g) = \hat\delta_{ATE}(g)/\hat\delta_{APO}(g)</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true"><mfrac><msub><mi>ψ</mi><msub><mi>δ</mi><mrow><mi>A</mi><mi>T</mi><mi>E</mi></mrow></msub></msub><msub><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub></mfrac></mstyle><mo>−</mo><mstyle displaystyle="true"><mfrac><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>T</mi><mi>E</mi></mrow></msub><mspace width="0.167em"></mspace><msub><mi>ψ</mi><msub><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub></msub></mrow><msubsup><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow><mn>2</mn></msubsup></mfrac></mstyle></mrow><annotation encoding="application/x-tex">\dfrac{\psi_{\delta_{ATE}}}{\delta_{APO}} - \dfrac{\delta_{ATE}\,\psi_{\delta_{APO}}}{\delta_{APO}^2}</annotation></semantics></math></td>
-<td>eq. (3), Estimation app.</td>
+<td>NA, DID-PT</td>
+<td>Lemma 1; eq. (3), Estimation app.</td>
 </tr>
 <tr class="even">
 <td><code>TD</code></td>
 <td><code>gap_ATE</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>T</mi><mi>E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>T</mi><mi>E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat\delta_{ATE}(f) - \hat\delta_{ATE}(m)</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>T</mi><mi>E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>−</mo><msub><mi>ψ</mi><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>T</mi><mi>E</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub></mrow><annotation encoding="application/x-tex">\psi_{\delta_{ATE}(f)} - \psi_{\delta_{ATE}(m)}</annotation></semantics></math></td>
-<td>Estimation app.</td>
+<td>NA, TD-PT</td>
+<td>Lemma 1; Estimation app.</td>
 </tr>
 <tr class="odd">
 <td><code>Conventional</code></td>
 <td><code>gap_theta</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat\delta_\theta(f) - \hat\delta_\theta(m)</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>−</mo><msub><mi>ψ</mi><mrow><msub><mi>δ</mi><mi>θ</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub></mrow><annotation encoding="application/x-tex">\psi_{\delta_\theta(f)} - \psi_{\delta_\theta(m)}</annotation></semantics></math></td>
-<td>Thm. 1, Estimation app.</td>
+<td>NA, DID-PT; under NA and NTD-PT it equals
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Bias</mtext><mo>×</mo><mo stretchy="false" form="prefix">[</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\text{Bias} \times [\theta(f) - \theta(m)]</annotation></semantics></math>
+</td>
+<td>Thm. 1; Estimation app.</td>
 </tr>
 <tr class="even">
 <td><code>NTD</code></td>
 <td><code>rho_obs</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub><mo>=</mo><msub><mi>μ</mi><mn>4</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msub><mi>μ</mi><mn>4</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat\rho_{obs} = \mu_4(f)/\mu_4(m)</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true"><mfrac><mrow><msub><mi>ψ</mi><mn>4</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msub><mi>μ</mi><mn>4</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></mstyle><mo>−</mo><mstyle displaystyle="true"><mfrac><mrow><msub><mi>μ</mi><mn>4</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>ψ</mi><mn>4</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msub><mi>μ</mi><mn>4</mn></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow></mfrac></mstyle></mrow><annotation encoding="application/x-tex">\dfrac{\psi_4(f)}{\mu_4(m)} - \dfrac{\mu_4(f)\,\psi_4(m)}{\mu_4(m)^2}</annotation></semantics></math></td>
-<td>Estimation app.</td>
+<td>consistency</td>
+<td>Thm. 2; Estimation app.</td>
 </tr>
 <tr class="odd">
 <td><code>NTD</code></td>
 <td><code>rho_cf</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>c</mi><mi>f</mi></mrow></msub><mo>=</mo><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat\rho_{cf} = \hat\delta_{APO}(f)/\hat\delta_{APO}(m)</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true"><mfrac><msub><mi>ψ</mi><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></mstyle><mo>−</mo><mstyle displaystyle="true"><mfrac><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>ψ</mi><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub></mrow><mrow><msub><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow></mfrac></mstyle></mrow><annotation encoding="application/x-tex">\dfrac{\psi_{\delta_{APO}(f)}}{\delta_{APO}(m)} - \dfrac{\delta_{APO}(f)\,\psi_{\delta_{APO}(m)}}{\delta_{APO}(m)^2}</annotation></semantics></math></td>
-<td>Estimation app.</td>
+<td>NA, NTD-PT</td>
+<td>Thm. 2; Estimation app.</td>
 </tr>
 <tr class="even">
 <td><code>NTD</code></td>
 <td><code>rho_effect</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub><mo>−</mo><msub><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>c</mi><mi>f</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\hat\rho_{obs} - \hat\rho_{cf}</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></msub><mo>−</mo><msub><mi>ψ</mi><msub><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub></msub></mrow><annotation encoding="application/x-tex">\psi_{\rho_{obs}} - \psi_{\rho_{cf}}</annotation></semantics></math></td>
-<td>Thm. 2, Estimation app.</td>
+<td>NA, NTD-PT</td>
+<td>Thm. 2; Estimation app.</td>
 </tr>
 <tr class="odd">
 <td><code>TD_E_LOGS</code></td>
@@ -275,6 +340,7 @@ persons and clusters
 <td>as <code>NTD</code> <code>rho_cf</code>, with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow><mo>×</mo></msubsup><annotation encoding="application/x-tex">\delta^{\times}_{APO}</annotation></semantics></math>
 </td>
+<td>NA, TD-E-LOGS</td>
 <td>Proportional app.; IF <strong>not in the paper</strong>
 </td>
 </tr>
@@ -289,6 +355,9 @@ persons and clusters
 <td>as <code>NTD</code>, with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ψ</mi><msubsup><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow><mo>×</mo></msubsup></msub><annotation encoding="application/x-tex">\psi_{\rho^{\times}_{cf}}</annotation></semantics></math>
 </td>
+<td>
+<code>rho_obs</code>: consistency; <code>rho_effect</code>: NA,
+TD-E-LOGS</td>
 <td>Proportional app.; IF <strong>not in the paper</strong>
 </td>
 </tr>
@@ -303,6 +372,7 @@ persons and clusters
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><msub><mi>θ</mi><mrow><mi>p</mi><mi>r</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>−</mo><msub><mi>ψ</mi><mrow><msub><mi>θ</mi><mrow><mi>p</mi><mi>r</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub></mrow><annotation encoding="application/x-tex">\psi_{\theta_{pre}(f)} - \psi_{\theta_{pre}(m)}</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><msub><mi>θ</mi><mrow><mi>p</mi><mi>r</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>=</mo><mstyle displaystyle="true"><mfrac><mrow><msub><mi>ψ</mi><mn>4</mn></msub><mo>−</mo><msub><mi>ψ</mi><mrow><msubsup><mi>δ</mi><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow><mo>×</mo></msubsup><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub></mrow><msub><mi>μ</mi><mn>1</mn></msub></mfrac></mstyle><mo>−</mo><mstyle displaystyle="true"><mfrac><mrow><msub><mi>θ</mi><mrow><mi>p</mi><mi>r</mi><mi>e</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>g</mi><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>ψ</mi><mn>1</mn></msub></mrow><msub><mi>μ</mi><mn>1</mn></msub></mfrac></mstyle></mrow><annotation encoding="application/x-tex">\psi_{\theta_{pre}(g)} = \dfrac{\psi_4 - \psi_{\delta^{\times}_{APO}(g)}}{\mu_1} - \dfrac{\theta_{pre}(g)\,\psi_1}{\mu_1}</annotation></semantics></math>
 </td>
+<td>NA, TD-PR</td>
 <td>Proportional app.; IF <strong>not in the paper</strong>
 </td>
 </tr>
@@ -313,6 +383,7 @@ persons and clusters
 <td><code>share_parenthood</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>s</mi><mo accent="true">̂</mo></mover><mo>=</mo><mstyle displaystyle="true"><mfrac><mrow><msub><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>c</mi><mi>f</mi></mrow></msub><mo>−</mo><msub><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></mrow><mrow><mn>1</mn><mo>−</mo><msub><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></mrow></mfrac></mstyle></mrow><annotation encoding="application/x-tex">\hat s = \dfrac{\hat\rho_{cf} - \hat\rho_{obs}}{1 - \hat\rho_{obs}}</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true"><mfrac><mrow><msub><mi>ψ</mi><msub><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub></msub><mo>−</mo><msub><mi>ψ</mi><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></msub></mrow><mrow><mn>1</mn><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></mrow></mfrac></mstyle><mo>+</mo><mstyle displaystyle="true"><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>ψ</mi><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></msub></mrow><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup></mrow></mfrac></mstyle></mrow><annotation encoding="application/x-tex">\dfrac{\psi_{\rho_{cf}} - \psi_{\rho_{obs}}}{1 - \rho_{obs}} + \dfrac{(\rho_{cf} - \rho_{obs})\,\psi_{\rho_{obs}}}{(1 - \rho_{obs})^2}</annotation></semantics></math></td>
+<td>as <code>rho_cf</code> of the same method</td>
 <td>Sec. 4.2 (estimate); <strong>not in the paper</strong> (IF)</td>
 </tr>
 <tr class="odd">
@@ -322,13 +393,15 @@ persons and clusters
 <td><code>share_other</code></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mover><mi>s</mi><mo accent="true">̂</mo></mover></mrow><annotation encoding="application/x-tex">1 - \hat s</annotation></semantics></math></td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><msub><mi>ψ</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">-\psi_s</annotation></semantics></math></td>
+<td>as <code>rho_cf</code> of the same method</td>
 <td><strong>not in the paper</strong></td>
 </tr>
 </tbody>
 </table>
-<p>What each row identifies, and under which assumption, is in
-<code><a href="../reference/single_treatment_group_analysis.html">?single_treatment_group_analysis</a></code> (Details). For
-<code>TD_E_LOGS</code> the counterfactual ratio uses
+<p>NA (no anticipation), DID-PT (parallel trends), TD-PT and NTD-PT are
+the assumptions of Sections 2 and 3 of the paper; TD-E-LOGS and TD-PR
+are those of the Proportional appendix. For <code>TD_E_LOGS</code> the
+counterfactual ratio uses
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>P</mi><mi>O</mi></mrow><mo>×</mo></msubsup><annotation encoding="application/x-tex">\hat\delta^{\times}_{APO}</annotation></semantics></math>;
 the <code>share_parenthood</code> row of <code>TD_E_LOGS</code> uses
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>c</mi><mi>f</mi></mrow><mo>×</mo></msubsup><annotation encoding="application/x-tex">\hat\rho^{\times}_{cf}</annotation></semantics></math>
