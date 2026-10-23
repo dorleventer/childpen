@@ -9,6 +9,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+options(scipen = 999)
 data.table::setDTthreads(1L)
 ```
 
@@ -42,6 +43,25 @@ res <- multiple_treatment_group_analysis(data, treatment_groups = 24:34,
 With the paper's sample this grid is the one behind its figures: treatment groups 24 to 34,
 event times 0 to 5, pre-treatment event times $-4$ to $-2$ (baseline $d - 1$), and controls up to
 40 ([Replicating the paper](replication.html)).
+
+**One comparison.** `single_treatment_group_analysis()` returns the rows of one cell
+$(d, d', a)$. Treatment group $d = 26$ against control group $d' = 28$, after childbirth at age
+$a = 27$ (event time 1) and before childbirth at age $a = 23$ (event time $-3$), both with baseline
+age 25:
+
+```{r one-cell}
+library(childpen)
+sim  <- simulate_data(5000, 24:30)
+fmt  <- function(v) format(signif(v, 3), scientific = FALSE, drop0trailing = TRUE, trim = TRUE)
+show <- function(x) transform(x[c("event_time", "control_offset", "method", "estimand", "est", "se")],
+                               est = fmt(est), se = fmt(se))
+
+post <- single_treatment_group_analysis(sim, d = 26, dp = 28, a = 27)
+show(post)
+
+pre <- single_treatment_group_analysis(sim, d = 26, dp = 28, a = 23)
+show(pre)
+```
 
 **Input data.** `data` is a data.frame or data.table in long format, one row per person and age;
 the panel need not be balanced. The columns are located by name:
