@@ -15,8 +15,7 @@ aggregate_estimands(
 \arguments{
 \item{results}{The data.frame returned by
 \code{\link{multiple_treatment_group_analysis}}, unmodified (its attributes
-carry the influence functions). A table without them is accepted, with
-standard errors under an independence approximation and a warning.}
+carry the influence functions and the treatment-group sizes).}
 
 \item{weights}{How to weight treatment groups:
 \itemize{

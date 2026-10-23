@@ -21,7 +21,7 @@ if (!length(args) %in% 2:3) stop("usage: Rscript dev/snapshot_compare.R <baselin
 base <- readRDS(args[1]); new <- readRDS(args[2])
 relabel <- if (length(args) == 3) { source(args[3]); relabel_baseline } else identity
 
-key_cols <- c("d", "dp", "a", "event_time", "estimand", "method", "agg_type")
+key_cols <- c("d", "dp", "a", "event_time", "control_offset", "estimand", "method", "agg_type")
 fails <- character(0); notes <- character(0)
 fail <- function(path, msg) fails <<- c(fails, sprintf("%s: %s", path, msg))
 note <- function(path, msg) notes <<- c(notes, sprintf("%s: %s", path, msg))

@@ -8,8 +8,7 @@
 #'
 #' @param results The data.frame returned by
 #'   \code{\link{multiple_treatment_group_analysis}}, unmodified (its attributes
-#'   carry the influence functions). A table without them is accepted, with
-#'   standard errors under an independence approximation and a warning.
+#'   carry the influence functions and the treatment-group sizes).
 #' @param weights How to weight treatment groups:
 #'   \itemize{
 #'     \item \code{"sample"} (default): treatment-group shares. Within gender,
@@ -134,26 +133,14 @@ aggregate_estimands <- function(results,
     }
   }
 
-  # ---- Extract IF data if available ----------------------------------------
+  # ---- Influence functions and group sizes (attributes of the results) -----
   if_data <- attr(results, "if_data")
   n_obs   <- attr(results, "n_obs")
   n_ids   <- attr(results, "n_ids")
   id_info <- attr(results, "id_info")
-  has_ifs <- !is.null(if_data) && !is.null(n_obs) && !is.null(n_ids)
-
-  if (!has_ifs) {
-    warning("Influence-function data not available. ",
-            "SEs are computed under an independence approximation, ",
-            "which ignores dependence from shared control groups. ",
-            "Pass the output of multiple_treatment_group_analysis() directly ",
-            "to get proper SEs.", call. = FALSE)
-  }
-
-  if (use_sample_weights && is.null(id_info)) {
-    warning('weights = "sample" requires id_info from ',
-            "multiple_treatment_group_analysis(). Falling back to uniform weights.", call. = FALSE)
-    use_sample_weights <- FALSE
-    use_uniform <- TRUE
+  if (is.null(if_data) || is.null(n_obs) || is.null(n_ids) || is.null(id_info)) {
+    stop("`results` carries no influence functions; pass the output of ",
+         "multiple_treatment_group_analysis() unmodified.", call. = FALSE)
   }
 
   # ---- Precompute sample-proportion group sizes ----------------------------
@@ -307,11 +294,6 @@ aggregate_estimands <- function(results,
                                    weight_type)$agg_score)
   }
 
-  # ---- Helper: SE under independence (fallback) ----------------------------
-  .agg_se_indep <- function(w_vec, se_vec) {
-    sqrt(sum(w_vec^2 * se_vec^2))
-  }
-
   # ---- 1. weighted_avg: sum_d w_d B_d ----------------------------------------
   # theta_Agg,1 (DID), the conventional gap, rho_Agg (NTD, TD_E_LOGS), the TD gap
   # in levels and the TD_PR gap; one cell per (event_time, method).
@@ -353,15 +335,11 @@ aggregate_estimands <- function(results,
 
       est_agg <- sum(w * sub$est)
 
-      if (has_ifs && if_col %in% names(if_data)) {
-        # the SE of sum_d w_d B_d with IF sign * psi: the sign does not change the variance,
-        # but the weight-estimation term uses B_d, so pass B_d = sign * est to keep it consistent
-        se_agg <- .agg_se_from_ifs(if_col, sub$d, et, off, w,
-                                   B_vals = sgn * sub$est, A_est = sgn * est_agg,
-                                   weight_type = wt)
-      } else {
-        se_agg <- .agg_se_indep(w, sub$se)
-      }
+      # the SE of sum_d w_d B_d with IF sign * psi: the sign does not change the variance,
+      # but the weight-estimation term uses B_d, so pass B_d = sign * est to keep it consistent
+      se_agg <- .agg_se_from_ifs(if_col, sub$d, et, off, w,
+                                 B_vals = sgn * sub$est, A_est = sgn * est_agg,
+                                 weight_type = wt)
 
       agg1_list[[length(agg1_list) + 1L]] <- data.table(
         event_time = et,
@@ -387,8 +365,8 @@ aggregate_estimands <- function(results,
 
   if (nrow(ate_rows) > 0L && nrow(apo_rows) > 0L) {
     keys <- c("d", "event_time", "control_offset", "method")
-    both <- merge(ate_rows[, .(d, event_time, control_offset, method, est_ate = est, se_ate = se)],
-                  apo_rows[, .(d, event_time, control_offset, method, est_apo = est, se_apo = se)],
+    both <- merge(ate_rows[, .(d, event_time, control_offset, method, est_ate = est)],
+                  apo_rows[, .(d, event_time, control_offset, method, est_apo = est)],
                   by = keys)
 
     if (nrow(both) > 0L) {
@@ -412,23 +390,16 @@ aggregate_estimands <- function(results,
         } else {
           est_agg <- mu_ate / mu_apo
 
-          if (has_ifs && mth %in% names(ate_if_map)) {
-            # Chain rule on the IFs of the two weighted averages (each with its
-            # estimated-share term under sample weights)
-            num <- .agg_if_scores(ate_if_map[[mth]], sub$d, et, off, w,
-                                  B_vals = sub$est_ate, A_est = mu_ate, weight_type = wt)
-            den <- .agg_if_scores(apo_if_map[[mth]], sub$d, et, off, w,
-                                  B_vals = sub$est_apo, A_est = mu_apo, weight_type = wt)
-            id_scores <- merge(num, den, by = "id", suffixes = c("_num", "_den"))
-            id_scores[, ratio_if := (1 / mu_apo) * agg_score_num -
-                                    (mu_ate / mu_apo^2) * agg_score_den]
-            se_agg <- .se_from_scores(id_scores$ratio_if)
-          } else {
-            var_mu_ate <- sum(w^2 * sub$se_ate^2)
-            var_mu_apo <- sum(w^2 * sub$se_apo^2)
-            se_agg <- sqrt((1 / mu_apo)^2 * var_mu_ate +
-                             (mu_ate / mu_apo^2)^2 * var_mu_apo)
-          }
+          # Chain rule on the IFs of the two weighted averages (each with its
+          # estimated-share term under sample weights)
+          num <- .agg_if_scores(ate_if_map[[mth]], sub$d, et, off, w,
+                                B_vals = sub$est_ate, A_est = mu_ate, weight_type = wt)
+          den <- .agg_if_scores(apo_if_map[[mth]], sub$d, et, off, w,
+                                B_vals = sub$est_apo, A_est = mu_apo, weight_type = wt)
+          id_scores <- merge(num, den, by = "id", suffixes = c("_num", "_den"))
+          id_scores[, ratio_if := (1 / mu_apo) * agg_score_num -
+                                  (mu_ate / mu_apo^2) * agg_score_den]
+          se_agg <- .se_from_scores(id_scores$ratio_if)
         }
 
         agg2_list[[length(agg2_list) + 1L]] <- data.table(

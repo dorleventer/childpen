@@ -57,6 +57,8 @@ of rows that exist in both versions are unchanged (checked with
   age (`dp <= a`), `dp <= d`, `pre < 1`, or a target age equal to the baseline.
 * Progress is reported with `message()`, one line per treatment group; cells
   that cannot be estimated are summarised in one message.
+* `aggregate_estimands()` stops when `results` lacks the influence functions (it used to
+  fall back to standard errors that treat treatment groups as independent).
 * `aggregate_estimands()` stops when no weight name matches a treatment group and
   warns about groups without a weight; `n_groups` counts groups with positive
   weight.
