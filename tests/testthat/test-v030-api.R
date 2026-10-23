@@ -136,3 +136,12 @@ test_that("aggregate_estimands: TD aggregates, uniform alias, weight-name checks
   expect_warning(aggregate_estimands(res, weights = c(`24` = 1, `25` = 1)), "weight zero")
   expect_error(aggregate_estimands(res, methods = "NTD_New"), "None of `methods`")
 })
+
+test_that("aggregate_estimands() and bias_bounds() require the influence functions", {
+  sim <- simulate_data(n_individuals = 600, treatment_groups = 24:27)
+  res <- multiple_treatment_group_analysis(sim, treatment_groups = 24:25, periods_post = 1,
+                                           periods_pre = NULL, verbose = FALSE)
+  bare <- as.data.frame(as.list(res))   # same table, attributes dropped
+  expect_error(aggregate_estimands(bare), "no influence functions")
+  expect_error(bias_bounds(bare), "no influence functions")
+})

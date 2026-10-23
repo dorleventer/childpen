@@ -126,8 +126,6 @@ $$
 $$
 for $n$ person-age rows and $G$ persons. A person who serves as a control group member for several treatment groups therefore enters several terms of the same sum. The share term is put on the person-age scale with the average number of ages per person, which is exact for a balanced panel. The estimators and the influence functions of the group-level rows are in [Estimation](estimators.html).
 
-When `results` has lost its influence-function attributes (for example a table read back from a file), `aggregate_estimands()` warns, computes standard errors as if the group-level estimates were independent ($\sqrt{\sum_d w_d^2\,\mathrm{se}_d^2}$ for `weighted_avg`), and uses uniform weights in place of `"sample"`.
-
 ## 4. Pre-treatment event times
 
 With `include_pre = TRUE`, pre-treatment event times are aggregated as well. A pre-treatment event time has one cell per control group, $d' = d + 1, \dots, d + H + 1$, and each `control_offset` $d' - d$ is aggregated separately, so each row is the aggregate of the validation estimates of one treatment-control distance. (After treatment `control_offset` equals `event_time` + 1, and each event time has one aggregate.) With the default `pre = 1` and `periods_pre = K`, the pre-treatment event times are $-(1 + K), \dots, -2$; the baseline is $e = -1$.
