@@ -407,42 +407,11 @@ the <code>share_parenthood</code> row of <code>TD_E_LOGS</code> uses
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>c</mi><mi>f</mi></mrow><mo>×</mo></msubsup><annotation encoding="application/x-tex">\hat\rho^{\times}_{cf}</annotation></semantics></math>
 in place of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mover><mi>ρ</mi><mo accent="true">̂</mo></mover><mrow><mi>c</mi><mi>f</mi></mrow></msub><annotation encoding="application/x-tex">\hat\rho_{cf}</annotation></semantics></math>.</p>
-<p><strong>Rows behind the paper’s figures.</strong> Pre-treatment
-<code>DID_Female</code> / <code>DID_Male</code> <code>ATE</code> rows:
-the DID validation tests (Figure 3). <code>Conventional</code>
-<code>gap_theta</code>: the conventional estimator (Figure 6b), its
-pre-treatment rows the NTD validation tests (Figure 5), and with
-<code><a href="../reference/bias_bounds.html">bias_bounds()</a></code> the bias-bounding exercise (Figure 4).
-<code>NTD</code> <code>rho_obs</code> and <code>rho_cf</code>: the two
-ratios (Figure 6a); <code>NTD</code> <code>rho_effect</code>: the new
-estimator (Figure 6b); the two ratios, or <code>share_parenthood</code>
-and <code>share_other</code>, give the accounting (Figure 6c).
-<code>TD_E_LOGS</code> and <code>TD_PR</code>: the Proportional
-appendix’s validation and estimate figures. Aggregates: <a href="aggregation.html">Aggregation</a>. Each figure is reproduced on
-simulated data in <a href="replication.html">Replicating the
-paper</a>.</p>
-<p><strong>Accounting (standard errors not in the paper).</strong> The
-paper splits the observed gender gap
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \rho(d)</annotation></semantics></math>
-into parenthood,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(\infty) - \rho(d)</annotation></semantics></math>,
-and other factors,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \rho(\infty)</annotation></semantics></math>,
-and reports parenthood’s share (Section 4.2) as a point estimate. The
-package also reports its standard error, from the influence function
-above. Derivation: write
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mi>N</mi><mi>/</mi><mi>M</mi></mrow><annotation encoding="application/x-tex">s = N/M</annotation></semantics></math>
-with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><msub><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">N = \rho_{cf} - \rho_{obs}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mn>1</mn><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">M = 1 - \rho_{obs}</annotation></semantics></math>;
-then
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mi>s</mi></msub><mo>=</mo><msub><mi>ψ</mi><mi>N</mi></msub><mi>/</mi><mi>M</mi><mo>−</mo><mi>N</mi><msub><mi>ψ</mi><mi>M</mi></msub><mi>/</mi><msup><mi>M</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\psi_s = \psi_N/M - N\psi_M/M^2</annotation></semantics></math>,
-with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mi>N</mi></msub><mo>=</mo><msub><mi>ψ</mi><msub><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub></msub><mo>−</mo><msub><mi>ψ</mi><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></msub></mrow><annotation encoding="application/x-tex">\psi_N = \psi_{\rho_{cf}} -
-\psi_{\rho_{obs}}</annotation></semantics></math> and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mi>M</mi></msub><mo>=</mo><mi>−</mi><msub><mi>ψ</mi><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></msub></mrow><annotation encoding="application/x-tex">\psi_M = -\psi_{\rho_{obs}}</annotation></semantics></math>,
-which gives the formula in the table.</p>
+<p>The standard errors of <code>share_parenthood</code> and
+<code>share_other</code> are <strong>not in the paper</strong>, which
+reports parenthood’s share as a point estimate (Section 4.2); the
+influence function in the table is the chain rule applied to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">s = (\rho_{cf} - \rho_{obs})/(1 - \rho_{obs})</annotation></semantics></math>.</p>
 </div>
 <div class="section level2">
 <h2 id="bias_bounds">
@@ -468,58 +437,8 @@ error scales with
 <h2 id="aggregate_estimands">
 <code>aggregate_estimands()</code><a class="anchor" aria-label="anchor" href="#aggregate_estimands"></a>
 </h2>
-<p>For event time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>e</mi><annotation encoding="application/x-tex">e</annotation></semantics></math>,
-the treatment groups
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>𝒟</mi><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathcal D(e)</annotation></semantics></math>
-with an estimate, group estimates
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>B</mi><mi>d</mi></msub><annotation encoding="application/x-tex">B_d</annotation></semantics></math>
-and group shares
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>d</mi></msub><annotation encoding="application/x-tex">p_d</annotation></semantics></math>
-(within gender for <code>DID_Female</code> / <code>DID_Male</code>,
-across genders otherwise),
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>e</mi></msub><mo>=</mo><msub><mo>∑</mo><mrow><mi>d</mi><mo>∈</mo><mi>𝒟</mi><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><msub><mi>p</mi><mi>d</mi></msub></mrow><annotation encoding="application/x-tex">P_e = \sum_{d \in \mathcal D(e)} p_d</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mi>d</mi></msub><mo>=</mo><msub><mi>p</mi><mi>d</mi></msub><mi>/</mi><msub><mi>P</mi><mi>e</mi></msub></mrow><annotation encoding="application/x-tex">w_d = p_d / P_e</annotation></semantics></math>:</p>
-<ul>
-<li>
-<code>weighted_avg</code>:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>A</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><msub><mover><mi>B</mi><mo accent="true">̂</mo></mover><mi>d</mi></msub></mrow><annotation encoding="application/x-tex">\hat A(e) = \sum_d w_d \hat B_d</annotation></semantics></math>,
-with (Estimation appendix, aggregate estimator)
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><mi>A</mi><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>=</mo><mfrac><mn>1</mn><msub><mi>P</mi><mi>e</mi></msub></mfrac><munder><mo>∑</mo><mrow><mi>d</mi><mo>∈</mo><mi>𝒟</mi><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow></munder><mo minsize="180%" maxsize="180%" stretchy="true" form="prefix">[</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>B</mi><mi>d</mi></msub><mo>−</mo><mi>A</mi><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>ψ</mi><msub><mi>p</mi><mi>d</mi></msub></msub><mo>+</mo><msub><mi>p</mi><mi>d</mi></msub><mspace width="0.167em"></mspace><msub><mi>ψ</mi><msub><mi>B</mi><mi>d</mi></msub></msub><mo minsize="180%" maxsize="180%" stretchy="true" form="postfix">]</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>ψ</mi><msub><mi>p</mi><mi>d</mi></msub></msub><mo>=</mo><mn>1</mn><mo stretchy="false" form="prefix">{</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">}</mo><mo>−</mo><msub><mi>p</mi><mi>d</mi></msub></mrow><annotation encoding="application/x-tex">
-\psi_{A(e)} = \frac{1}{P_e}\sum_{d \in \mathcal D(e)}\Big[(B_d - A(e))\,\psi_{p_d} + p_d\,\psi_{B_d}\Big],
-\qquad \psi_{p_d} = 1\{D = d\} - p_d
-</annotation></semantics></math>
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo stretchy="false" form="prefix">{</mo><mi>G</mi><mo>=</mo><mi>g</mi><mo>,</mo><mi>D</mi><mo>=</mo><mi>d</mi><mo stretchy="false" form="postfix">}</mo><mo>−</mo><msub><mi>p</mi><mrow><mi>g</mi><mo>,</mo><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">1\{G = g, D = d\} - p_{g,d}</annotation></semantics></math>
-for within-gender shares). With fixed or uniform weights the first term
-drops out. For <code>share_other</code> the influence function is minus
-that of <code>share_parenthood</code>.</li>
-<li>
-<code>ratio_of_avgs</code> (<code>DID_Female</code>,
-<code>DID_Male</code>):
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>g</mi><mi>g</mi><mo>,</mo><mn>2</mn></mrow></msub><mo>=</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>/</mi><mi>d</mi><mi>e</mi><mi>n</mi></mrow><annotation encoding="application/x-tex">\hat\theta_{Agg,2} = num/den</annotation></semantics></math>
-with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mi>u</mi><mi>m</mi><mo>=</mo><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>T</mi><mi>E</mi><mo>,</mo><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">num = \sum_d w_d \hat\delta_{ATE,d}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>e</mi><mi>n</mi><mo>=</mo><msub><mo>∑</mo><mi>d</mi></msub><msub><mi>w</mi><mi>d</mi></msub><msub><mover><mi>δ</mi><mo accent="true">̂</mo></mover><mrow><mi>A</mi><mi>P</mi><mi>O</mi><mo>,</mo><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">den = \sum_d w_d \hat\delta_{APO,d}</annotation></semantics></math>,
-and influence function
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><mi>n</mi><mi>u</mi><mi>m</mi></mrow></msub><mi>/</mi><mi>d</mi><mi>e</mi><mi>n</mi><mo>−</mo><mi>n</mi><mi>u</mi><mi>m</mi><mspace width="0.167em"></mspace><msub><mi>ψ</mi><mrow><mi>d</mi><mi>e</mi><mi>n</mi></mrow></msub><mi>/</mi><mi>d</mi><mi>e</mi><msup><mi>n</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\psi_{num}/den - num\,\psi_{den}/den^2</annotation></semantics></math>,
-where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ψ</mi><mrow><mi>n</mi><mi>u</mi><mi>m</mi></mrow></msub><annotation encoding="application/x-tex">\psi_{num}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ψ</mi><mrow><mi>d</mi><mi>e</mi><mi>n</mi></mrow></msub><annotation encoding="application/x-tex">\psi_{den}</annotation></semantics></math>
-are the influence functions of the two weighted averages above (each
-with its share term).</li>
-</ul>
-<p>Pre-treatment event times have one cell per control group;
-<code>include_pre = TRUE</code> aggregates each control offset
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>−</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">d' - d</annotation></semantics></math>
-separately. The share term is put on the person-age scale with the
-average number of ages per person, which is exact for a balanced
-panel.</p>
-<p>Group influence functions are summed per person across treatment
-groups before squaring, so the standard errors account for persons who
-are controls for several treatment groups.</p>
+<p>The aggregate estimators, their influence functions and standard
+errors are in <a href="aggregation.html">Aggregation</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="where-this-lives-in-the-code">Where this lives in the code<a class="anchor" aria-label="anchor" href="#where-this-lives-in-the-code"></a>

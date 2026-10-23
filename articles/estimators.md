@@ -130,30 +130,10 @@ ratio uses $`\hat\delta^{\times}_{APO}`$; the `share_parenthood` row of
 `TD_E_LOGS` uses $`\hat\rho^{\times}_{cf}`$ in place of
 $`\hat\rho_{cf}`$.
 
-**Rows behind the paper’s figures.** Pre-treatment `DID_Female` /
-`DID_Male` `ATE` rows: the DID validation tests (Figure 3).
-`Conventional` `gap_theta`: the conventional estimator (Figure 6b), its
-pre-treatment rows the NTD validation tests (Figure 5), and with
-[`bias_bounds()`](https://dorleventer.github.io/childpen/reference/bias_bounds.md)
-the bias-bounding exercise (Figure 4). `NTD` `rho_obs` and `rho_cf`: the
-two ratios (Figure 6a); `NTD` `rho_effect`: the new estimator (Figure
-6b); the two ratios, or `share_parenthood` and `share_other`, give the
-accounting (Figure 6c). `TD_E_LOGS` and `TD_PR`: the Proportional
-appendix’s validation and estimate figures. Aggregates:
-[Aggregation](https://dorleventer.github.io/childpen/articles/aggregation.md).
-Each figure is reproduced on simulated data in [Replicating the
-paper](https://dorleventer.github.io/childpen/articles/replication.md).
-
-**Accounting (standard errors not in the paper).** The paper splits the
-observed gender gap $`1 - \rho(d)`$ into parenthood,
-$`\rho(\infty) - \rho(d)`$, and other factors, $`1 - \rho(\infty)`$, and
-reports parenthood’s share (Section 4.2) as a point estimate. The
-package also reports its standard error, from the influence function
-above. Derivation: write $`s = N/M`$ with $`N = \rho_{cf} - \rho_{obs}`$
-and $`M = 1 - \rho_{obs}`$; then $`\psi_s = \psi_N/M - N\psi_M/M^2`$,
-with $`\psi_N = \psi_{\rho_{cf}} -
-\psi_{\rho_{obs}}`$ and $`\psi_M = -\psi_{\rho_{obs}}`$, which gives the
-formula in the table.
+The standard errors of `share_parenthood` and `share_other` are **not in
+the paper**, which reports parenthood’s share as a point estimate
+(Section 4.2); the influence function in the table is the chain rule
+applied to $`s = (\rho_{cf} - \rho_{obs})/(1 - \rho_{obs})`$.
 
 ## `bias_bounds()`
 
@@ -173,36 +153,9 @@ paper**. The standard error scales with $`1 + \theta(m)`$.
 
 ## `aggregate_estimands()`
 
-For event time $`e`$, the treatment groups $`\mathcal D(e)`$ with an
-estimate, group estimates $`B_d`$ and group shares $`p_d`$ (within
-gender for `DID_Female` / `DID_Male`, across genders otherwise),
-$`P_e = \sum_{d \in \mathcal D(e)} p_d`$ and $`w_d = p_d / P_e`$:
-
-- `weighted_avg`: $`\hat A(e) = \sum_d w_d \hat B_d`$, with (Estimation
-  appendix, aggregate estimator)
-  ``` math
-  \psi_{A(e)} = \frac{1}{P_e}\sum_{d \in \mathcal D(e)}\Big[(B_d - A(e))\,\psi_{p_d} + p_d\,\psi_{B_d}\Big],
-  \qquad \psi_{p_d} = 1\{D = d\} - p_d
-  ```
-  ($`1\{G = g, D = d\} - p_{g,d}`$ for within-gender shares). With fixed
-  or uniform weights the first term drops out. For `share_other` the
-  influence function is minus that of `share_parenthood`.
-- `ratio_of_avgs` (`DID_Female`, `DID_Male`):
-  $`\hat\theta_{Agg,2} = num/den`$ with
-  $`num = \sum_d w_d \hat\delta_{ATE,d}`$ and
-  $`den = \sum_d w_d \hat\delta_{APO,d}`$, and influence function
-  $`\psi_{num}/den - num\,\psi_{den}/den^2`$, where $`\psi_{num}`$ and
-  $`\psi_{den}`$ are the influence functions of the two weighted
-  averages above (each with its share term).
-
-Pre-treatment event times have one cell per control group;
-`include_pre = TRUE` aggregates each control offset $`d' - d`$
-separately. The share term is put on the person-age scale with the
-average number of ages per person, which is exact for a balanced panel.
-
-Group influence functions are summed per person across treatment groups
-before squaring, so the standard errors account for persons who are
-controls for several treatment groups.
+The aggregate estimators, their influence functions and standard errors
+are in
+[Aggregation](https://dorleventer.github.io/childpen/articles/aggregation.md).
 
 ## Where this lives in the code
 

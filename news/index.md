@@ -75,6 +75,9 @@ unchanged (checked with `dev/snapshot_compare.R` against v0.2.3 output).
   treatment group; cells that cannot be estimated are summarised in one
   message.
 - [`aggregate_estimands()`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md)
+  stops when `results` lacks the influence functions (it used to fall
+  back to standard errors that treat treatment groups as independent).
+- [`aggregate_estimands()`](https://dorleventer.github.io/childpen/reference/aggregate_estimands.md)
   stops when no weight name matches a treatment group and warns about
   groups without a weight; `n_groups` counts groups with positive
   weight.

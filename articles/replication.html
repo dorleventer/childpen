@@ -70,27 +70,16 @@
     
     
 <p>This article reproduces the figures of Leventer (2025),
-<em>Identification of Child Penalties</em>, in the paper’s order, on
-simulated data: the Israeli administrative data are confidential. Each
-section gives the call, the rows of the output it uses, a short plot,
-and how the figure is read. It builds on the earlier articles: <a href="notation.html">Notation and output</a> for the symbols and rows,
-<a href="estimators.html">Estimation</a> for the estimators and standard
-errors, and <a href="aggregation.html">Aggregation</a> for the aggregate
-estimands.</p>
-<p>The simulated data come from <code><a href="../reference/simulate_data.html">simulate_data()</a></code>, designed
-to show the paper’s patterns: later first births enter the labor market
-later and then have steeper earnings growth (so parallel trends fails in
-the paper’s direction), effects of parenthood differ by age at first
-birth and fade with time since birth, and the gender earnings ratio
-falls with age. In this design NTD holds approximately and TD-E-LOGS
-exactly; the true values are attached to the data
-(<code>attr(sim, "truth")</code>) and are overlaid where they help. The
-numbers are not the paper’s; the figures are built from the same
-rows.</p>
+<em>Identification of Child Penalties</em>, in the paper’s order. For
+each figure it lists the rows of the output the figure uses, then the
+code. The Israeli administrative data are confidential, so the code runs
+on data from <code><a href="../reference/simulate_data.html">simulate_data()</a></code>, and the numbers are not the
+paper’s. Symbols and rows are in <a href="notation.html">Notation and
+output</a>, estimators and standard errors in <a href="estimators.html">Estimation</a>, and aggregate estimands in <a href="aggregation.html">Aggregation</a>.</p>
 <div class="section level2">
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
-<p>The grid mirrors the paper’s sample (Section 1.2): treatment groups
+<p>The grid follows the paper’s sample (Section 1.2): treatment groups
 24 to 34, event times 0 to 5, pre-treatment event times
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>4</mn></mrow><annotation encoding="application/x-tex">-4</annotation></semantics></math>
 to
@@ -103,11 +92,10 @@ and control groups up to age 40.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span>; <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sim</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">30000</span>, treatment_groups <span class="op">=</span> <span class="fl">24</span><span class="op">:</span><span class="fl">40</span><span class="op">)</span></span>
-<span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">sim</span>, <span class="st">"truth"</span><span class="op">)</span></span>
-<span><span class="va">res</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis</a></span><span class="op">(</span><span class="va">sim</span>, treatment_groups <span class="op">=</span> <span class="fl">24</span><span class="op">:</span><span class="fl">34</span>,</span>
-<span>                                           periods_post <span class="op">=</span> <span class="fl">5</span>, periods_pre <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>                                           max_control_group <span class="op">=</span> <span class="fl">40</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_data.html">simulate_data</a></span><span class="op">(</span>n_individuals <span class="op">=</span> <span class="fl">30000</span>, treatment_groups <span class="op">=</span> <span class="fl">24</span><span class="op">:</span><span class="fl">40</span><span class="op">)</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis</a></span><span class="op">(</span><span class="va">sim</span>, treatment_groups <span class="op">=</span> <span class="fl">24</span><span class="op">:</span><span class="fl">34</span>,</span>
+<span>                                         periods_post <span class="op">=</span> <span class="fl">5</span>, periods_pre <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>                                         max_control_group <span class="op">=</span> <span class="fl">40</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>A helper for the pre-treatment (validation) figures, one line per
 control group:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -123,14 +111,16 @@ control group:</p>
 <div class="section level2">
 <h2 id="figure-1-sample-statistics-section-1-2">Figure 1: sample statistics (Section 1.2)<a class="anchor" aria-label="anchor" href="#figure-1-sample-statistics-section-1-2"></a>
 </h2>
-<p><strong>(a) Age at first birth</strong> and <strong>(b) mean earnings
-by age</strong>, computed directly from the data.</p>
+<p>Computed from the data. <strong>(a)</strong> Age at first birth by
+gender.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">female</span>, <span class="va">D</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">female</span>, <span class="va">D</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">female</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>share <span class="op">=</span> <span class="va">n</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">D</span>, <span class="va">share</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">female</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Men"</span>, <span class="st">"Women"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"dodge"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Age at first birth"</span>, y <span class="op">=</span> <span class="st">"Share"</span>, fill <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig1a-1.png" class="r-plt" alt="" width="864"></p>
+<p><strong>(b)</strong> Mean earnings by age, treatment group and
+gender; the dashed line is the age at first birth.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">D</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">24</span>, <span class="fl">34</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">D</span>, <span class="va">female</span>, <span class="va">age</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -139,51 +129,31 @@ by age</strong>, computed directly from the data.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">D</span>, nrow <span class="op">=</span> <span class="fl">1</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Mean earnings"</span>, colour <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig1b-1.png" class="r-plt" alt="" width="864"></p>
-<p>The dashed line marks the age at first birth. Later first births earn
-less at young ages and more later on, the life-cycle pattern behind the
-selection argument of Section 2.</p>
-<p><strong>(c) The normalized event study</strong> (equations (1)-(2))
-is a regression on event-time indicators with age and calendar-year
-fixed effects. It is not computed by the package (any fixed-effects
-regression package does it) and needs a calendar year, which the
-simulated data do not have.</p>
-</div>
-<div class="section level2">
-<h2 id="figure-2-human-capital-by-age-at-first-birth-section-2-2">Figure 2: human capital by age at first birth (Section 2.2)<a class="anchor" aria-label="anchor" href="#figure-2-human-capital-by-age-at-first-birth-section-2-2"></a>
-</h2>
-<p>Figure 2 plots means of pre-birth covariates (grandparents’ earnings,
-test scores, high-school credits) by age at first birth and gender. It
-needs those covariates, which are part of the confidential data; with
-one’s own data it is a table of means by <code>D</code> and
-<code>female</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="figure-3-did-validation-tests-by-treatment-control-pair-section-2-3">Figure 3: DID validation tests by treatment-control pair (Section
 2.3)<a class="anchor" aria-label="anchor" href="#figure-3-did-validation-tests-by-treatment-control-pair-section-2-3"></a>
 </h2>
-<p>Rows: <code>DID_Female</code> and <code>DID_Male</code>, estimand
+<p>Rows: <code>DID_Female</code> and <code>DID_Male</code>
 <code>ATE</code>, pre-treatment event times.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DID_Female"</span>, <span class="st">"DID_Male"</span><span class="op">)</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"ATE"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">pre_plot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="va">method</span> <span class="op">~</span> <span class="va">d</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig3-1.png" class="r-plt" alt="" width="864"></p>
-<p>Each line is one treatment-control pair. Under no anticipation, a
-pre-treatment DID estimate equals the difference in counterfactual
-trends between the two groups at that age, the parallel-trends violation
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>γ</mi><mrow><mi>P</mi><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">\gamma_{PT}</annotation></semantics></math>
-(Lemma 1). Lines away from zero are trend differences before treatment
-for that pair; here they grow with the distance to the control group, as
-selection on the timing of first birth implies (Section 2). Parallel
-trends is an assumption about post-treatment ages, so these are
-suggestive checks, one per pair.</p>
 </div>
 <div class="section level2">
 <h2 id="figure-4-bias-bounding-of-the-conventional-estimator-section-3-3">Figure 4: bias bounding of the conventional estimator (Section
 3.3)<a class="anchor" aria-label="anchor" href="#figure-4-bias-bounding-of-the-conventional-estimator-section-3-3"></a>
 </h2>
 <p>Rows: <code>Conventional</code> <code>gap_theta</code> after
-treatment, and <code><a href="../reference/bias_bounds.html">bias_bounds()</a></code> over
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mi>−</mi><mn>0.1</mn><mo>,</mo><mn>0.1</mn><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">\theta(m) \in [-0.1, 0.1]</annotation></semantics></math>.</p>
+treatment (line, with its 95% confidence interval in grey), and
+<code><a href="../reference/bias_bounds.html">bias_bounds()</a></code> for fathers’ effects
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(m)</annotation></semantics></math>
+between
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.1</mn></mrow><annotation encoding="application/x-tex">-0.1</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.1</mn><annotation encoding="application/x-tex">0.1</annotation></semantics></math>
+(orange band).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">event_time</span> <span class="op">&gt;=</span> <span class="fl">0</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"Conventional"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"gap_theta"</span><span class="op">)</span></span>
 <span><span class="va">band</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/bias_bounds.html">bias_bounds</a></span><span class="op">(</span><span class="va">res</span>, theta_m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.1</span>, <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -192,27 +162,9 @@ treatment, and <code><a href="../reference/bias_bounds.html">bias_bounds()</a></
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">band</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, ymin <span class="op">=</span> <span class="va">lo</span>, ymax <span class="op">=</span> <span class="va">hi</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"orange"</span>, alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">conv</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span>, fill <span class="op">=</span> <span class="st">"grey50"</span>, alpha <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">conv</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">est</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">truth</span>, <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">24</span><span class="op">:</span><span class="fl">34</span>, <span class="va">event_time</span> <span class="op">&lt;=</span> <span class="fl">5</span><span class="op">)</span>,</span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">gap_theta</span><span class="op">)</span>, shape <span class="op">=</span> <span class="fl">4</span>, colour <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">d</span>, nrow <span class="op">=</span> <span class="fl">2</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event time"</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu">theta</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="op">-</span> <span class="fu">theta</span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig4-1.png" class="r-plt" alt="" width="864"></p>
-<p>The black line (grey 95% interval) is the conventional estimator.
-Under no anticipation and NTD-PT it estimates the gender gap in
-normalized effects times a bias factor (Theorem 1). The orange band
-holds the bias-corrected gap for fathers’ effects
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(m)</annotation></semantics></math>
-between
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mn>0.1</mn></mrow><annotation encoding="application/x-tex">-0.1</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.1</mn><annotation encoding="application/x-tex">0.1</annotation></semantics></math>
-(Proposition 2); the corrected gap is linear in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(m)</annotation></semantics></math>,
-so the band’s two edges span it. The red crosses are the true gaps. For
-the earliest groups at later event times, whose control groups are on
-steeper trajectories, the conventional estimate lies above the band,
-closer to zero than the true gap; for later groups the two are
-close.</p>
 </div>
 <div class="section level2">
 <h2 id="figure-5-ntd-validation-tests-by-treatment-control-pair-section-4-2">Figure 5: NTD validation tests by treatment-control pair (Section
@@ -224,19 +176,13 @@ event times.</p>
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"Conventional"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"gap_theta"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">pre_plot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">d</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig5-1.png" class="r-plt" alt="" width="864"></p>
-<p>Under no anticipation, a zero pre-treatment gender gap in normalized
-DID is equivalent to the NTD restriction at that age, parallel-trends
-violations normalized by counterfactual earnings being equal for women
-and men (Proposition 1). Each line is the check for one pair. Unlike the
-DID tests of Figure 3, these do not grow with the distance to the
-control group.</p>
 </div>
 <div class="section level2">
-<h2 id="figure-6-the-effect-of-parenthood-on-the-gender-earnings-ratio-sections-4-1-4-2">Figure 6: the effect of parenthood on the gender earnings ratio
-(Sections 4.1-4.2)<a class="anchor" aria-label="anchor" href="#figure-6-the-effect-of-parenthood-on-the-gender-earnings-ratio-sections-4-1-4-2"></a>
+<h2 id="figure-6-the-effect-of-parenthood-on-the-gender-earnings-ratio-section-4-2">Figure 6: the effect of parenthood on the gender earnings ratio
+(Section 4.2)<a class="anchor" aria-label="anchor" href="#figure-6-the-effect-of-parenthood-on-the-gender-earnings-ratio-section-4-2"></a>
 </h2>
-<p><strong>(a) The two ratios.</strong> Rows: <code>NTD</code>
-<code>rho_obs</code> and <code>rho_cf</code>.</p>
+<p><strong>(a) Observed and counterfactual ratios.</strong> Rows:
+<code>NTD</code> <code>rho_obs</code> and <code>rho_cf</code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op">&gt;=</span> <span class="fl">0</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD"</span>, <span class="va">estimand</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rho_obs"</span>, <span class="st">"rho_cf"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">est</span>, colour <span class="op">=</span> <span class="va">estimand</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -246,13 +192,6 @@ control group.</p>
 <span>                      labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>rho_cf <span class="op">=</span> <span class="st">"Counterfactual (DID)"</span>, rho_obs <span class="op">=</span> <span class="st">"Observed"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event time"</span>, y <span class="op">=</span> <span class="st">"Female/male earnings ratio"</span>, colour <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig6a-1.png" class="r-plt" alt="" width="864"></p>
-<p><code>rho_obs</code> is the observed female/male earnings ratio,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d)</annotation></semantics></math>.
-<code>rho_cf</code> is the ratio of the DID-imputed counterfactual
-means; under no anticipation and NTD-PT it identifies the ratio absent
-children,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(\infty)</annotation></semantics></math>
-(Theorem 2).</p>
 <p><strong>(b) The new and the conventional estimator.</strong> Rows:
 <code>NTD</code> <code>rho_effect</code> and <code>Conventional</code>
 <code>gap_theta</code>.</p>
@@ -266,26 +205,14 @@ children,
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>NTD <span class="op">=</span> <span class="st">"#D55E00"</span>, Conventional <span class="op">=</span> <span class="st">"#56B4E9"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event time"</span>, y <span class="op">=</span> <span class="st">"Estimate (95% CI)"</span>, colour <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig6b-1.png" class="r-plt" alt="" width="864"></p>
-<p>The <code>NTD</code> row is the difference of the two ratios in (a):
-under no anticipation and NTD-PT it estimates the effect of parenthood
-on the gender earnings ratio,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d) - \rho(\infty)</annotation></semantics></math>
-(Theorem 2). The <code>Conventional</code> row estimates the gender gap
-in normalized effects times the bias factor of Theorem 1. The two
-targets differ:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d) - \rho(\infty)</annotation></semantics></math>
-equals
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta(f) - \theta(m)</annotation></semantics></math>
-scaled by
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>θ</mi><mo stretchy="false" form="prefix">(</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(\infty)/(1 + \theta(m))</annotation></semantics></math>
-(equation (9)), so with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>&lt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\rho(\infty) &lt; 1</annotation></semantics></math>
-and small fathers’ effects the new estimand is smaller in absolute
-value.</p>
 <p><strong>(c) Accounting for the gender gap.</strong> Rows:
-<code>NTD</code> <code>rho_obs</code> and <code>rho_cf</code> (the
-split), or <code>share_parenthood</code> (the share, with its standard
-error).</p>
+<code>NTD</code> <code>rho_obs</code> and <code>rho_cf</code>. The
+observed gap
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">1 - \rho_{obs}</annotation></semantics></math>
+splits into parenthood,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub><mo>−</mo><msub><mi>ρ</mi><mrow><mi>o</mi><mi>b</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\rho_{cf} - \rho_{obs}</annotation></semantics></math>,
+and other factors,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><msub><mi>ρ</mi><mrow><mi>c</mi><mi>f</mi></mrow></msub></mrow><annotation encoding="application/x-tex">1 - \rho_{cf}</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op">&gt;=</span> <span class="fl">0</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD"</span>, <span class="va">estimand</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rho_obs"</span>, <span class="st">"rho_cf"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">d</span>, <span class="va">event_time</span>, <span class="va">estimand</span>, <span class="va">est</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -297,36 +224,13 @@ error).</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Parenthood <span class="op">=</span> <span class="st">"#BFDCEC"</span>, `Other factors` <span class="op">=</span> <span class="st">"grey80"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event time"</span>, y <span class="op">=</span> <span class="st">"1 - female/male ratio"</span>, fill <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig6c-1.png" class="r-plt" alt="" width="864"></p>
-<p>The observed gap
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \rho(d)</annotation></semantics></math>
-splits into a part due to parenthood,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(\infty) - \rho(d)</annotation></semantics></math>,
-and a part due to other factors,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 - \rho(\infty)</annotation></semantics></math>;
-under no anticipation and NTD-PT the first is the effect of parenthood
-on the gap. The <code>share_parenthood</code> row is the ratio of the
-two, with a standard error (the standard error is an addition of the
-package, see <a href="estimators.html">Estimation</a>):</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op">&gt;=</span> <span class="fl">0</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"NTD"</span>, <span class="va">estimand</span> <span class="op">==</span> <span class="st">"share_parenthood"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">truth</span>, <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">24</span><span class="op">:</span><span class="fl">34</span>, <span class="va">event_time</span> <span class="op">&lt;=</span> <span class="fl">5</span><span class="op">)</span>,</span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">share_parenthood</span><span class="op">)</span>, inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>, shape <span class="op">=</span> <span class="fl">4</span>, colour <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">d</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event time"</span>, y <span class="op">=</span> <span class="st">"Parenthood's share of the gap"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="replication_files/figure-html/share-1.png" class="r-plt" alt="" width="864"></p>
-<p>In the simulated data parenthood’s share at childbirth falls with the
-age at first birth and, within a group, with time since birth (red
-crosses: true values). Groups compared at the same event time are at
-different ages; the same shares placed on one age axis separate the
-two.</p>
 </div>
 <div class="section level2">
 <h2 id="figure-7-the-gender-earnings-ratio-before-birth-section-4-3">Figure 7: the gender earnings ratio before birth (Section 4.3)<a class="anchor" aria-label="anchor" href="#figure-7-the-gender-earnings-ratio-before-birth-section-4-3"></a>
 </h2>
 <p>Computed from the data: the female/male ratio of mean earnings at
-ages before first birth.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+ages before the first birth.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">age</span> <span class="op">&lt;</span> <span class="va">D</span>, <span class="va">D</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">27</span><span class="op">:</span><span class="fl">38</span>, <span class="va">age</span> <span class="op">&gt;=</span> <span class="fl">22</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">D</span>, <span class="va">age</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>rho <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Y</span><span class="op">[</span><span class="va">female</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Y</span><span class="op">[</span><span class="va">female</span> <span class="op">==</span> <span class="fl">0</span><span class="op">]</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -334,28 +238,16 @@ ages before first birth.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">1</span>, linetype <span class="op">=</span> <span class="fl">2</span>, colour <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Age"</span>, y <span class="op">=</span> <span class="st">"Female/male earnings ratio"</span>, colour <span class="op">=</span> <span class="st">"D"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig7-1.png" class="r-plt" alt="" width="864"></p>
-<p>Under no anticipation, earnings before birth are earnings absent
-children, so each line is the counterfactual ratio
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo>,</mo><mi>∞</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d, \infty, a)</annotation></semantics></math>
-at ages before birth. In the simulated design the ratio depends on age
-only, so the lines lie on one curve that falls after age 25.</p>
-</div>
-<div class="section level2">
-<h2 id="figure-8-age-at-first-birth-across-countries-section-5-2">Figure 8: age at first birth across countries (Section 5.2)<a class="anchor" aria-label="anchor" href="#figure-8-age-at-first-birth-across-countries-section-5-2"></a>
-</h2>
-<p>Figure 8 uses the OECD Family Database (indicator SF2.3): fertility
-rates for first births by five-year age group, normalized to sum to one
-within each country. It does not use the package.</p>
 </div>
 <div class="section level2">
 <h2 id="figure-9-aggregates-under-different-treatment-distributions-section-5-2">Figure 9: aggregates under different treatment distributions
 (Section 5.2)<a class="anchor" aria-label="anchor" href="#figure-9-aggregates-under-different-treatment-distributions-section-5-2"></a>
 </h2>
-<p>Rows: <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> with three sets of weights,
-<code>NTD</code> <code>rho_effect</code>, <code>weighted_avg</code>. The
-paper’s weights are normal densities with standard deviation 3 and means
-26, 29 and 32 over groups 24 to 34.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p>Rows: <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code>, <code>NTD</code>
+<code>rho_effect</code>, <code>weighted_avg</code>, with the paper’s
+three sets of weights: normal densities with standard deviation 3 and
+means 26, 29 and 32 over groups 24 to 34.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dd</span> <span class="op">&lt;-</span> <span class="fl">24</span><span class="op">:</span><span class="fl">34</span></span>
 <span><span class="va">dists</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`Right-skewed` <span class="op">=</span> <span class="fl">26</span>, Centered <span class="op">=</span> <span class="fl">29</span>, `Left-skewed` <span class="op">=</span> <span class="fl">32</span><span class="op">)</span></span>
 <span><span class="va">agg9</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dists</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span>
@@ -366,75 +258,49 @@ paper’s weights are normal densities with standard deviation 3 and means
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">distribution</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dists</span><span class="op">)</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event time"</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">rho</span><span class="op">[</span><span class="va">Agg</span><span class="op">]</span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/fig9-1.png" class="r-plt" alt="" width="864"></p>
-<p>Each panel is the aggregate effect on the gender earnings ratio
-(equation (10)) from the same group-level estimates, weighted by a
-different distribution of ages at first birth. The panels differ because
-the group-level effects differ across groups; comparisons of aggregates
-across countries or subgroups mix differences in group-level effects
-with differences in these distributions (<a href="aggregation.html">Aggregation</a>).</p>
 </div>
 <div class="section level2">
 <h2 id="online-appendix">Online appendix<a class="anchor" aria-label="anchor" href="#online-appendix"></a>
 </h2>
-<p><strong>Selection on fertility timing in the UK and Germany.</strong>
-The figure uses Understanding Society with the harmonised BHPS, and
-SOEP-CORE (paternal background and cognitive tests); it does not use the
-package.</p>
-<p><strong>Proportional DID and TD: validation tests.</strong> Rows:
-<code>NTD</code> and <code>TD_E_LOGS</code> <code>rho_effect</code>,
-<code>TD_PR</code> <code>gap_theta_pre</code>, pre-treatment event
-times, groups 26 to 30.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<p><strong>Validation tests of the proportional TD approaches</strong>
+(online appendix on proportional DID and TD). Rows: <code>NTD</code> and
+<code>TD_E_LOGS</code> <code>rho_effect</code> and <code>TD_PR</code>
+<code>gap_theta_pre</code>, pre-treatment event times, groups 26 to
+30.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">26</span><span class="op">:</span><span class="fl">30</span>,</span>
 <span>              <span class="op">(</span><span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NTD"</span>, <span class="st">"TD_E_LOGS"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">estimand</span> <span class="op">==</span> <span class="st">"rho_effect"</span><span class="op">)</span> <span class="op">|</span></span>
 <span>                <span class="va">method</span> <span class="op">==</span> <span class="st">"TD_PR"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">pre_plot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="va">method</span> <span class="op">~</span> <span class="va">d</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/oa-val-1.png" class="r-plt" alt="" width="864"></p>
-<p>Under no anticipation, each row is zero at a pre-treatment age
-exactly when its assumption’s restriction holds there (NTD-PT,
-TD-E-LOGS, TD-PR).</p>
-<p><strong>NTD and TD-E-LOGS estimates.</strong> Rows: <code>NTD</code>
-and <code>TD_E_LOGS</code> <code>rho_effect</code>, groups 26 to 30.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p><strong>NTD and TD-E-LOGS estimates</strong> (online appendix on
+proportional DID and TD). Rows: <code>NTD</code> and
+<code>TD_E_LOGS</code> <code>rho_effect</code>, groups 26 to 30.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op">&gt;=</span> <span class="fl">0</span>, <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">26</span><span class="op">:</span><span class="fl">30</span>, <span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NTD"</span>, <span class="st">"TD_E_LOGS"</span><span class="op">)</span>,</span>
 <span>              <span class="va">estimand</span> <span class="op">==</span> <span class="st">"rho_effect"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">est</span>, colour <span class="op">=</span> <span class="va">method</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">truth</span>, <span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fl">26</span><span class="op">:</span><span class="fl">30</span>, <span class="va">event_time</span> <span class="op">&lt;=</span> <span class="fl">5</span><span class="op">)</span>,</span>
-<span>             <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">rho_effect</span><span class="op">)</span>, inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>, shape <span class="op">=</span> <span class="fl">4</span>, colour <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">d</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event time"</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu">rho</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">-</span> <span class="fu">rho</span><span class="op">(</span><span class="va">infinity</span><span class="op">)</span><span class="op">)</span>, colour <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">d</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event time"</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu">rho</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">-</span> <span class="fu">rho</span><span class="op">(</span><span class="va">infinity</span><span class="op">)</span><span class="op">)</span>, colour <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/oa-post-1.png" class="r-plt" alt="" width="864"></p>
-<p>Both rows target
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>d</mi><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>ρ</mi><mo stretchy="false" form="prefix">(</mo><mi>∞</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho(d) - \rho(\infty)</annotation></semantics></math>;
-NTD imputes counterfactual earnings additively and TD-E-LOGS
-multiplicatively. Both track the true values (red crosses) up to
-sampling noise. In the simulated design TD-E-LOGS holds exactly and NTD
-approximately; the systematic difference is at most about 0.01, smaller
-than the sampling noise at this sample size.</p>
-<p><strong>Aggregate estimates.</strong> Rows:
-<code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code>, <code>Conventional</code>
-<code>gap_theta</code> and <code>NTD</code> <code>rho_effect</code>,
-<code>weighted_avg</code>, with the default sample weights (the number
-of mothers and fathers in each treatment group, as in the paper).</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p><strong>Aggregate estimates</strong> (online appendix on aggregate
+estimates). Rows: <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code>,
+<code>Conventional</code> <code>gap_theta</code> and <code>NTD</code>
+<code>rho_effect</code>, <code>weighted_avg</code>, with the default
+sample weights. The paper’s figure adds the UK and Germany, from survey
+data.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/aggregate_estimands.html">aggregate_estimands</a></span><span class="op">(</span><span class="va">res</span>, methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Conventional"</span>, <span class="st">"NTD"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">estimand</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gap_theta"</span>, <span class="st">"rho_effect"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">event_time</span>, <span class="va">est</span>, ymin <span class="op">=</span> <span class="va">ci_l</span>, ymax <span class="op">=</span> <span class="va">ci_h</span>, colour <span class="op">=</span> <span class="va">method</span>, fill <span class="op">=</span> <span class="va">method</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.2</span>, colour <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Event time"</span>, y <span class="op">=</span> <span class="st">"Aggregate estimate (95% CI)"</span>, colour <span class="op">=</span> <span class="cn">NULL</span>, fill <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 <p><img src="replication_files/figure-html/oa-agg-1.png" class="r-plt" alt="" width="864"></p>
-<p>The <code>NTD</code> row estimates
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ρ</mi><mrow><mi>A</mi><mi>g</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\rho_{Agg}(e)</annotation></semantics></math>
-(equation (10)); the <code>Conventional</code> row is the aggregate of
-the conventional estimator, the descriptive counterpart of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><msub><mi>θ</mi><mrow><mi>A</mi><mi>g</mi><mi>g</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\Delta\theta_{Agg}(e)</annotation></semantics></math>
-(equation (11)). The paper’s figure adds the UK and Germany, from survey
-data.</p>
 </div>
 <div class="section level2">
 <h2 id="numbers-quoted-in-the-paper">Numbers quoted in the paper<a class="anchor" aria-label="anchor" href="#numbers-quoted-in-the-paper"></a>
 </h2>
-<p>Each number in the text comes from one row of the output on the
-paper’s data:</p>
+<p>Each number in the text comes from one row of the output:</p>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -476,6 +342,42 @@ at birth, and parenthood’s share</td>
 <td>Online appendix: aggregate conventional and new estimates five years
 after birth</td>
 <td><code>filter(aggregate_estimands(res), method %in% c("Conventional", "NTD"), estimand %in% c("gap_theta", "rho_effect"), event_time == 5)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="figures-not-produced-by-the-package">Figures not produced by the package<a class="anchor" aria-label="anchor" href="#figures-not-produced-by-the-package"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Figure</th>
+<th>Data it needs</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Figure 1(c): the normalized event study (Section 1.2; equations (1)
+and (2))</td>
+<td>a regression on event-time indicators with age and calendar-year
+fixed effects; needs calendar year</td>
+</tr>
+<tr class="even">
+<td>Figure 2: human capital by age at first birth (Section 2.2)</td>
+<td>pre-birth covariates (grandparents’ earnings, test scores,
+high-school credits), part of the confidential data</td>
+</tr>
+<tr class="odd">
+<td>Figure 8: age at first birth across countries (Section 5.2)</td>
+<td>OECD Family Database, indicator SF2.3</td>
+</tr>
+<tr class="even">
+<td>Online appendix: selection on fertility timing in the UK and
+Germany</td>
+<td>Understanding Society with the harmonised BHPS, and SOEP-CORE</td>
 </tr>
 </tbody>
 </table>

@@ -25,9 +25,8 @@ aggregate_estimands(
 
   The data.frame returned by
   [`multiple_treatment_group_analysis`](https://dorleventer.github.io/childpen/reference/multiple_treatment_group_analysis.md),
-  unmodified (its attributes carry the influence functions). A table
-  without them is accepted, with standard errors under an independence
-  approximation and a warning.
+  unmodified (its attributes carry the influence functions and the
+  treatment-group sizes).
 
 - weights:
 

@@ -68,6 +68,8 @@
 <li>Invalid comparisons are errors: a control group already treated at the target age (<code>dp &lt;= a</code>), <code>dp &lt;= d</code>, <code>pre &lt; 1</code>, or a target age equal to the baseline.</li>
 <li>Progress is reported with <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message()</a></code>, one line per treatment group; cells that cannot be estimated are summarised in one message.</li>
 <li>
+<code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> stops when <code>results</code> lacks the influence functions (it used to fall back to standard errors that treat treatment groups as independent).</li>
+<li>
 <code><a href="../reference/aggregate_estimands.html">aggregate_estimands()</a></code> stops when no weight name matches a treatment group and warns about groups without a weight; <code>n_groups</code> counts groups with positive weight.</li>
 <li>
 <code><a href="../reference/simulate_data.html">simulate_data()</a></code> has a new design that shows the paper’s patterns: career entry later and growth steeper for later first births (parallel trends fails in the paper’s direction; pre-treatment DID estimates grow in magnitude with the distance to the control group), effects of parenthood that differ by age at first birth and fade with event time, and a gender earnings ratio that falls with age (so NTD holds approximately, TD-E-LOGS exactly). The true values for every treatment group and age are attached (<code>attr(, "truth")</code>). The simulated data differ from earlier versions. It also works with a single treatment group and checks its inputs.</li>
