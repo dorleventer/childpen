@@ -124,7 +124,11 @@ Let $B_d$ be the estimate of treatment group $d$, $p_d = \Pr(D = d)$ its populat
 $$
 \psi_{A(e)} = \frac{1}{P_e} \sum_{d \in \mathcal{D}(e)} \Big[ \big(B_d - A(e)\big)\,\psi_{p_d} + p_d\,\psi_{B_d} \Big], \qquad \psi_{p_d} = 1\{D = d\} - p_d .
 $$
-For the within-gender rows the share is the joint share of gender $g$ and group $d$, with $1\{G = g, D = d\} - p_{g,d}$ in place of $\psi_{p_d}$. With `"uniform"` or fixed weights the first term is absent; with `"sample"` it accounts for the estimated shares. For `ratio_of_avgs` the chain rule is applied to the ratio of the two weighted averages, each with its share term, and the influence function of `share_other` is minus that of `share_parenthood`.
+For the within-gender rows the share is the joint share of gender $g$ and group $d$, with $1\{G = g, D = d\} - p_{g,d}$ in place of $\psi_{p_d}$. With `"uniform"` or fixed weights the first term is absent; with `"sample"` it accounts for the estimated shares. For `ratio_of_avgs`, $\hat\theta_{\mathrm{Agg},2} = \hat N / \hat M$ with $\hat N = \sum_d w_d\,\hat\delta_{\mathrm{ATE},d}$ and $\hat M = \sum_d w_d\,\hat\delta_{\mathrm{APO},d}$, and by the chain rule (**not in the paper**)
+$$
+\psi_{\theta_{\mathrm{Agg},2}} = \frac{\psi_N}{M} - \frac{N\,\psi_M}{M^2},
+$$
+where $\psi_N$ and $\psi_M$ are the influence functions of the two weighted averages, each with its share term. The influence function of `share_other` is minus that of `share_parenthood`.
 
 The group-level influence functions are summed per person across treatment groups before they are squared, with clusters at the person level,
 $$
