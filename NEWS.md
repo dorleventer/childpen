@@ -37,9 +37,9 @@ of rows that exist in both versions are unchanged (checked with
   `control_offset`, `ci_l`, `ci_h`, `t`, `p`); results carry `control_offset`
   (= dp - d), and `multiple_treatment_group_analysis()` attaches
   `attr(, "skipped")`.
-* Articles follow the paper, in order: Notation and output, Identification,
-  Estimation (every estimator and its influence function), Aggregation, and
-  Replicating the paper (the paper's main figures, including the accounting
+* Articles follow the paper, in order: Notation and output, Estimation (every
+  estimator, its influence function, and the assumption behind each row),
+  Aggregation, and Replicating the paper (the paper's main figures, including the accounting
   exercise, on simulated data; on the site only).
 
 ## Input checks and messages

@@ -12,8 +12,7 @@ This article reproduces the figures of Leventer (2025), *Identification of Child
 the paper's order, on simulated data: the Israeli administrative data are confidential. Each
 section gives the call, the rows of the output it uses, a short plot, and how the figure is read.
 It builds on the earlier articles: [Notation and output](notation.html) for the symbols and
-rows, [Identification](identification.html) for the assumptions and results,
-[Estimation](estimators.html) for the estimators and standard errors, and
+rows, [Estimation](estimators.html) for the estimators and standard errors, and
 [Aggregation](aggregation.html) for the aggregate estimands.
 
 The simulated data come from `simulate_data()`, designed to show the paper's patterns: later
@@ -100,7 +99,7 @@ Each line is one treatment-control pair. Under no anticipation, a pre-treatment 
 equals the difference in counterfactual trends between the two groups at that age, the
 parallel-trends violation $\gamma_{PT}$ (Lemma 1). Lines away from zero are trend differences
 before treatment for that pair; here they grow with the distance to the control group, as
-selection on the timing of first birth implies ([Identification](identification.html)).
+selection on the timing of first birth implies (Section 2).
 Parallel trends is an assumption about post-treatment ages, so these are suggestive checks, one
 per pair.
 
@@ -326,6 +325,3 @@ Each number in the text comes from one row of the output on the paper's data:
 | Section 4.2: counterfactual and observed ratio for $D = 30$ at birth, and parenthood's share | `filter(res, method == "NTD", estimand %in% c("rho_cf", "rho_obs", "share_parenthood"), d == 30, event_time == 0)` |
 | Section 4.2: parenthood's share at birth across $D = 26, \dots, 30$ | `filter(res, method == "NTD", estimand == "share_parenthood", event_time == 0, d %in% 26:30)` |
 | Online appendix: aggregate conventional and new estimates five years after birth | `filter(aggregate_estimands(res), method %in% c("Conventional", "NTD"), estimand %in% c("gap_theta", "rho_effect"), event_time == 5)` |
-
-The paper's own scripts read the results with earlier labels; the map is in
-[Notation and output](notation.html).
