@@ -42,6 +42,68 @@ $`-4`$ to $`-2`$ (baseline $`d - 1`$), and controls up to 40
 ([Replicating the
 paper](https://dorleventer.github.io/childpen/articles/replication.md)).
 
+**One comparison.**
+[`single_treatment_group_analysis()`](https://dorleventer.github.io/childpen/reference/single_treatment_group_analysis.md)
+returns the rows of one cell $`(d, d', a)`$. Treatment group $`d = 26`$
+against control group $`d' = 28`$, after childbirth at age $`a = 27`$
+(event time 1) and before childbirth at age $`a = 23`$ (event time
+$`-3`$), both with baseline age 25:
+
+``` r
+
+library(childpen)
+sim  <- simulate_data(5000, 24:30)
+fmt  <- function(v) format(signif(v, 3), scientific = FALSE, drop0trailing = TRUE, trim = TRUE)
+show <- function(x) transform(x[c("event_time", "control_offset", "method", "estimand", "est", "se")],
+                               est = fmt(est), se = fmt(se))
+
+post <- single_treatment_group_analysis(sim, d = 26, dp = 28, a = 27)
+show(post)
+#>    event_time control_offset       method         estimand     est     se
+#> 1           1              2   DID_Female              APO   24900    377
+#> 2           1              2     DID_Male              APO   26200    388
+#> 3           1              2   DID_Female              ATE   -8340    327
+#> 4           1              2     DID_Male              ATE   -1160    361
+#> 5           1              2   DID_Female            theta  -0.335 0.0095
+#> 6           1              2     DID_Male            theta -0.0444 0.0134
+#> 7           1              2           TD          gap_ATE   -7170    487
+#> 8           1              2 Conventional        gap_theta   -0.29 0.0164
+#> 9           1              2          NTD       rho_effect  -0.289 0.0176
+#> 10          1              2    TD_E_LOGS       rho_effect  -0.288 0.0202
+#> 11          1              2        TD_PR    gap_theta_pre   -0.34 0.0241
+#> 12          1              2          NTD          rho_obs   0.662 0.0124
+#> 13          1              2          NTD           rho_cf   0.951 0.0202
+#> 14          1              2          NTD share_parenthood   0.856 0.0572
+#> 15          1              2          NTD      share_other   0.144 0.0572
+#> 16          1              2    TD_E_LOGS          rho_obs   0.662 0.0124
+#> 17          1              2    TD_E_LOGS           rho_cf    0.95 0.0235
+#> 18          1              2    TD_E_LOGS share_parenthood   0.853  0.067
+#> 19          1              2    TD_E_LOGS      share_other   0.147  0.067
+
+pre <- single_treatment_group_analysis(sim, d = 26, dp = 28, a = 23)
+show(pre)
+#>    event_time control_offset       method         estimand     est     se
+#> 1          -3              2   DID_Female              APO   17400    346
+#> 2          -3              2     DID_Male              APO   17700    361
+#> 3          -3              2   DID_Female              ATE     213    289
+#> 4          -3              2     DID_Male              ATE     492    324
+#> 5          -3              2   DID_Female            theta  0.0122 0.0168
+#> 6          -3              2     DID_Male            theta  0.0278 0.0187
+#> 7          -3              2           TD          gap_ATE    -280    434
+#> 8          -3              2 Conventional        gap_theta -0.0155 0.0251
+#> 9          -3              2          NTD       rho_effect -0.0148  0.024
+#> 10         -3              2    TD_E_LOGS       rho_effect -0.0156 0.0218
+#> 11         -3              2        TD_PR    gap_theta_pre -0.0132 0.0184
+#> 12         -3              2          NTD          rho_obs   0.963 0.0185
+#> 13         -3              2          NTD           rho_cf   0.978 0.0279
+#> 14         -3              2          NTD share_parenthood   0.403  0.656
+#> 15         -3              2          NTD      share_other   0.597  0.656
+#> 16         -3              2    TD_E_LOGS          rho_obs   0.963 0.0185
+#> 17         -3              2    TD_E_LOGS           rho_cf   0.979  0.024
+#> 18         -3              2    TD_E_LOGS share_parenthood   0.427  0.571
+#> 19         -3              2    TD_E_LOGS      share_other   0.573  0.571
+```
+
 **Input data.** `data` is a data.frame or data.table in long format, one
 row per person and age; the panel need not be balanced. The columns are
 located by name:

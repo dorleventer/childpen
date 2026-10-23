@@ -411,39 +411,6 @@ share term is put on the person-age scale with the average number of
 ages per person, which is exact for a balanced panel. The estimators and
 the influence functions of the group-level rows are in <a href="estimators.html">Estimation</a>.</p>
 </div>
-<div class="section level2">
-<h2 id="pre-treatment-event-times">4. Pre-treatment event times<a class="anchor" aria-label="anchor" href="#pre-treatment-event-times"></a>
-</h2>
-<p>With <code>include_pre = TRUE</code>, pre-treatment event times are
-aggregated as well. A pre-treatment event time has one cell per control
-group,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>=</mo><mi>d</mi><mo>+</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>d</mi><mo>+</mo><mi>H</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d' = d + 1, \dots, d + H + 1</annotation></semantics></math>,
-and each <code>control_offset</code>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>d</mi><mo>′</mo></msup><mo>−</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">d' - d</annotation></semantics></math>
-is aggregated separately, so each row is the aggregate of the validation
-estimates of one treatment-control distance. (After treatment
-<code>control_offset</code> equals <code>event_time</code> + 1, and each
-event time has one aggregate.) With the default <code>pre = 1</code> and
-<code>periods_pre = K</code>, the pre-treatment event times are
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>+</mo><mi>K</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mi>…</mi><mo>,</mo><mi>−</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">-(1 + K), \dots, -2</annotation></semantics></math>;
-the baseline is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mo>=</mo><mi>−</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">e = -1</annotation></semantics></math>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res_pre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multiple_treatment_group_analysis.html">multiple_treatment_group_analysis</a></span><span class="op">(</span><span class="va">sim</span>, <span class="fl">26</span><span class="op">:</span><span class="fl">28</span>, periods_post <span class="op">=</span> <span class="fl">2</span>, periods_pre <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>                                             verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">agg_pre</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aggregate_estimands.html">aggregate_estimands</a></span><span class="op">(</span><span class="va">res_pre</span>, include_pre <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                               methods <span class="op">=</span> <span class="st">"Conventional"</span><span class="op">)</span></span>
-<span><span class="va">agg_pre</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">event_time</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="va">method</span> <span class="op">==</span> <span class="st">"Conventional"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">event_time</span>, <span class="va">control_offset</span>, <span class="va">est</span>, <span class="va">se</span>, <span class="va">n_groups</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   event_time control_offset       est       se n_groups</span></span>
-<span><span class="co">#&gt; 1         -3              1  0.011681 0.008648        3</span></span>
-<span><span class="co">#&gt; 2         -3              2  0.012587 0.009221        3</span></span>
-<span><span class="co">#&gt; 3         -3              3 -0.001928 0.008275        3</span></span>
-<span><span class="co">#&gt; 4         -2              1  0.001376 0.009292        3</span></span>
-<span><span class="co">#&gt; 5         -2              2  0.005349 0.008033        3</span></span>
-<span><span class="co">#&gt; 6         -2              3  0.001429 0.007885        3</span></span></code></pre></div>
-</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>

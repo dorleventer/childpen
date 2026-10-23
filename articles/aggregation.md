@@ -204,33 +204,3 @@ scale with the average number of ages per person, which is exact for a
 balanced panel. The estimators and the influence functions of the
 group-level rows are in
 [Estimation](https://dorleventer.github.io/childpen/articles/estimators.md).
-
-## 4. Pre-treatment event times
-
-With `include_pre = TRUE`, pre-treatment event times are aggregated as
-well. A pre-treatment event time has one cell per control group,
-$`d' = d + 1, \dots, d + H + 1`$, and each `control_offset` $`d' - d`$
-is aggregated separately, so each row is the aggregate of the validation
-estimates of one treatment-control distance. (After treatment
-`control_offset` equals `event_time` + 1, and each event time has one
-aggregate.) With the default `pre = 1` and `periods_pre = K`, the
-pre-treatment event times are $`-(1 + K), \dots, -2`$; the baseline is
-$`e = -1`$.
-
-``` r
-
-res_pre <- multiple_treatment_group_analysis(sim, 26:28, periods_post = 2, periods_pre = 2,
-                                             verbose = FALSE)
-agg_pre <- aggregate_estimands(res_pre, include_pre = TRUE,
-                               methods = "Conventional")
-agg_pre |>
-  filter(event_time < 0, method == "Conventional") |>
-  select(event_time, control_offset, est, se, n_groups)
-#>   event_time control_offset       est       se n_groups
-#> 1         -3              1  0.011681 0.008648        3
-#> 2         -3              2  0.012587 0.009221        3
-#> 3         -3              3 -0.001928 0.008275        3
-#> 4         -2              1  0.001376 0.009292        3
-#> 5         -2              2  0.005349 0.008033        3
-#> 6         -2              3  0.001429 0.007885        3
-```
